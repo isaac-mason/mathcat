@@ -29,7 +29,7 @@
 - feat: change `raycast3.intersectsTriangle` to hit backfaces and set a `frontFacing` property on the output result
 - feat: add `createIntersectsTriangleResult`, `IntersectsTriangleResult` type
 - feat: add `plane3` module with common plane operations for `Plane3` type
-
+- feat: add `mat4.multiply3x3`, `mat4.multiply3x3RightTransposed`
 ## 0.0.6
 
 - `maaths` has been renamed to `mathcat` to avoid confusion with `maath` from pmndrs.
