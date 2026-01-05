@@ -14,6 +14,21 @@ export function create(): Raycast3 {
 }
 
 /**
+ * Creates a new Raycast3 from given values.
+ * @param origin The origin Vec3.
+ * @param direction The direction Vec3.
+ * @param length The length of the ray.
+ * @returns A new Raycast3.
+ */
+export function fromValues(origin: Vec3, direction: Vec3, length: number): Raycast3 {
+    return {
+        origin: vec3.clone(origin),
+        direction: vec3.clone(direction),
+        length,
+    };
+}
+
+/**
  * Sets the components of a Raycast3.
  * @param out The output Raycast3.
  * @param origin The origin Vec3.
@@ -62,12 +77,21 @@ const _rayIntersectsTriangle_normal = /*@__PURE__*/ vec3.create();
 const _rayIntersectsTriangle_diff = /*@__PURE__*/ vec3.create();
 const _rayIntersectsTriangle_temp = /*@__PURE__*/ vec3.create();
 
+/**
+ * Result of a ray-triangle intersection test
+ * @see createIntersectsTriangleResult
+ * @see intersectsTriangle
+ */
 export type IntersectsTriangleResult = {
     fraction: number;
     hit: boolean;
     frontFacing: boolean;
 };
 
+/**
+ * Creates a new IntersectsTriangleResult with default values.
+ * @returns A new IntersectsTriangleResult.
+ */
 export function createIntersectsTriangleResult(): IntersectsTriangleResult {
     return {
         fraction: 0,
@@ -78,7 +102,6 @@ export function createIntersectsTriangleResult(): IntersectsTriangleResult {
 
 /**
  * Ray-triangle intersection test.
- * Aligned with Three.js implementation.
  * Based on https://github.com/pmjoniak/GeometricTools/blob/master/GTEngine/Include/Mathematics/GteIntrRay3Triangle3.h
  *
  * @param out Output object to store result (hit boolean, fraction, frontFacing)
