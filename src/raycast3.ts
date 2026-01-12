@@ -227,7 +227,9 @@ export function intersectsBox3(ray: Raycast3, aabb: Box3): boolean {
             let t1 = (aabb[1][i] - ray.origin[i]) * invD;
 
             if (invD < 0) {
-                [t0, t1] = [t1, t0];
+                const temp = t0;
+                t0 = t1;
+                t1 = temp;
             }
 
             tmin = Math.max(tmin, t0);
