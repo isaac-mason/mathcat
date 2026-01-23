@@ -1,6 +1,6 @@
 import * as common from './common';
 import * as mat3 from './mat3';
-import type { Euler, EulerOrder, Mat3, Quat, Vec3 } from './types';
+import type { Euler, EulerOrder, Mat3, Mat4, Quat, Vec3 } from './types';
 import * as vec3 from './vec3';
 import * as vec4 from './vec4';
 
@@ -413,6 +413,20 @@ export function fromMat3(out: Quat, m: Mat3): Quat {
     }
 
     return out;
+}
+
+/**
+ * Calculates a quaternion from a 4x4 rotation matrix
+ * Extracts the 3x3 rotation part and calls fromMat3
+ *
+ * @param out the receiving quaternion
+ * @param m rotation matrix
+ * @returns out
+ */
+export function fromMat4(out: Quat, m: Mat4): Quat {
+    const m3 = mat3.create();
+    mat3.fromMat4(m3, m);
+    return fromMat3(out, m3);
 }
 
 /**
