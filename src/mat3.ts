@@ -167,6 +167,25 @@ export function identity(out: Mat3): Mat3 {
 }
 
 /**
+ * Set a mat3 to the zero matrix
+ *
+ * @param out the receiving matrix
+ * @returns out
+ */
+export function zero(out: Mat3): Mat3 {
+    out[0] = 0;
+    out[1] = 0;
+    out[2] = 0;
+    out[3] = 0;
+    out[4] = 0;
+    out[5] = 0;
+    out[6] = 0;
+    out[7] = 0;
+    out[8] = 0;
+    return out;
+}
+
+/**
  * Transpose the values of a mat3
  *
  * @param out the receiving matrix

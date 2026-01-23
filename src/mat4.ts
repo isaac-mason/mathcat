@@ -210,6 +210,32 @@ export function identity(out: Mat4): Mat4 {
 }
 
 /**
+ * Set a mat4 to the zero matrix
+ *
+ * @param out the receiving matrix
+ * @returns out
+ */
+export function zero(out: Mat4): Mat4 {
+    out[0] = 0;
+    out[1] = 0;
+    out[2] = 0;
+    out[3] = 0;
+    out[4] = 0;
+    out[5] = 0;
+    out[6] = 0;
+    out[7] = 0;
+    out[8] = 0;
+    out[9] = 0;
+    out[10] = 0;
+    out[11] = 0;
+    out[12] = 0;
+    out[13] = 0;
+    out[14] = 0;
+    out[15] = 0;
+    return out;
+}
+
+/**
  * Transpose the values of a mat4
  *
  * @param out the receiving matrix
