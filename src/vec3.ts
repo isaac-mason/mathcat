@@ -442,6 +442,31 @@ export function cross(out: Vec3, a: Vec3, b: Vec3): Vec3 {
 }
 
 /**
+ * Calculates a normalized perpendicular vector to the given vector.
+ * Useful for finding an arbitrary orthogonal basis vector.
+ *
+ * @param out the receiving vector
+ * @param a the source vector
+ * @returns the out vector
+ */
+export function perpendicular(out: Vec3, a: Vec3): Vec3 {
+    if (Math.abs(a[0]) > Math.abs(a[1])) {
+        const len = Math.sqrt(a[0] * a[0] + a[2] * a[2]);
+        const invLen = 1.0 / len;
+        out[0] = a[2] * invLen;
+        out[1] = 0;
+        out[2] = -a[0] * invLen;
+    } else {
+        const len = Math.sqrt(a[1] * a[1] + a[2] * a[2]);
+        const invLen = 1.0 / len;
+        out[0] = 0;
+        out[1] = a[2] * invLen;
+        out[2] = -a[1] * invLen;
+    }
+    return out;
+}
+
+/**
  * Performs a linear interpolation between two vec3's
  *
  * @param out the receiving vector
