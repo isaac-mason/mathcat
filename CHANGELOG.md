@@ -32,6 +32,7 @@
 - feat: add `mat4.multiply3x3`, `mat4.multiply3x3RightTransposed`
 - feat: add `raycast3.fromValues` to create a Raycast3 from individual components
 - feat: add `mat3.zero` and `mat4.zero` to set all elements to zero
+- feat: add `mat4.multiply3x3TransposedVec`, `mat4.multiply3x3Vec`, `mat4.crossProductMatrix`
 
 ## 0.0.6
 

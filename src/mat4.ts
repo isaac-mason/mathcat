@@ -621,6 +621,68 @@ export function multiply3x3RightTransposed(out: Mat4, a: Mat4, b: Mat4): Mat4 {
 }
 
 /**
+ * Transform a Vec3 by the transpose of the 3x3 rotation part.
+ *
+ * @param out the receiving vector
+ * @param mat the matrix to transform with
+ * @param vec the vector to transform
+ * @returns out
+ */
+export function multiply3x3TransposedVec(out: Vec3, mat: Mat4, vec: Vec3): Vec3 {
+    const x = vec[0];
+    const y = vec[1];
+    const z = vec[2];
+    
+    out[0] = mat[0] * x + mat[1] * y + mat[2] * z;
+    out[1] = mat[4] * x + mat[5] * y + mat[6] * z;
+    out[2] = mat[8] * x + mat[9] * y + mat[10] * z;
+    
+    return out;
+}
+
+/**
+ * Transform a Vec3 by only the 3x3 rotation part of a Mat4.
+ *
+ * @param out the receiving vector
+ * @param mat the matrix to transform with
+ * @param vec the vector to transform
+ * @returns out
+ */
+export function multiply3x3Vec(out: Vec3, mat: Mat4, vec: Vec3): Vec3 {
+    const x = vec[0];
+    const y = vec[1];
+    const z = vec[2];
+    
+    out[0] = mat[0] * x + mat[4] * y + mat[8] * z;
+    out[1] = mat[1] * x + mat[5] * y + mat[9] * z;
+    out[2] = mat[2] * x + mat[6] * y + mat[10] * z;
+    
+    return out;
+}
+
+/**
+ * Cross product matrix (skew-symmetric matrix).
+ * Equivalent to Jolt's Mat44::sCrossProduct(Vec3Arg)
+ *
+ * @param out the receiving matrix
+ * @param v the vector to create the cross product matrix from
+ * @returns out
+ */
+export function crossProductMatrix(out: Mat4, v: Vec3): Mat4 {
+    const x = v[0];
+    const y = v[1];
+    const z = v[2];
+
+    return set(
+        out,
+        0, z, -y, 0, // column 0
+        -z, 0, x, 0, // column 1
+        y, -x, 0, 0, // column 2
+        0, 0, 0, 1   // column 3
+    );
+}
+
+/**
  * Translate a mat4 by the given vector
  *
  * @param out the receiving matrix
