@@ -353,6 +353,57 @@ export function invert(out: Mat4, a: Mat4): Mat4 | null {
 }
 
 /**
+ * Inverts only the 3x3 rotation part of a mat4.
+ * Sets the translation column and bottom row to [0, 0, 0, 1].
+ * Equivalent to Jolt's Mat44::Inversed3x3()
+ *
+ * @param out the receiving matrix
+ * @param a the source matrix
+ * @returns out, or null if the 3x3 part is not invertible
+ */
+export function invert3x3(out: Mat4, a: Mat4): Mat4 | null {
+    const a00 = a[0];
+    const a01 = a[1];
+    const a02 = a[2];
+    const a10 = a[4];
+    const a11 = a[5];
+    const a12 = a[6];
+    const a20 = a[8];
+    const a21 = a[9];
+    const a22 = a[10];
+
+    const b01 = a22 * a11 - a12 * a21;
+    const b11 = -a22 * a10 + a12 * a20;
+    const b21 = a21 * a10 - a11 * a20;
+
+    // calculate the determinant
+    let det = a00 * b01 + a01 * b11 + a02 * b21;
+
+    if (!det) {
+        return null;
+    }
+    det = 1.0 / det;
+
+    out[0] = b01 * det;
+    out[1] = (-a22 * a01 + a02 * a21) * det;
+    out[2] = (a12 * a01 - a02 * a11) * det;
+    out[3] = 0;
+    out[4] = b11 * det;
+    out[5] = (a22 * a00 - a02 * a20) * det;
+    out[6] = (-a12 * a00 + a02 * a10) * det;
+    out[7] = 0;
+    out[8] = b21 * det;
+    out[9] = (-a21 * a00 + a01 * a20) * det;
+    out[10] = (a11 * a00 - a01 * a10) * det;
+    out[11] = 0;
+    out[12] = 0;
+    out[13] = 0;
+    out[14] = 0;
+    out[15] = 1;
+    return out;
+}
+
+/**
  * Calculates the adjugate of a mat4
  *
  * @param out the receiving matrix

@@ -34,6 +34,7 @@
 - feat: add `mat3.zero` and `mat4.zero` to set all elements to zero
 - feat: add `mat4.multiply3x3TransposedVec`, `mat4.multiply3x3Vec`, `mat4.crossProductMatrix`
 - feat: add `quat.fromMat4` to set a quaternion from 3x3 part of a Mat4
+- feat: add `mat4.invert3x3`
 
 ## 0.0.6
 
