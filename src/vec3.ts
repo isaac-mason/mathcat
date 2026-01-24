@@ -104,7 +104,7 @@ export function setScalar(out: Vec3, s: number): Vec3 {
  * @param startIndex the starting index in the buffer
  * @returns out
  */
-export function fromBuffer(out: Vec3, buffer: ArrayLike<number>, startIndex = 0): Vec3 {
+export function fromBuffer(out: Vec3, buffer: ArrayLike<number>, startIndex: number): Vec3 {
     out[0] = buffer[startIndex];
     out[1] = buffer[startIndex + 1];
     out[2] = buffer[startIndex + 2];
@@ -118,7 +118,7 @@ export function fromBuffer(out: Vec3, buffer: ArrayLike<number>, startIndex = 0)
  * @param startIndex The starting index in the buffer
  * @returns The output buffer
  */
-export function toBuffer(outBuffer: MutableArrayLike<number>, vec: Vec3, startIndex = 0): ArrayLike<number> {
+export function toBuffer(outBuffer: MutableArrayLike<number>, vec: Vec3, startIndex: number): ArrayLike<number> {
     outBuffer[startIndex] = vec[0];
     outBuffer[startIndex + 1] = vec[1];
     outBuffer[startIndex + 2] = vec[2];
