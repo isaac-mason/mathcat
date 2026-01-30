@@ -2,9 +2,10 @@
 
 ## 0.0.7 (Unreleased)
 
-- feat: add `ray3` module and `Ray3` type for rays with origin, direction, and length in 3D space
-- feat: replace `box3.intersectsRay` with `ray3.intersectsBox3` for ray-box intersection tests
-- feat: add `ray3.intersectsTriangle` for ray-triangle intersection tests in 3D space
+- feat: add `raycast3` module and `Raycast3` type for rays with origin, direction, and length in 3D space
+    - add `raycast3.create`, `raycast3.set`, `raycast3.copy`, `raycast3.fromSegment`
+    - replace `box3.intersectsRay` with `raycast3.intersectsBox3` for ray-box intersection tests
+    - add `raycast3.intersectsTriangle` for ray-triangle intersection tests in 3D space
 - feat: move `circumcircle` module out of `triangle2`, export standalone
 - feat: add `box3.copy` function to copy Box3 values to another Box3
 - feat: add `box3.transformMat4`
@@ -20,9 +21,7 @@
 - feat: add `quat.fromDegrees` convenience function to set quaternion from Euler angles in degrees
 - feat: add `box3.union` to compute the union of two Box3s
 - feat: add `box3.size` to compute the size or dimensions of a Box3
-- feat: add `ray3.create`, `ray3.set`, `ray3.copy`, `ray3.fromSegment`
 - feat: add `box3.expandByMargin` to expand a Box3 by a uniform margin in all directions
-- feat: rename `ray3` / `Ray3` to `raycast3` / `Raycast3` to better reflect its purpose as a ray used for raycasting, including a length component
 - feat: add `box3.surfaceArea` to compute the surface area of a Box3
 - feat: add `box3.empty` to set a Box3 to an empty state (min at +Infinity, max at -Infinity)
 - feat: add `box3.equals` and `box3.exactEquals` for Box3 equality checks
