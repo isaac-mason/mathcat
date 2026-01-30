@@ -36,6 +36,7 @@
 - feat: add `mat4.invert3x3`
 - feat: add `vec3.perpendicular`
 - feat: make `startIndex` required for `vec3.fromBuffer` and `vec3.toBuffer`
+- feat: add `euler.set`
 
 ## 0.0.6
 
