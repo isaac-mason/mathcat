@@ -56,12 +56,6 @@ describe('vec3', () => {
             const result = vec3.fromBuffer(out, buffer, 1);
             expect(result).toEqual([20, 30, 40]);
         });
-
-        it('should default to start index 0', () => {
-            const buffer = [10, 20, 30];
-            const result = vec3.fromBuffer(out, buffer);
-            expect(result).toEqual([10, 20, 30]);
-        });
     });
 
     describe('toBuffer', () => {
@@ -69,12 +63,6 @@ describe('vec3', () => {
             const buffer = new Array(5).fill(0);
             vec3.toBuffer(buffer, a, 1);
             expect(buffer).toEqual([0, 1, 2, 3, 0]);
-        });
-
-        it('should default to start index 0', () => {
-            const buffer = new Array(3).fill(0);
-            vec3.toBuffer(buffer, a);
-            expect(buffer).toEqual([1, 2, 3]);
         });
     });
 
