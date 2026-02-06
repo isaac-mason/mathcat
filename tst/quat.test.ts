@@ -326,6 +326,16 @@ describe('quat', () => {
         });
     });
 
+    describe('fromDegrees', () => {
+        it('should create quaternion from euler angles in degrees', () => {
+            const result = quat.create();
+
+            quat.fromDegrees(result, 45, 30, 60, 'xyz');
+
+            expect(quat.length(result)).toBeCloseTo(1);
+        });
+    });
+
     describe('rotationTo', () => {
         it('should create rotation from one vector to another', () => {
             const a: Vec3 = [1, 0, 0];

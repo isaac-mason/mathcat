@@ -1,6 +1,6 @@
 import * as common from './common';
 import * as mat3 from './mat3';
-import type { Euler, Mat3, Quat, Vec3 } from './types';
+import type { Euler, EulerOrder, Mat3, Mat4, Quat, Vec3 } from './types';
 import * as vec3 from './vec3';
 import * as vec4 from './vec4';
 
@@ -416,6 +416,20 @@ export function fromMat3(out: Quat, m: Mat3): Quat {
 }
 
 /**
+ * Calculates a quaternion from a 4x4 rotation matrix
+ * Extracts the 3x3 rotation part and calls fromMat3
+ *
+ * @param out the receiving quaternion
+ * @param m rotation matrix
+ * @returns out
+ */
+export function fromMat4(out: Quat, m: Mat4): Quat {
+    const m3 = mat3.create();
+    mat3.fromMat4(m3, m);
+    return fromMat3(out, m3);
+}
+
+/**
  * Creates a quaternion from the given euler
  * @param out the receiving quaternion
  * @param euler the euler to create the quaternion from
@@ -486,6 +500,28 @@ export function fromEuler(out: Quat, euler: Euler): Quat {
     }
 
     return out;
+}
+
+const _fromDegrees_euler: Euler = [0, 0, 0, 'xyz'];
+
+/**
+ * Creates a quaternion from euler angles specified in degrees.
+ * Shorthand for converting degrees to radians and then creating a quaternion from euler.
+ *
+ * @param out the receiving quaternion
+ * @param x The x euler rotation in degrees
+ * @param y The y euler rotation in degrees
+ * @param z The z euler rotation in degrees
+ * @param order The order of rotation
+ * @returns out
+ */
+export function fromDegrees(out: Quat, x: number, y: number, z: number, order: EulerOrder): Quat {
+    _fromDegrees_euler[0] = (x * Math.PI) / 180;
+    _fromDegrees_euler[1] = (y * Math.PI) / 180;
+    _fromDegrees_euler[2] = (z * Math.PI) / 180;
+    _fromDegrees_euler[3] = order;
+
+    return fromEuler(out, _fromDegrees_euler);
 }
 
 /**

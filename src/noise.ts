@@ -1,4 +1,5 @@
 import { fade, lerp } from './common';
+import type { Vec3 } from './types';
 
 // adapted from maath:
 // https://github.com/pmndrs/maath/blob/main/packages/maath/src/random/noise.ts
@@ -22,35 +23,22 @@ import { fade, lerp } from './common';
 // attribution is appreciated.
 // ```
 
-class Grad {
-    constructor(
-        public x: number,
-        public y: number,
-        public z: number,
-    ) {}
+const dot2 = (grad: Vec3, x: number, y: number) => grad[0] * x + grad[1] * y;
+const dot3 = (grad: Vec3, x: number, y: number, z: number) => grad[0] * x + grad[1] * y + grad[2] * z;
 
-    dot2 = (x: number, y: number) => {
-        return this.x * x + this.y * y;
-    };
-
-    dot3 = (x: number, y: number, z: number) => {
-        return this.x * x + this.y * y + this.z * z;
-    };
-}
-
-const grad3 = [
-    new Grad(1, 1, 0),
-    new Grad(-1, 1, 0),
-    new Grad(1, -1, 0),
-    new Grad(-1, -1, 0),
-    new Grad(1, 0, 1),
-    new Grad(-1, 0, 1),
-    new Grad(1, 0, -1),
-    new Grad(-1, 0, -1),
-    new Grad(0, 1, 1),
-    new Grad(0, -1, 1),
-    new Grad(0, 1, -1),
-    new Grad(0, -1, -1),
+const grad3: Vec3[] = [
+    [1, 1, 0],
+    [-1, 1, 0],
+    [1, -1, 0],
+    [-1, -1, 0],
+    [1, 0, 1],
+    [-1, 0, 1],
+    [1, 0, -1],
+    [-1, 0, -1],
+    [0, 1, 1],
+    [0, -1, 1],
+    [0, 1, -1],
+    [0, -1, -1],
 ];
 
 const p = [
@@ -82,7 +70,7 @@ function createPermutationTables(seed: number) {
 
     // To remove the need for index wrapping, double the permutation table length
     const perm: number[] = new Array(512);
-    const gradP: Grad[] = new Array(512);
+    const gradP: Vec3[] = new Array(512);
 
     for (let i = 0; i < 256; i++) {
         let v: number;
@@ -160,21 +148,21 @@ export function createSimplex2D(seed: number): NoiseGenerator2D {
             n0 = 0;
         } else {
             t0 *= t0;
-            n0 = t0 * t0 * gi0.dot2(x0, y0); // (x,y) of grad3 used for 2D gradient
+            n0 = t0 * t0 * dot2(gi0, x0, y0); // (x,y) of grad3 used for 2D gradient
         }
         let t1 = 0.5 - x1 * x1 - y1 * y1;
         if (t1 < 0) {
             n1 = 0;
         } else {
             t1 *= t1;
-            n1 = t1 * t1 * gi1.dot2(x1, y1);
+            n1 = t1 * t1 * dot2(gi1, x1, y1);
         }
         let t2 = 0.5 - x2 * x2 - y2 * y2;
         if (t2 < 0) {
             n2 = 0;
         } else {
             t2 *= t2;
-            n2 = t2 * t2 * gi2.dot2(x2, y2);
+            n2 = t2 * t2 * dot2(gi2, x2, y2);
         }
         // Add contributions from each corner to get the final noise value.
         // The result is scaled to return values in the interval [-1,1].
@@ -294,28 +282,28 @@ export function createSimplex3D(seed: number): NoiseGenerator3D {
             n0 = 0;
         } else {
             t0 *= t0;
-            n0 = t0 * t0 * gi0.dot3(x0, y0, z0); // (x,y) of grad3 used for 2D gradient
+            n0 = t0 * t0 * dot3(gi0, x0, y0, z0); // (x,y) of grad3 used for 2D gradient
         }
         let t1 = 0.6 - x1 * x1 - y1 * y1 - z1 * z1;
         if (t1 < 0) {
             n1 = 0;
         } else {
             t1 *= t1;
-            n1 = t1 * t1 * gi1.dot3(x1, y1, z1);
+            n1 = t1 * t1 * dot3(gi1, x1, y1, z1);
         }
         let t2 = 0.6 - x2 * x2 - y2 * y2 - z2 * z2;
         if (t2 < 0) {
             n2 = 0;
         } else {
             t2 *= t2;
-            n2 = t2 * t2 * gi2.dot3(x2, y2, z2);
+            n2 = t2 * t2 * dot3(gi2, x2, y2, z2);
         }
         let t3 = 0.6 - x3 * x3 - y3 * y3 - z3 * z3;
         if (t3 < 0) {
             n3 = 0;
         } else {
             t3 *= t3;
-            n3 = t3 * t3 * gi3.dot3(x3, y3, z3);
+            n3 = t3 * t3 * dot3(gi3, x3, y3, z3);
         }
         // Add contributions from each corner to get the final noise value.
         // The result is scaled to return values in the interval [-1,1].
@@ -344,10 +332,10 @@ export function createPerlin2D(seed: number): NoiseGenerator2D {
         Y = Y & 255;
 
         // Calculate noise contributions from each of the four corners
-        const n00 = gradP[X + perm[Y]].dot2(x, y);
-        const n01 = gradP[X + perm[Y + 1]].dot2(x, y - 1);
-        const n10 = gradP[X + 1 + perm[Y]].dot2(x - 1, y);
-        const n11 = gradP[X + 1 + perm[Y + 1]].dot2(x - 1, y - 1);
+        const n00 = dot2(gradP[X + perm[Y]], x, y);
+        const n01 = dot2(gradP[X + perm[Y + 1]], x, y - 1);
+        const n10 = dot2(gradP[X + 1 + perm[Y]], x - 1, y);
+        const n11 = dot2(gradP[X + 1 + perm[Y + 1]], x - 1, y - 1);
 
         // Compute the fade curve value for x
         const u = fade(x);
@@ -381,14 +369,14 @@ export function createPerlin3D(seed: number): NoiseGenerator3D {
         Z = Z & 255;
 
         // Calculate noise contributions from each of the eight corners
-        const n000 = gradP[X + perm[Y + perm[Z]]].dot3(x, y, z);
-        const n001 = gradP[X + perm[Y + perm[Z + 1]]].dot3(x, y, z - 1);
-        const n010 = gradP[X + perm[Y + 1 + perm[Z]]].dot3(x, y - 1, z);
-        const n011 = gradP[X + perm[Y + 1 + perm[Z + 1]]].dot3(x, y - 1, z - 1);
-        const n100 = gradP[X + 1 + perm[Y + perm[Z]]].dot3(x - 1, y, z);
-        const n101 = gradP[X + 1 + perm[Y + perm[Z + 1]]].dot3(x - 1, y, z - 1);
-        const n110 = gradP[X + 1 + perm[Y + 1 + perm[Z]]].dot3(x - 1, y - 1, z);
-        const n111 = gradP[X + 1 + perm[Y + 1 + perm[Z + 1]]].dot3(x - 1, y - 1, z - 1);
+        const n000 = dot3(gradP[X + perm[Y + perm[Z]]], x, y, z);
+        const n001 = dot3(gradP[X + perm[Y + perm[Z + 1]]], x, y, z - 1);
+        const n010 = dot3(gradP[X + perm[Y + 1 + perm[Z]]], x, y - 1, z);
+        const n011 = dot3(gradP[X + perm[Y + 1 + perm[Z + 1]]], x, y - 1, z - 1);
+        const n100 = dot3(gradP[X + 1 + perm[Y + perm[Z]]], x - 1, y, z);
+        const n101 = dot3(gradP[X + 1 + perm[Y + perm[Z + 1]]], x - 1, y, z - 1);
+        const n110 = dot3(gradP[X + 1 + perm[Y + 1 + perm[Z]]], x - 1, y - 1, z);
+        const n111 = dot3(gradP[X + 1 + perm[Y + 1 + perm[Z + 1]]], x - 1, y - 1, z - 1);
 
         // Compute the fade curve value for x, y, z
         const u = fade(x);

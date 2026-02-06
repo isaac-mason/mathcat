@@ -210,6 +210,32 @@ export function identity(out: Mat4): Mat4 {
 }
 
 /**
+ * Set a mat4 to the zero matrix
+ *
+ * @param out the receiving matrix
+ * @returns out
+ */
+export function zero(out: Mat4): Mat4 {
+    out[0] = 0;
+    out[1] = 0;
+    out[2] = 0;
+    out[3] = 0;
+    out[4] = 0;
+    out[5] = 0;
+    out[6] = 0;
+    out[7] = 0;
+    out[8] = 0;
+    out[9] = 0;
+    out[10] = 0;
+    out[11] = 0;
+    out[12] = 0;
+    out[13] = 0;
+    out[14] = 0;
+    out[15] = 0;
+    return out;
+}
+
+/**
  * Transpose the values of a mat4
  *
  * @param out the receiving matrix
@@ -323,6 +349,57 @@ export function invert(out: Mat4, a: Mat4): Mat4 | null {
     out[14] = (a31 * b01 - a30 * b03 - a32 * b00) * det;
     out[15] = (a20 * b03 - a21 * b01 + a22 * b00) * det;
 
+    return out;
+}
+
+/**
+ * Inverts only the 3x3 rotation part of a mat4.
+ * Sets the translation column and bottom row to [0, 0, 0, 1].
+ * Equivalent to Jolt's Mat44::Inversed3x3()
+ *
+ * @param out the receiving matrix
+ * @param a the source matrix
+ * @returns out, or null if the 3x3 part is not invertible
+ */
+export function invert3x3(out: Mat4, a: Mat4): Mat4 | null {
+    const a00 = a[0];
+    const a01 = a[1];
+    const a02 = a[2];
+    const a10 = a[4];
+    const a11 = a[5];
+    const a12 = a[6];
+    const a20 = a[8];
+    const a21 = a[9];
+    const a22 = a[10];
+
+    const b01 = a22 * a11 - a12 * a21;
+    const b11 = -a22 * a10 + a12 * a20;
+    const b21 = a21 * a10 - a11 * a20;
+
+    // calculate the determinant
+    let det = a00 * b01 + a01 * b11 + a02 * b21;
+
+    if (!det) {
+        return null;
+    }
+    det = 1.0 / det;
+
+    out[0] = b01 * det;
+    out[1] = (-a22 * a01 + a02 * a21) * det;
+    out[2] = (a12 * a01 - a02 * a11) * det;
+    out[3] = 0;
+    out[4] = b11 * det;
+    out[5] = (a22 * a00 - a02 * a20) * det;
+    out[6] = (-a12 * a00 + a02 * a10) * det;
+    out[7] = 0;
+    out[8] = b21 * det;
+    out[9] = (-a21 * a00 + a01 * a20) * det;
+    out[10] = (a11 * a00 - a01 * a10) * det;
+    out[11] = 0;
+    out[12] = 0;
+    out[13] = 0;
+    out[14] = 0;
+    out[15] = 1;
     return out;
 }
 
@@ -485,6 +562,175 @@ export function multiply(out: Mat4, a: Mat4, b: Mat4): Mat4 {
     out[14] = b0 * a02 + b1 * a12 + b2 * a22 + b3 * a32;
     out[15] = b0 * a03 + b1 * a13 + b2 * a23 + b3 * a33;
     return out;
+}
+
+/**
+ * Multiplies two mat4s treating them as 3x3 rotation matrices.
+ * Only computes the upper-left 3x3 portion, sets the 4th column to [0,0,0,1].
+ * More efficient than full mat4.multiply when working with pure rotations.
+ *
+ * @param out the receiving matrix
+ * @param a the first operand
+ * @param b the second operand
+ * @returns out
+ */
+export function multiply3x3(out: Mat4, a: Mat4, b: Mat4): Mat4 {
+    const a00 = a[0];
+    const a01 = a[1];
+    const a02 = a[2];
+    const a10 = a[4];
+    const a11 = a[5];
+    const a12 = a[6];
+    const a20 = a[8];
+    const a21 = a[9];
+    const a22 = a[10];
+
+    let b0 = b[0];
+    let b1 = b[1];
+    let b2 = b[2];
+    out[0] = b0 * a00 + b1 * a10 + b2 * a20;
+    out[1] = b0 * a01 + b1 * a11 + b2 * a21;
+    out[2] = b0 * a02 + b1 * a12 + b2 * a22;
+    out[3] = 0;
+
+    b0 = b[4];
+    b1 = b[5];
+    b2 = b[6];
+    out[4] = b0 * a00 + b1 * a10 + b2 * a20;
+    out[5] = b0 * a01 + b1 * a11 + b2 * a21;
+    out[6] = b0 * a02 + b1 * a12 + b2 * a22;
+    out[7] = 0;
+
+    b0 = b[8];
+    b1 = b[9];
+    b2 = b[10];
+    out[8] = b0 * a00 + b1 * a10 + b2 * a20;
+    out[9] = b0 * a01 + b1 * a11 + b2 * a21;
+    out[10] = b0 * a02 + b1 * a12 + b2 * a22;
+    out[11] = 0;
+
+    out[12] = 0;
+    out[13] = 0;
+    out[14] = 0;
+    out[15] = 1;
+
+    return out;
+}
+
+/**
+ * Multiplies a mat4 by the transpose of another mat4,
+ * treating both as 3x3 rotation matrices.
+ * Computes: out = a * transpose(b) (3x3 only)
+ * Sets the 4th column to [0,0,0,1].
+ *
+ * @param out the receiving matrix
+ * @param a the first operand
+ * @param b the second operand (will be transposed)
+ * @returns out
+ */
+export function multiply3x3RightTransposed(out: Mat4, a: Mat4, b: Mat4): Mat4 {
+    const a00 = a[0];
+    const a01 = a[1];
+    const a02 = a[2];
+    const a10 = a[4];
+    const a11 = a[5];
+    const a12 = a[6];
+    const a20 = a[8];
+    const a21 = a[9];
+    const a22 = a[10];
+
+    let bt0 = b[0];
+    let bt1 = b[4];
+    let bt2 = b[8];
+    out[0] = bt0 * a00 + bt1 * a10 + bt2 * a20;
+    out[1] = bt0 * a01 + bt1 * a11 + bt2 * a21;
+    out[2] = bt0 * a02 + bt1 * a12 + bt2 * a22;
+    out[3] = 0;
+
+    bt0 = b[1];
+    bt1 = b[5];
+    bt2 = b[9];
+    out[4] = bt0 * a00 + bt1 * a10 + bt2 * a20;
+    out[5] = bt0 * a01 + bt1 * a11 + bt2 * a21;
+    out[6] = bt0 * a02 + bt1 * a12 + bt2 * a22;
+    out[7] = 0;
+
+    bt0 = b[2];
+    bt1 = b[6];
+    bt2 = b[10];
+    out[8] = bt0 * a00 + bt1 * a10 + bt2 * a20;
+    out[9] = bt0 * a01 + bt1 * a11 + bt2 * a21;
+    out[10] = bt0 * a02 + bt1 * a12 + bt2 * a22;
+    out[11] = 0;
+
+    out[12] = 0;
+    out[13] = 0;
+    out[14] = 0;
+    out[15] = 1;
+
+    return out;
+}
+
+/**
+ * Transform a Vec3 by the transpose of the 3x3 rotation part.
+ *
+ * @param out the receiving vector
+ * @param mat the matrix to transform with
+ * @param vec the vector to transform
+ * @returns out
+ */
+export function multiply3x3TransposedVec(out: Vec3, mat: Mat4, vec: Vec3): Vec3 {
+    const x = vec[0];
+    const y = vec[1];
+    const z = vec[2];
+    
+    out[0] = mat[0] * x + mat[1] * y + mat[2] * z;
+    out[1] = mat[4] * x + mat[5] * y + mat[6] * z;
+    out[2] = mat[8] * x + mat[9] * y + mat[10] * z;
+    
+    return out;
+}
+
+/**
+ * Transform a Vec3 by only the 3x3 rotation part of a Mat4.
+ *
+ * @param out the receiving vector
+ * @param mat the matrix to transform with
+ * @param vec the vector to transform
+ * @returns out
+ */
+export function multiply3x3Vec(out: Vec3, mat: Mat4, vec: Vec3): Vec3 {
+    const x = vec[0];
+    const y = vec[1];
+    const z = vec[2];
+    
+    out[0] = mat[0] * x + mat[4] * y + mat[8] * z;
+    out[1] = mat[1] * x + mat[5] * y + mat[9] * z;
+    out[2] = mat[2] * x + mat[6] * y + mat[10] * z;
+    
+    return out;
+}
+
+/**
+ * Cross product matrix (skew-symmetric matrix).
+ * Equivalent to Jolt's Mat44::sCrossProduct(Vec3Arg)
+ *
+ * @param out the receiving matrix
+ * @param v the vector to create the cross product matrix from
+ * @returns out
+ */
+export function crossProductMatrix(out: Mat4, v: Vec3): Mat4 {
+    const x = v[0];
+    const y = v[1];
+    const z = v[2];
+
+    return set(
+        out,
+        0, z, -y, 0, // column 0
+        -z, 0, x, 0, // column 1
+        y, -x, 0, 0, // column 2
+        0, 0, 0, 1   // column 3
+    );
 }
 
 /**

@@ -1,6 +1,6 @@
 import GUI from 'lil-gui';
 import type { Circle, Triangle2 } from 'mathcat';
-import { circle, triangle2 } from 'mathcat';
+import { circle, circumcircle } from 'mathcat';
 
 function generateRandomTriangle(): Triangle2 {
     const spread = 150;
@@ -83,7 +83,7 @@ resizeCanvas();
 function selectExample(name: keyof typeof examples) {
     settings.example = name;
     currentTriangle = examples[name]();
-    triangle2.circumcircle(currentCircumcircle, currentTriangle);
+    circumcircle(currentCircumcircle, currentTriangle[0], currentTriangle[1], currentTriangle[2]);
     render();
 }
 

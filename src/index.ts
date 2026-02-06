@@ -18,15 +18,19 @@ export * as mat4 from './mat4';
 
 export * as circle from './circle';
 export * as segment2 from './segment2';
-export * as triangle2 from './triangle2';
 
 export * as box3 from './box3';
 export * as obb3 from './obb3';
+export * as plane3 from './plane3';
 export * as sphere from './sphere';
 export * as triangle3 from './triangle3';
 
+export * as raycast3 from './raycast3';
+
 export * from './quickhull3';
 export * from './quickhull2';
+
+export * from "./circumcircle";
 
 export * as easing from './easing';
 

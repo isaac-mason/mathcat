@@ -56,12 +56,6 @@ describe('vec3', () => {
             const result = vec3.fromBuffer(out, buffer, 1);
             expect(result).toEqual([20, 30, 40]);
         });
-
-        it('should default to start index 0', () => {
-            const buffer = [10, 20, 30];
-            const result = vec3.fromBuffer(out, buffer);
-            expect(result).toEqual([10, 20, 30]);
-        });
     });
 
     describe('toBuffer', () => {
@@ -69,12 +63,6 @@ describe('vec3', () => {
             const buffer = new Array(5).fill(0);
             vec3.toBuffer(buffer, a, 1);
             expect(buffer).toEqual([0, 1, 2, 3, 0]);
-        });
-
-        it('should default to start index 0', () => {
-            const buffer = new Array(3).fill(0);
-            vec3.toBuffer(buffer, a);
-            expect(buffer).toEqual([1, 2, 3]);
         });
     });
 
@@ -459,6 +447,35 @@ describe('vec3', () => {
 
         it('sqrLen should be alias for squaredLength', () => {
             expect(vec3.sqrLen).toBe(vec3.squaredLength);
+        });
+    });
+
+    describe('isScaleInsideOut', () => {
+        it('should return false for all positive scale', () => {
+            expect(vec3.isScaleInsideOut([1, 2, 3])).toBe(false);
+            expect(vec3.isScaleInsideOut([0.5, 2, 4])).toBe(false);
+        });
+
+        it('should return true for one negative component (reflection)', () => {
+            expect(vec3.isScaleInsideOut([-1, 1, 1])).toBe(true);
+            expect(vec3.isScaleInsideOut([1, -2, 1])).toBe(true);
+            expect(vec3.isScaleInsideOut([1, 1, -3])).toBe(true);
+        });
+
+        it('should return false for two negative components', () => {
+            expect(vec3.isScaleInsideOut([-1, -2, 1])).toBe(false);
+            expect(vec3.isScaleInsideOut([-1, 1, -3])).toBe(false);
+            expect(vec3.isScaleInsideOut([1, -2, -3])).toBe(false);
+        });
+
+        it('should return true for three negative components', () => {
+            expect(vec3.isScaleInsideOut([-1, -2, -3])).toBe(true);
+        });
+
+        it('should handle zero and negative values', () => {
+            expect(vec3.isScaleInsideOut([0, 1, 1])).toBe(false);
+            expect(vec3.isScaleInsideOut([0, -1, 1])).toBe(true);
+            expect(vec3.isScaleInsideOut([0, -1, -1])).toBe(false);
         });
     });
 });

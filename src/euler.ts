@@ -23,6 +23,22 @@ export function fromValues(x: number, y: number, z: number, order: EulerOrder): 
 }
 
 /**
+ * Sets a given Euler from the given values.
+ * @param x The x rotation in radians.
+ * @param y The y rotation in radians.
+ * @param z The z rotation in radians.
+ * @param order The order of rotation.
+ * @returns The output Euler.
+ */
+export function set(out: Euler, x: number, y: number, z: number, order: EulerOrder): Euler {
+    out[0] = x;
+    out[1] = y;
+    out[2] = z;
+    out[3] = order;
+    return out;
+}
+
+/**
  * Sets Euler angle radians from given degrees
  * @param out The output Euler.
  * @param x The x rotation in degrees.
@@ -179,7 +195,7 @@ export function equals(a: Euler, b: Euler): boolean {
     );
 }
 
-const _setFromQuaternionRotationMatrix = mat4.create();
+const _setFromQuaternionRotationMatrix = /*@__PURE__*/ mat4.create();
 
 /**
  * Sets the Euler angles from a quaternion.
@@ -193,7 +209,7 @@ export function fromQuat(out: Euler, q: Quat, order: EulerOrder): Euler {
     return fromRotationMat4(out, _setFromQuaternionRotationMatrix, order);
 }
 
-const _reorderQuaternion = quat.create();
+const _reorderQuaternion = /*@__PURE__*/ quat.create();
 
 /**
  * Reorders the Euler based on the specified order.

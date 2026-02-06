@@ -84,13 +84,27 @@ export function set(out: Vec3, x: number, y: number, z: number): Vec3 {
 }
 
 /**
+ * Sets all components of a vec3 to the given scalar value
+ *
+ * @param out the receiving vector
+ * @param s scalar value to set
+ * @returns out
+ */
+export function setScalar(out: Vec3, s: number): Vec3 {
+    out[0] = s;
+    out[1] = s;
+    out[2] = s;
+    return out;
+}
+
+/**
  * Sets the components of a vec3 from a buffer
  * @param out the receiving vector
  * @param buffer the source buffer
  * @param startIndex the starting index in the buffer
  * @returns out
  */
-export function fromBuffer(out: Vec3, buffer: ArrayLike<number>, startIndex = 0): Vec3 {
+export function fromBuffer(out: Vec3, buffer: ArrayLike<number>, startIndex: number): Vec3 {
     out[0] = buffer[startIndex];
     out[1] = buffer[startIndex + 1];
     out[2] = buffer[startIndex + 2];
@@ -104,7 +118,7 @@ export function fromBuffer(out: Vec3, buffer: ArrayLike<number>, startIndex = 0)
  * @param startIndex The starting index in the buffer
  * @returns The output buffer
  */
-export function toBuffer(outBuffer: MutableArrayLike<number>, vec: Vec3, startIndex = 0): ArrayLike<number> {
+export function toBuffer(outBuffer: MutableArrayLike<number>, vec: Vec3, startIndex: number): ArrayLike<number> {
     outBuffer[startIndex] = vec[0];
     outBuffer[startIndex + 1] = vec[1];
     outBuffer[startIndex + 2] = vec[2];
@@ -424,6 +438,31 @@ export function cross(out: Vec3, a: Vec3, b: Vec3): Vec3 {
     out[0] = ay * bz - az * by;
     out[1] = az * bx - ax * bz;
     out[2] = ax * by - ay * bx;
+    return out;
+}
+
+/**
+ * Calculates a normalized perpendicular vector to the given vector.
+ * Useful for finding an arbitrary orthogonal basis vector.
+ *
+ * @param out the receiving vector
+ * @param a the source vector
+ * @returns the out vector
+ */
+export function perpendicular(out: Vec3, a: Vec3): Vec3 {
+    if (Math.abs(a[0]) > Math.abs(a[1])) {
+        const len = Math.sqrt(a[0] * a[0] + a[2] * a[2]);
+        const invLen = 1.0 / len;
+        out[0] = a[2] * invLen;
+        out[1] = 0;
+        out[2] = -a[0] * invLen;
+    } else {
+        const len = Math.sqrt(a[1] * a[1] + a[2] * a[2]);
+        const invLen = 1.0 / len;
+        out[0] = 0;
+        out[1] = a[2] * invLen;
+        out[2] = -a[1] * invLen;
+    }
     return out;
 }
 
@@ -771,6 +810,30 @@ export function finite(a: Vec3): boolean {
     return Number.isFinite(a[0]) && Number.isFinite(a[1]) && Number.isFinite(a[2]);
 }
 
+
+/**
+ * Determines if a scale vector represents an inside-out transformation (reflection)
+ * Returns true if an odd number of scale components are negative
+ *
+ * @param scale The scale vector to test
+ * @returns true if the scale represents a reflection (odd number of negative components)
+ */
+export function isScaleInsideOut(scale: Vec3): boolean {
+    // create a bitmask of which components are negative
+    // each component that is < 0 contributes a bit (1, 2, or 4)
+    const mask = (scale[0] < 0 ? 1 : 0) | (scale[1] < 0 ? 2 : 0) | (scale[2] < 0 ? 4 : 0);
+    
+    // count the number of set bits and return true if odd
+    // popcount: count number of 1-bits in the mask
+    let count = 0;
+    let m = mask;
+    while (m) {
+        count += m & 1;
+        m >>= 1;
+    }
+    return (count & 1) !== 0;
+}
+
 /**
  * Alias for {@link subtract}
  */
@@ -805,3 +868,4 @@ export const len = length;
  * Alias for {@link squaredLength}
  */
 export const sqrLen = squaredLength;
+
