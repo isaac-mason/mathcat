@@ -34,9 +34,9 @@ mathcat is a collection of math helpers for 3D graphics and simulations.
 </tr><tr>
 <td><a href="#mat2d"><code>Mat2d</code></a></td><td><a href="#box3"><code>Box3</code></a></td><td><a href="#obb3"><code>OBB3</code></a></td><td><a href="#eulerorder"><code>EulerOrder</code></a></td>
 </tr><tr>
-<td><a href="#euler"><code>Euler</code></a></td><td><a href="#triangle3"><code>Triangle3</code></a></td><td><a href="#triangle2"><code>Triangle2</code></a></td><td><a href="#plane3"><code>Plane3</code></a></td>
+<td><a href="#euler"><code>Euler</code></a></td><td><a href="#plane3"><code>Plane3</code></a></td><td><a href="#sphere"><code>Sphere</code></a></td><td><a href="#circle"><code>Circle</code></a></td>
 </tr><tr>
-<td><a href="#sphere"><code>Sphere</code></a></td><td><a href="#circle"><code>Circle</code></a></td><td><a href="#mutablearraylike"><code>MutableArrayLike</code></a></td><td></td>
+<td><a href="#ray3"><code>Ray3</code></a></td><td><a href="#raycast3"><code>Raycast3</code></a></td><td><a href="#mutablearraylike"><code>MutableArrayLike</code></a></td><td></td>
 </tr></table>
 
 **vec2**
@@ -82,31 +82,33 @@ mathcat is a collection of math helpers for 3D graphics and simulations.
 </tr><tr>
 <td><a href="#vec3fromvalues"><code>vec3.fromValues</code></a></td><td><a href="#vec3copy"><code>vec3.copy</code></a></td><td><a href="#vec3set"><code>vec3.set</code></a></td>
 </tr><tr>
-<td><a href="#vec3frombuffer"><code>vec3.fromBuffer</code></a></td><td><a href="#vec3tobuffer"><code>vec3.toBuffer</code></a></td><td><a href="#vec3add"><code>vec3.add</code></a></td>
+<td><a href="#vec3setscalar"><code>vec3.setScalar</code></a></td><td><a href="#vec3frombuffer"><code>vec3.fromBuffer</code></a></td><td><a href="#vec3tobuffer"><code>vec3.toBuffer</code></a></td>
 </tr><tr>
-<td><a href="#vec3addscalar"><code>vec3.addScalar</code></a></td><td><a href="#vec3subtract"><code>vec3.subtract</code></a></td><td><a href="#vec3subtractscalar"><code>vec3.subtractScalar</code></a></td>
+<td><a href="#vec3add"><code>vec3.add</code></a></td><td><a href="#vec3addscalar"><code>vec3.addScalar</code></a></td><td><a href="#vec3subtract"><code>vec3.subtract</code></a></td>
 </tr><tr>
-<td><a href="#vec3multiply"><code>vec3.multiply</code></a></td><td><a href="#vec3divide"><code>vec3.divide</code></a></td><td><a href="#vec3ceil"><code>vec3.ceil</code></a></td>
+<td><a href="#vec3subtractscalar"><code>vec3.subtractScalar</code></a></td><td><a href="#vec3multiply"><code>vec3.multiply</code></a></td><td><a href="#vec3divide"><code>vec3.divide</code></a></td>
 </tr><tr>
-<td><a href="#vec3floor"><code>vec3.floor</code></a></td><td><a href="#vec3min"><code>vec3.min</code></a></td><td><a href="#vec3max"><code>vec3.max</code></a></td>
+<td><a href="#vec3ceil"><code>vec3.ceil</code></a></td><td><a href="#vec3floor"><code>vec3.floor</code></a></td><td><a href="#vec3min"><code>vec3.min</code></a></td>
 </tr><tr>
-<td><a href="#vec3round"><code>vec3.round</code></a></td><td><a href="#vec3scale"><code>vec3.scale</code></a></td><td><a href="#vec3scaleandadd"><code>vec3.scaleAndAdd</code></a></td>
+<td><a href="#vec3max"><code>vec3.max</code></a></td><td><a href="#vec3round"><code>vec3.round</code></a></td><td><a href="#vec3scale"><code>vec3.scale</code></a></td>
 </tr><tr>
-<td><a href="#vec3distance"><code>vec3.distance</code></a></td><td><a href="#vec3squareddistance"><code>vec3.squaredDistance</code></a></td><td><a href="#vec3squaredlength"><code>vec3.squaredLength</code></a></td>
+<td><a href="#vec3scaleandadd"><code>vec3.scaleAndAdd</code></a></td><td><a href="#vec3distance"><code>vec3.distance</code></a></td><td><a href="#vec3squareddistance"><code>vec3.squaredDistance</code></a></td>
 </tr><tr>
-<td><a href="#vec3negate"><code>vec3.negate</code></a></td><td><a href="#vec3inverse"><code>vec3.inverse</code></a></td><td><a href="#vec3normalize"><code>vec3.normalize</code></a></td>
+<td><a href="#vec3squaredlength"><code>vec3.squaredLength</code></a></td><td><a href="#vec3negate"><code>vec3.negate</code></a></td><td><a href="#vec3inverse"><code>vec3.inverse</code></a></td>
 </tr><tr>
-<td><a href="#vec3dot"><code>vec3.dot</code></a></td><td><a href="#vec3cross"><code>vec3.cross</code></a></td><td><a href="#vec3lerp"><code>vec3.lerp</code></a></td>
+<td><a href="#vec3normalize"><code>vec3.normalize</code></a></td><td><a href="#vec3dot"><code>vec3.dot</code></a></td><td><a href="#vec3cross"><code>vec3.cross</code></a></td>
 </tr><tr>
-<td><a href="#vec3slerp"><code>vec3.slerp</code></a></td><td><a href="#vec3hermite"><code>vec3.hermite</code></a></td><td><a href="#vec3bezier"><code>vec3.bezier</code></a></td>
+<td><a href="#vec3perpendicular"><code>vec3.perpendicular</code></a></td><td><a href="#vec3lerp"><code>vec3.lerp</code></a></td><td><a href="#vec3slerp"><code>vec3.slerp</code></a></td>
 </tr><tr>
-<td><a href="#vec3transformmat4"><code>vec3.transformMat4</code></a></td><td><a href="#vec3transformmat3"><code>vec3.transformMat3</code></a></td><td><a href="#vec3transformquat"><code>vec3.transformQuat</code></a></td>
+<td><a href="#vec3hermite"><code>vec3.hermite</code></a></td><td><a href="#vec3bezier"><code>vec3.bezier</code></a></td><td><a href="#vec3transformmat4"><code>vec3.transformMat4</code></a></td>
 </tr><tr>
-<td><a href="#vec3rotatex"><code>vec3.rotateX</code></a></td><td><a href="#vec3rotatey"><code>vec3.rotateY</code></a></td><td><a href="#vec3rotatez"><code>vec3.rotateZ</code></a></td>
+<td><a href="#vec3transformmat3"><code>vec3.transformMat3</code></a></td><td><a href="#vec3transformquat"><code>vec3.transformQuat</code></a></td><td><a href="#vec3rotatex"><code>vec3.rotateX</code></a></td>
 </tr><tr>
-<td><a href="#vec3angle"><code>vec3.angle</code></a></td><td><a href="#vec3zero"><code>vec3.zero</code></a></td><td><a href="#vec3str"><code>vec3.str</code></a></td>
+<td><a href="#vec3rotatey"><code>vec3.rotateY</code></a></td><td><a href="#vec3rotatez"><code>vec3.rotateZ</code></a></td><td><a href="#vec3angle"><code>vec3.angle</code></a></td>
 </tr><tr>
-<td><a href="#vec3exactequals"><code>vec3.exactEquals</code></a></td><td><a href="#vec3equals"><code>vec3.equals</code></a></td><td><a href="#vec3finite"><code>vec3.finite</code></a></td>
+<td><a href="#vec3zero"><code>vec3.zero</code></a></td><td><a href="#vec3str"><code>vec3.str</code></a></td><td><a href="#vec3exactequals"><code>vec3.exactEquals</code></a></td>
+</tr><tr>
+<td><a href="#vec3equals"><code>vec3.equals</code></a></td><td><a href="#vec3finite"><code>vec3.finite</code></a></td><td><a href="#vec3isscaleinsideout"><code>vec3.isScaleInsideOut</code></a></td>
 </tr><tr>
 <td><a href="#vec3sub"><code>vec3.sub</code></a></td><td><a href="#vec3mul"><code>vec3.mul</code></a></td><td><a href="#vec3div"><code>vec3.div</code></a></td>
 </tr><tr>
@@ -150,11 +152,11 @@ mathcat is a collection of math helpers for 3D graphics and simulations.
 **euler**
 
 <table><tr>
-<td><a href="#eulercreate"><code>euler.create</code></a></td><td><a href="#eulerfromvalues"><code>euler.fromValues</code></a></td><td><a href="#eulerfromdegrees"><code>euler.fromDegrees</code></a></td>
+<td><a href="#eulercreate"><code>euler.create</code></a></td><td><a href="#eulerfromvalues"><code>euler.fromValues</code></a></td><td><a href="#eulerset"><code>euler.set</code></a></td>
 </tr><tr>
-<td><a href="#eulerfromrotationmat4"><code>euler.fromRotationMat4</code></a></td><td><a href="#eulerexactequals"><code>euler.exactEquals</code></a></td><td><a href="#eulerequals"><code>euler.equals</code></a></td>
+<td><a href="#eulerfromdegrees"><code>euler.fromDegrees</code></a></td><td><a href="#eulerfromrotationmat4"><code>euler.fromRotationMat4</code></a></td><td><a href="#eulerexactequals"><code>euler.exactEquals</code></a></td>
 </tr><tr>
-<td><a href="#eulerfromquat"><code>euler.fromQuat</code></a></td><td><a href="#eulerreorder"><code>euler.reorder</code></a></td><td></td>
+<td><a href="#eulerequals"><code>euler.equals</code></a></td><td><a href="#eulerfromquat"><code>euler.fromQuat</code></a></td><td><a href="#eulerreorder"><code>euler.reorder</code></a></td>
 </tr></table>
 
 **quat**
@@ -170,21 +172,23 @@ mathcat is a collection of math helpers for 3D graphics and simulations.
 </tr><tr>
 <td><a href="#quatpow"><code>quat.pow</code></a></td><td><a href="#quatslerp"><code>quat.slerp</code></a></td><td><a href="#quatinvert"><code>quat.invert</code></a></td>
 </tr><tr>
-<td><a href="#quatconjugate"><code>quat.conjugate</code></a></td><td><a href="#quatfrommat3"><code>quat.fromMat3</code></a></td><td><a href="#quatfromeuler"><code>quat.fromEuler</code></a></td>
+<td><a href="#quatconjugate"><code>quat.conjugate</code></a></td><td><a href="#quatfrommat3"><code>quat.fromMat3</code></a></td><td><a href="#quatfrommat4"><code>quat.fromMat4</code></a></td>
 </tr><tr>
-<td><a href="#quatstr"><code>quat.str</code></a></td><td><a href="#quatclone"><code>quat.clone</code></a></td><td><a href="#quatfromvalues"><code>quat.fromValues</code></a></td>
+<td><a href="#quatfromeuler"><code>quat.fromEuler</code></a></td><td><a href="#quatfromdegrees"><code>quat.fromDegrees</code></a></td><td><a href="#quatstr"><code>quat.str</code></a></td>
 </tr><tr>
-<td><a href="#quatcopy"><code>quat.copy</code></a></td><td><a href="#quatset"><code>quat.set</code></a></td><td><a href="#quatadd"><code>quat.add</code></a></td>
+<td><a href="#quatclone"><code>quat.clone</code></a></td><td><a href="#quatfromvalues"><code>quat.fromValues</code></a></td><td><a href="#quatcopy"><code>quat.copy</code></a></td>
 </tr><tr>
-<td><a href="#quatscale"><code>quat.scale</code></a></td><td><a href="#quatdot"><code>quat.dot</code></a></td><td><a href="#quatlerp"><code>quat.lerp</code></a></td>
+<td><a href="#quatset"><code>quat.set</code></a></td><td><a href="#quatadd"><code>quat.add</code></a></td><td><a href="#quatscale"><code>quat.scale</code></a></td>
 </tr><tr>
-<td><a href="#quatlength"><code>quat.length</code></a></td><td><a href="#quatlen"><code>quat.len</code></a></td><td><a href="#quatsquaredlength"><code>quat.squaredLength</code></a></td>
+<td><a href="#quatdot"><code>quat.dot</code></a></td><td><a href="#quatlerp"><code>quat.lerp</code></a></td><td><a href="#quatlength"><code>quat.length</code></a></td>
 </tr><tr>
-<td><a href="#quatsqrlen"><code>quat.sqrLen</code></a></td><td><a href="#quatmul"><code>quat.mul</code></a></td><td><a href="#quatnormalize"><code>quat.normalize</code></a></td>
+<td><a href="#quatlen"><code>quat.len</code></a></td><td><a href="#quatsquaredlength"><code>quat.squaredLength</code></a></td><td><a href="#quatsqrlen"><code>quat.sqrLen</code></a></td>
 </tr><tr>
-<td><a href="#quatexactequals"><code>quat.exactEquals</code></a></td><td><a href="#quatequals"><code>quat.equals</code></a></td><td><a href="#quatrotationto"><code>quat.rotationTo</code></a></td>
+<td><a href="#quatmul"><code>quat.mul</code></a></td><td><a href="#quatnormalize"><code>quat.normalize</code></a></td><td><a href="#quatexactequals"><code>quat.exactEquals</code></a></td>
 </tr><tr>
-<td><a href="#quatsqlerp"><code>quat.sqlerp</code></a></td><td><a href="#quatsetaxes"><code>quat.setAxes</code></a></td><td></td>
+<td><a href="#quatequals"><code>quat.equals</code></a></td><td><a href="#quatrotationto"><code>quat.rotationTo</code></a></td><td><a href="#quatsqlerp"><code>quat.sqlerp</code></a></td>
+</tr><tr>
+<td><a href="#quatsetaxes"><code>quat.setAxes</code></a></td><td></td><td></td>
 </tr></table>
 
 **quat2**
@@ -300,31 +304,33 @@ mathcat is a collection of math helpers for 3D graphics and simulations.
 </tr><tr>
 <td><a href="#mat3fromvalues"><code>mat3.fromValues</code></a></td><td><a href="#mat3set"><code>mat3.set</code></a></td>
 </tr><tr>
-<td><a href="#mat3identity"><code>mat3.identity</code></a></td><td><a href="#mat3transpose"><code>mat3.transpose</code></a></td>
+<td><a href="#mat3identity"><code>mat3.identity</code></a></td><td><a href="#mat3zero"><code>mat3.zero</code></a></td>
 </tr><tr>
-<td><a href="#mat3invert"><code>mat3.invert</code></a></td><td><a href="#mat3adjoint"><code>mat3.adjoint</code></a></td>
+<td><a href="#mat3transpose"><code>mat3.transpose</code></a></td><td><a href="#mat3invert"><code>mat3.invert</code></a></td>
 </tr><tr>
-<td><a href="#mat3determinant"><code>mat3.determinant</code></a></td><td><a href="#mat3multiply"><code>mat3.multiply</code></a></td>
+<td><a href="#mat3adjoint"><code>mat3.adjoint</code></a></td><td><a href="#mat3determinant"><code>mat3.determinant</code></a></td>
 </tr><tr>
-<td><a href="#mat3translate"><code>mat3.translate</code></a></td><td><a href="#mat3rotate"><code>mat3.rotate</code></a></td>
+<td><a href="#mat3multiply"><code>mat3.multiply</code></a></td><td><a href="#mat3translate"><code>mat3.translate</code></a></td>
 </tr><tr>
-<td><a href="#mat3scale"><code>mat3.scale</code></a></td><td><a href="#mat3fromtranslation"><code>mat3.fromTranslation</code></a></td>
+<td><a href="#mat3rotate"><code>mat3.rotate</code></a></td><td><a href="#mat3scale"><code>mat3.scale</code></a></td>
 </tr><tr>
-<td><a href="#mat3fromrotation"><code>mat3.fromRotation</code></a></td><td><a href="#mat3fromscaling"><code>mat3.fromScaling</code></a></td>
+<td><a href="#mat3fromtranslation"><code>mat3.fromTranslation</code></a></td><td><a href="#mat3fromrotation"><code>mat3.fromRotation</code></a></td>
 </tr><tr>
-<td><a href="#mat3frommat2d"><code>mat3.fromMat2d</code></a></td><td><a href="#mat3fromquat"><code>mat3.fromQuat</code></a></td>
+<td><a href="#mat3fromscaling"><code>mat3.fromScaling</code></a></td><td><a href="#mat3frommat2d"><code>mat3.fromMat2d</code></a></td>
 </tr><tr>
-<td><a href="#mat3normalfrommat4"><code>mat3.normalFromMat4</code></a></td><td><a href="#mat3projection"><code>mat3.projection</code></a></td>
+<td><a href="#mat3fromquat"><code>mat3.fromQuat</code></a></td><td><a href="#mat3normalfrommat4"><code>mat3.normalFromMat4</code></a></td>
 </tr><tr>
-<td><a href="#mat3str"><code>mat3.str</code></a></td><td><a href="#mat3frob"><code>mat3.frob</code></a></td>
+<td><a href="#mat3projection"><code>mat3.projection</code></a></td><td><a href="#mat3str"><code>mat3.str</code></a></td>
 </tr><tr>
-<td><a href="#mat3add"><code>mat3.add</code></a></td><td><a href="#mat3subtract"><code>mat3.subtract</code></a></td>
+<td><a href="#mat3frob"><code>mat3.frob</code></a></td><td><a href="#mat3add"><code>mat3.add</code></a></td>
 </tr><tr>
-<td><a href="#mat3multiplyscalar"><code>mat3.multiplyScalar</code></a></td><td><a href="#mat3multiplyscalarandadd"><code>mat3.multiplyScalarAndAdd</code></a></td>
+<td><a href="#mat3subtract"><code>mat3.subtract</code></a></td><td><a href="#mat3multiplyscalar"><code>mat3.multiplyScalar</code></a></td>
 </tr><tr>
-<td><a href="#mat3exactequals"><code>mat3.exactEquals</code></a></td><td><a href="#mat3equals"><code>mat3.equals</code></a></td>
+<td><a href="#mat3multiplyscalarandadd"><code>mat3.multiplyScalarAndAdd</code></a></td><td><a href="#mat3exactequals"><code>mat3.exactEquals</code></a></td>
 </tr><tr>
-<td><a href="#mat3mul"><code>mat3.mul</code></a></td><td><a href="#mat3sub"><code>mat3.sub</code></a></td>
+<td><a href="#mat3equals"><code>mat3.equals</code></a></td><td><a href="#mat3mul"><code>mat3.mul</code></a></td>
+</tr><tr>
+<td><a href="#mat3sub"><code>mat3.sub</code></a></td><td></td>
 </tr></table>
 
 **mat4**
@@ -336,51 +342,59 @@ mathcat is a collection of math helpers for 3D graphics and simulations.
 </tr><tr>
 <td><a href="#mat4set"><code>mat4.set</code></a></td><td><a href="#mat4identity"><code>mat4.identity</code></a></td>
 </tr><tr>
-<td><a href="#mat4transpose"><code>mat4.transpose</code></a></td><td><a href="#mat4invert"><code>mat4.invert</code></a></td>
+<td><a href="#mat4zero"><code>mat4.zero</code></a></td><td><a href="#mat4transpose"><code>mat4.transpose</code></a></td>
+</tr><tr>
+<td><a href="#mat4invert"><code>mat4.invert</code></a></td><td><a href="#mat4invert3x3"><code>mat4.invert3x3</code></a></td>
 </tr><tr>
 <td><a href="#mat4adjoint"><code>mat4.adjoint</code></a></td><td><a href="#mat4determinant"><code>mat4.determinant</code></a></td>
 </tr><tr>
-<td><a href="#mat4multiply"><code>mat4.multiply</code></a></td><td><a href="#mat4translate"><code>mat4.translate</code></a></td>
+<td><a href="#mat4multiply"><code>mat4.multiply</code></a></td><td><a href="#mat4multiply3x3"><code>mat4.multiply3x3</code></a></td>
 </tr><tr>
-<td><a href="#mat4scale"><code>mat4.scale</code></a></td><td><a href="#mat4rotate"><code>mat4.rotate</code></a></td>
+<td><a href="#mat4multiply3x3righttransposed"><code>mat4.multiply3x3RightTransposed</code></a></td><td><a href="#mat4multiply3x3transposedvec"><code>mat4.multiply3x3TransposedVec</code></a></td>
 </tr><tr>
-<td><a href="#mat4rotatex"><code>mat4.rotateX</code></a></td><td><a href="#mat4rotatey"><code>mat4.rotateY</code></a></td>
+<td><a href="#mat4multiply3x3vec"><code>mat4.multiply3x3Vec</code></a></td><td><a href="#mat4crossproductmatrix"><code>mat4.crossProductMatrix</code></a></td>
 </tr><tr>
-<td><a href="#mat4rotatez"><code>mat4.rotateZ</code></a></td><td><a href="#mat4fromtranslation"><code>mat4.fromTranslation</code></a></td>
+<td><a href="#mat4translate"><code>mat4.translate</code></a></td><td><a href="#mat4scale"><code>mat4.scale</code></a></td>
 </tr><tr>
-<td><a href="#mat4fromscaling"><code>mat4.fromScaling</code></a></td><td><a href="#mat4fromrotation"><code>mat4.fromRotation</code></a></td>
+<td><a href="#mat4rotate"><code>mat4.rotate</code></a></td><td><a href="#mat4rotatex"><code>mat4.rotateX</code></a></td>
 </tr><tr>
-<td><a href="#mat4fromxrotation"><code>mat4.fromXRotation</code></a></td><td><a href="#mat4fromyrotation"><code>mat4.fromYRotation</code></a></td>
+<td><a href="#mat4rotatey"><code>mat4.rotateY</code></a></td><td><a href="#mat4rotatez"><code>mat4.rotateZ</code></a></td>
 </tr><tr>
-<td><a href="#mat4fromzrotation"><code>mat4.fromZRotation</code></a></td><td><a href="#mat4fromrotationtranslation"><code>mat4.fromRotationTranslation</code></a></td>
+<td><a href="#mat4fromtranslation"><code>mat4.fromTranslation</code></a></td><td><a href="#mat4fromscaling"><code>mat4.fromScaling</code></a></td>
 </tr><tr>
-<td><a href="#mat4fromquat2"><code>mat4.fromQuat2</code></a></td><td><a href="#mat4gettranslation"><code>mat4.getTranslation</code></a></td>
+<td><a href="#mat4fromrotation"><code>mat4.fromRotation</code></a></td><td><a href="#mat4fromxrotation"><code>mat4.fromXRotation</code></a></td>
 </tr><tr>
-<td><a href="#mat4getscaling"><code>mat4.getScaling</code></a></td><td><a href="#mat4getrotation"><code>mat4.getRotation</code></a></td>
+<td><a href="#mat4fromyrotation"><code>mat4.fromYRotation</code></a></td><td><a href="#mat4fromzrotation"><code>mat4.fromZRotation</code></a></td>
 </tr><tr>
-<td><a href="#mat4decompose"><code>mat4.decompose</code></a></td><td><a href="#mat4fromrotationtranslationscale"><code>mat4.fromRotationTranslationScale</code></a></td>
+<td><a href="#mat4fromrotationtranslation"><code>mat4.fromRotationTranslation</code></a></td><td><a href="#mat4fromquat2"><code>mat4.fromQuat2</code></a></td>
 </tr><tr>
-<td><a href="#mat4fromrotationtranslationscaleorigin"><code>mat4.fromRotationTranslationScaleOrigin</code></a></td><td><a href="#mat4fromquat"><code>mat4.fromQuat</code></a></td>
+<td><a href="#mat4gettranslation"><code>mat4.getTranslation</code></a></td><td><a href="#mat4getscaling"><code>mat4.getScaling</code></a></td>
 </tr><tr>
-<td><a href="#mat4frustum"><code>mat4.frustum</code></a></td><td><a href="#mat4perspectiveno"><code>mat4.perspectiveNO</code></a></td>
+<td><a href="#mat4getrotation"><code>mat4.getRotation</code></a></td><td><a href="#mat4decompose"><code>mat4.decompose</code></a></td>
 </tr><tr>
-<td><a href="#mat4perspective"><code>mat4.perspective</code></a></td><td><a href="#mat4perspectivezo"><code>mat4.perspectiveZO</code></a></td>
+<td><a href="#mat4fromrotationtranslationscale"><code>mat4.fromRotationTranslationScale</code></a></td><td><a href="#mat4fromrotationtranslationscaleorigin"><code>mat4.fromRotationTranslationScaleOrigin</code></a></td>
 </tr><tr>
-<td><a href="#mat4perspectivefromfieldofview"><code>mat4.perspectiveFromFieldOfView</code></a></td><td><a href="#mat4orthono"><code>mat4.orthoNO</code></a></td>
+<td><a href="#mat4fromquat"><code>mat4.fromQuat</code></a></td><td><a href="#mat4frustum"><code>mat4.frustum</code></a></td>
 </tr><tr>
-<td><a href="#mat4ortho"><code>mat4.ortho</code></a></td><td><a href="#mat4orthozo"><code>mat4.orthoZO</code></a></td>
+<td><a href="#mat4perspectiveno"><code>mat4.perspectiveNO</code></a></td><td><a href="#mat4perspective"><code>mat4.perspective</code></a></td>
 </tr><tr>
-<td><a href="#mat4lookat"><code>mat4.lookAt</code></a></td><td><a href="#mat4targetto"><code>mat4.targetTo</code></a></td>
+<td><a href="#mat4perspectivezo"><code>mat4.perspectiveZO</code></a></td><td><a href="#mat4perspectivefromfieldofview"><code>mat4.perspectiveFromFieldOfView</code></a></td>
 </tr><tr>
-<td><a href="#mat4str"><code>mat4.str</code></a></td><td><a href="#mat4frob"><code>mat4.frob</code></a></td>
+<td><a href="#mat4orthono"><code>mat4.orthoNO</code></a></td><td><a href="#mat4ortho"><code>mat4.ortho</code></a></td>
 </tr><tr>
-<td><a href="#mat4add"><code>mat4.add</code></a></td><td><a href="#mat4subtract"><code>mat4.subtract</code></a></td>
+<td><a href="#mat4orthozo"><code>mat4.orthoZO</code></a></td><td><a href="#mat4lookat"><code>mat4.lookAt</code></a></td>
 </tr><tr>
-<td><a href="#mat4multiplyscalar"><code>mat4.multiplyScalar</code></a></td><td><a href="#mat4multiplyscalarandadd"><code>mat4.multiplyScalarAndAdd</code></a></td>
+<td><a href="#mat4targetto"><code>mat4.targetTo</code></a></td><td><a href="#mat4str"><code>mat4.str</code></a></td>
 </tr><tr>
-<td><a href="#mat4exactequals"><code>mat4.exactEquals</code></a></td><td><a href="#mat4equals"><code>mat4.equals</code></a></td>
+<td><a href="#mat4frob"><code>mat4.frob</code></a></td><td><a href="#mat4add"><code>mat4.add</code></a></td>
 </tr><tr>
-<td><a href="#mat4mul"><code>mat4.mul</code></a></td><td><a href="#mat4sub"><code>mat4.sub</code></a></td>
+<td><a href="#mat4subtract"><code>mat4.subtract</code></a></td><td><a href="#mat4multiplyscalar"><code>mat4.multiplyScalar</code></a></td>
+</tr><tr>
+<td><a href="#mat4multiplyscalarandadd"><code>mat4.multiplyScalarAndAdd</code></a></td><td><a href="#mat4exactequals"><code>mat4.exactEquals</code></a></td>
+</tr><tr>
+<td><a href="#mat4equals"><code>mat4.equals</code></a></td><td><a href="#mat4mul"><code>mat4.mul</code></a></td>
+</tr><tr>
+<td><a href="#mat4sub"><code>mat4.sub</code></a></td><td></td>
 </tr></table>
 
 **circle**
@@ -395,26 +409,32 @@ mathcat is a collection of math helpers for 3D graphics and simulations.
 <td><a href="#segment2closestpoint"><code>segment2.closestPoint</code></a></td>
 </tr></table>
 
-**triangle2**
-
-<table><tr>
-<td><a href="#triangle2create"><code>triangle2.create</code></a></td><td><a href="#triangle2circumcircle"><code>triangle2.circumcircle</code></a></td>
-</tr></table>
-
 **box3**
 
 <table><tr>
 <td><a href="#box3create"><code>box3.create</code></a></td><td><a href="#box3clone"><code>box3.clone</code></a></td>
 </tr><tr>
-<td><a href="#box3set"><code>box3.set</code></a></td><td><a href="#box3setfromcenterandsize"><code>box3.setFromCenterAndSize</code></a></td>
+<td><a href="#box3copy"><code>box3.copy</code></a></td><td><a href="#box3set"><code>box3.set</code></a></td>
 </tr><tr>
-<td><a href="#box3expandbypoint"><code>box3.expandByPoint</code></a></td><td><a href="#box3containspoint"><code>box3.containsPoint</code></a></td>
+<td><a href="#box3empty"><code>box3.empty</code></a></td><td><a href="#box3exactequals"><code>box3.exactEquals</code></a></td>
 </tr><tr>
-<td><a href="#box3containsbox3"><code>box3.containsBox3</code></a></td><td><a href="#box3intersectsbox3"><code>box3.intersectsBox3</code></a></td>
+<td><a href="#box3equals"><code>box3.equals</code></a></td><td><a href="#box3setfromcenterandsize"><code>box3.setFromCenterAndSize</code></a></td>
 </tr><tr>
-<td><a href="#box3intersectstriangle3"><code>box3.intersectsTriangle3</code></a></td><td><a href="#box3intersectssphere"><code>box3.intersectsSphere</code></a></td>
+<td><a href="#box3expandbypoint"><code>box3.expandByPoint</code></a></td><td><a href="#box3expandbyextents"><code>box3.expandByExtents</code></a></td>
 </tr><tr>
-<td><a href="#box3intersectsplane3"><code>box3.intersectsPlane3</code></a></td><td><a href="#box3intersectsray"><code>box3.intersectsRay</code></a></td>
+<td><a href="#box3expandbymargin"><code>box3.expandByMargin</code></a></td><td><a href="#box3union"><code>box3.union</code></a></td>
+</tr><tr>
+<td><a href="#box3center"><code>box3.center</code></a></td><td><a href="#box3extents"><code>box3.extents</code></a></td>
+</tr><tr>
+<td><a href="#box3size"><code>box3.size</code></a></td><td><a href="#box3surfacearea"><code>box3.surfaceArea</code></a></td>
+</tr><tr>
+<td><a href="#box3scale"><code>box3.scale</code></a></td><td><a href="#box3transformmat4"><code>box3.transformMat4</code></a></td>
+</tr><tr>
+<td><a href="#box3containspoint"><code>box3.containsPoint</code></a></td><td><a href="#box3containsbox3"><code>box3.containsBox3</code></a></td>
+</tr><tr>
+<td><a href="#box3intersectsbox3"><code>box3.intersectsBox3</code></a></td><td><a href="#box3intersectstriangle3"><code>box3.intersectsTriangle3</code></a></td>
+</tr><tr>
+<td><a href="#box3intersectssphere"><code>box3.intersectsSphere</code></a></td><td><a href="#box3intersectsplane3"><code>box3.intersectsPlane3</code></a></td>
 </tr></table>
 
 **obb3**
@@ -429,6 +449,26 @@ mathcat is a collection of math helpers for 3D graphics and simulations.
 <td><a href="#obb3applymatrix4"><code>obb3.applyMatrix4</code></a></td><td></td><td></td>
 </tr></table>
 
+**plane3**
+
+<table><tr>
+<td><a href="#plane3create"><code>plane3.create</code></a></td><td><a href="#plane3fromnormalandconstant"><code>plane3.fromNormalAndConstant</code></a></td>
+</tr><tr>
+<td><a href="#plane3fromnormalandpoint"><code>plane3.fromNormalAndPoint</code></a></td><td><a href="#plane3fromcoplanarpoints"><code>plane3.fromCoplanarPoints</code></a></td>
+</tr><tr>
+<td><a href="#plane3clone"><code>plane3.clone</code></a></td><td><a href="#plane3copy"><code>plane3.copy</code></a></td>
+</tr><tr>
+<td><a href="#plane3normalize"><code>plane3.normalize</code></a></td><td><a href="#plane3negate"><code>plane3.negate</code></a></td>
+</tr><tr>
+<td><a href="#plane3offset"><code>plane3.offset</code></a></td><td><a href="#plane3distancetopoint"><code>plane3.distanceToPoint</code></a></td>
+</tr><tr>
+<td><a href="#plane3projectpoint"><code>plane3.projectPoint</code></a></td><td><a href="#plane3transform"><code>plane3.transform</code></a></td>
+</tr><tr>
+<td><a href="#plane3intersectssphere"><code>plane3.intersectsSphere</code></a></td><td><a href="#plane3exactequals"><code>plane3.exactEquals</code></a></td>
+</tr><tr>
+<td><a href="#plane3intersect"><code>plane3.intersect</code></a></td><td><a href="#plane3equals"><code>plane3.equals</code></a></td>
+</tr></table>
+
 **sphere**
 
 <table><tr>
@@ -438,7 +478,21 @@ mathcat is a collection of math helpers for 3D graphics and simulations.
 **triangle3**
 
 <table><tr>
-<td><a href="#triangle3create"><code>triangle3.create</code></a></td>
+<td><a href="#triangle3bounds"><code>triangle3.bounds</code></a></td><td><a href="#triangle3normal"><code>triangle3.normal</code></a></td><td><a href="#triangle3centroid"><code>triangle3.centroid</code></a></td>
+</tr></table>
+
+**raycast3**
+
+<table><tr>
+<td><a href="#raycast3create"><code>raycast3.create</code></a></td><td><a href="#raycast3fromvalues"><code>raycast3.fromValues</code></a></td>
+</tr><tr>
+<td><a href="#raycast3set"><code>raycast3.set</code></a></td><td><a href="#raycast3copy"><code>raycast3.copy</code></a></td>
+</tr><tr>
+<td><a href="#raycast3fromsegment"><code>raycast3.fromSegment</code></a></td><td><a href="#raycast3intersectstriangleresult"><code>raycast3.IntersectsTriangleResult</code></a></td>
+</tr><tr>
+<td><a href="#raycast3createintersectstriangleresult"><code>raycast3.createIntersectsTriangleResult</code></a></td><td><a href="#raycast3intersectstriangle"><code>raycast3.intersectsTriangle</code></a></td>
+</tr><tr>
+<td><a href="#raycast3intersectsbox3"><code>raycast3.intersectsBox3</code></a></td><td></td>
 </tr></table>
 
 **quickhull3**
@@ -451,6 +505,12 @@ mathcat is a collection of math helpers for 3D graphics and simulations.
 
 <table><tr>
 <td><a href="#quickhull2"><code>quickhull2</code></a></td>
+</tr></table>
+
+**circumcircle**
+
+<table><tr>
+<td><a href="#circumcircle"><code>circumcircle</code></a></td>
 </tr></table>
 
 **easing**
@@ -680,28 +740,6 @@ export type Euler = [
 ];
 ```
 
-#### `Triangle3`
-
-```ts
-/** A triangle in 3D space */
-export type Triangle3 = [
-    a: Vec3,
-    b: Vec3,
-    c: Vec3
-];
-```
-
-#### `Triangle2`
-
-```ts
-/** A triangle in 2D space */
-export type Triangle2 = [
-    a: Vec2,
-    b: Vec2,
-    c: Vec2
-];
-```
-
 #### `Plane3`
 
 ```ts
@@ -733,6 +771,27 @@ export type Sphere = {
 export type Circle = {
     center: Vec2;
     radius: number;
+};
+```
+
+#### `Ray3`
+
+```ts
+/** A ray in 3D space */
+export type Ray3 = {
+    origin: Vec3;
+    direction: Vec3;
+};
+```
+
+#### `Raycast3`
+
+```ts
+/** A raycast in 3D space */
+export type Raycast3 = {
+    origin: Vec3;
+    direction: Vec3;
+    length: number;
 };
 ```
 
@@ -1410,6 +1469,19 @@ export function copy(out: Vec3, a: Vec3): Vec3;
 export function set(out: Vec3, x: number, y: number, z: number): Vec3;
 ```
 
+#### `vec3.setScalar`
+
+```ts
+/**
+ * Sets all components of a vec3 to the given scalar value
+ *
+ * @param out the receiving vector
+ * @param s scalar value to set
+ * @returns out
+ */
+export function setScalar(out: Vec3, s: number): Vec3;
+```
+
 #### `vec3.fromBuffer`
 
 ```ts
@@ -1420,7 +1492,7 @@ export function set(out: Vec3, x: number, y: number, z: number): Vec3;
  * @param startIndex the starting index in the buffer
  * @returns out
  */
-export function fromBuffer(out: Vec3, buffer: ArrayLike<number>, startIndex = 0): Vec3;
+export function fromBuffer(out: Vec3, buffer: ArrayLike<number>, startIndex: number): Vec3;
 ```
 
 #### `vec3.toBuffer`
@@ -1433,7 +1505,7 @@ export function fromBuffer(out: Vec3, buffer: ArrayLike<number>, startIndex = 0)
  * @param startIndex The starting index in the buffer
  * @returns The output buffer
  */
-export function toBuffer(outBuffer: MutableArrayLike<number>, vec: Vec3, startIndex = 0): ArrayLike<number>;
+export function toBuffer(outBuffer: MutableArrayLike<number>, vec: Vec3, startIndex: number): ArrayLike<number>;
 ```
 
 #### `vec3.add`
@@ -1720,6 +1792,20 @@ export function dot(a: Vec3, b: Vec3): number;
 export function cross(out: Vec3, a: Vec3, b: Vec3): Vec3;
 ```
 
+#### `vec3.perpendicular`
+
+```ts
+/**
+ * Calculates a normalized perpendicular vector to the given vector.
+ * Useful for finding an arbitrary orthogonal basis vector.
+ *
+ * @param out the receiving vector
+ * @param a the source vector
+ * @returns the out vector
+ */
+export function perpendicular(out: Vec3, a: Vec3): Vec3;
+```
+
 #### `vec3.lerp`
 
 ```ts
@@ -1941,6 +2027,19 @@ export function equals(a: Vec3, b: Vec3): boolean;
  * @returns whether or not the vector is finite
  */
 export function finite(a: Vec3): boolean;
+```
+
+#### `vec3.isScaleInsideOut`
+
+```ts
+/**
+ * Determines if a scale vector represents an inside-out transformation (reflection)
+ * Returns true if an odd number of scale components are negative
+ *
+ * @param scale The scale vector to test
+ * @returns true if the scale represents a reflection (odd number of negative components)
+ */
+export function isScaleInsideOut(scale: Vec3): boolean;
 ```
 
 #### `vec3.sub`
@@ -2536,6 +2635,20 @@ export function create(): Euler;
 export function fromValues(x: number, y: number, z: number, order: EulerOrder): Euler;
 ```
 
+#### `euler.set`
+
+```ts
+/**
+ * Sets a given Euler from the given values.
+ * @param x The x rotation in radians.
+ * @param y The y rotation in radians.
+ * @param z The z rotation in radians.
+ * @param order The order of rotation.
+ * @returns The output Euler.
+ */
+export function set(out: Euler, x: number, y: number, z: number, order: EulerOrder): Euler;
+```
+
 #### `euler.fromDegrees`
 
 ```ts
@@ -2857,6 +2970,20 @@ export function conjugate(out: Quat, a: Quat): Quat;
 export function fromMat3(out: Quat, m: Mat3): Quat;
 ```
 
+#### `quat.fromMat4`
+
+```ts
+/**
+ * Calculates a quaternion from a 4x4 rotation matrix
+ * Extracts the 3x3 rotation part and calls fromMat3
+ *
+ * @param out the receiving quaternion
+ * @param m rotation matrix
+ * @returns out
+ */
+export function fromMat4(out: Quat, m: Mat4): Quat;
+```
+
 #### `quat.fromEuler`
 
 ```ts
@@ -2867,6 +2994,23 @@ export function fromMat3(out: Quat, m: Mat3): Quat;
  * @returns out
  */
 export function fromEuler(out: Quat, euler: Euler): Quat;
+```
+
+#### `quat.fromDegrees`
+
+```ts
+/**
+ * Creates a quaternion from euler angles specified in degrees.
+ * Shorthand for converting degrees to radians and then creating a quaternion from euler.
+ *
+ * @param out the receiving quaternion
+ * @param x The x euler rotation in degrees
+ * @param y The y euler rotation in degrees
+ * @param z The z euler rotation in degrees
+ * @param order The order of rotation
+ * @returns out
+ */
+export function fromDegrees(out: Quat, x: number, y: number, z: number, order: EulerOrder): Quat;
 ```
 
 #### `quat.str`
@@ -4521,6 +4665,18 @@ export function set(out: Mat3, m00: number, m01: number, m02: number, m10: numbe
 export function identity(out: Mat3): Mat3;
 ```
 
+#### `mat3.zero`
+
+```ts
+/**
+ * Set a mat3 to the zero matrix
+ *
+ * @param out the receiving matrix
+ * @returns out
+ */
+export function zero(out: Mat3): Mat3;
+```
+
 #### `mat3.transpose`
 
 ```ts
@@ -4966,6 +5122,18 @@ export function set(out: Mat4, m00: number, m01: number, m02: number, m03: numbe
 export function identity(out: Mat4): Mat4;
 ```
 
+#### `mat4.zero`
+
+```ts
+/**
+ * Set a mat4 to the zero matrix
+ *
+ * @param out the receiving matrix
+ * @returns out
+ */
+export function zero(out: Mat4): Mat4;
+```
+
 #### `mat4.transpose`
 
 ```ts
@@ -4990,6 +5158,21 @@ export function transpose(out: Mat4, a: Mat4): Mat4;
  * @returns out, or null if source matrix is not invertible
  */
 export function invert(out: Mat4, a: Mat4): Mat4 | null;
+```
+
+#### `mat4.invert3x3`
+
+```ts
+/**
+ * Inverts only the 3x3 rotation part of a mat4.
+ * Sets the translation column and bottom row to [0, 0, 0, 1].
+ * Equivalent to Jolt's Mat44::Inversed3x3()
+ *
+ * @param out the receiving matrix
+ * @param a the source matrix
+ * @returns out, or null if the 3x3 part is not invertible
+ */
+export function invert3x3(out: Mat4, a: Mat4): Mat4 | null;
 ```
 
 #### `mat4.adjoint`
@@ -5029,6 +5212,81 @@ export function determinant(a: Mat4): number;
  * @returns out
  */
 export function multiply(out: Mat4, a: Mat4, b: Mat4): Mat4;
+```
+
+#### `mat4.multiply3x3`
+
+```ts
+/**
+ * Multiplies two mat4s treating them as 3x3 rotation matrices.
+ * Only computes the upper-left 3x3 portion, sets the 4th column to [0,0,0,1].
+ * More efficient than full mat4.multiply when working with pure rotations.
+ *
+ * @param out the receiving matrix
+ * @param a the first operand
+ * @param b the second operand
+ * @returns out
+ */
+export function multiply3x3(out: Mat4, a: Mat4, b: Mat4): Mat4;
+```
+
+#### `mat4.multiply3x3RightTransposed`
+
+```ts
+/**
+ * Multiplies a mat4 by the transpose of another mat4,
+ * treating both as 3x3 rotation matrices.
+ * Computes: out = a * transpose(b) (3x3 only)
+ * Sets the 4th column to [0,0,0,1].
+ *
+ * @param out the receiving matrix
+ * @param a the first operand
+ * @param b the second operand (will be transposed)
+ * @returns out
+ */
+export function multiply3x3RightTransposed(out: Mat4, a: Mat4, b: Mat4): Mat4;
+```
+
+#### `mat4.multiply3x3TransposedVec`
+
+```ts
+/**
+ * Transform a Vec3 by the transpose of the 3x3 rotation part.
+ *
+ * @param out the receiving vector
+ * @param mat the matrix to transform with
+ * @param vec the vector to transform
+ * @returns out
+ */
+export function multiply3x3TransposedVec(out: Vec3, mat: Mat4, vec: Vec3): Vec3;
+```
+
+#### `mat4.multiply3x3Vec`
+
+```ts
+/**
+ * Transform a Vec3 by only the 3x3 rotation part of a Mat4.
+ *
+ * @param out the receiving vector
+ * @param mat the matrix to transform with
+ * @param vec the vector to transform
+ * @returns out
+ */
+export function multiply3x3Vec(out: Vec3, mat: Mat4, vec: Vec3): Vec3;
+```
+
+#### `mat4.crossProductMatrix`
+
+```ts
+/**
+ * Cross product matrix (skew-symmetric matrix).
+ * Equivalent to Jolt's Mat44::sCrossProduct(Vec3Arg)
+ *
+ * @param out the receiving matrix
+ * @param v the vector to create the cross product matrix from
+ * @returns out
+ */
+export function crossProductMatrix(out: Mat4, v: Vec3): Mat4;
 ```
 
 #### `mat4.translate`
@@ -5696,26 +5954,6 @@ export function create(): Circle;
 export function closestPoint(out: Vec2, point: Vec2, a: Vec2, b: Vec2): Vec2;
 ```
 
-### triangle2
-
-#### `triangle2.create`
-
-```ts
-export function create(): Triangle2;
-```
-
-#### `triangle2.circumcircle`
-
-```ts
-/**
- * Calculates the circumcircle of three points and stores the center in the output parameter.
- * @param outCircle The circle to store the result in
- * @param triangle The triangle defined by three points
- * @returns outCircle
- */
-export function circumcircle(outCircle: Circle, triangle: Triangle2): Circle;
-```
-
 ### box3
 
 #### `box3.create`
@@ -5739,6 +5977,18 @@ export function create(): Box3;
 export function clone(box: Box3): Box3;
 ```
 
+#### `box3.copy`
+
+```ts
+/**
+ * Copies a Box3 to another Box3
+ * @param out the output Box3
+ * @param box the input Box3
+ * @returns the output Box3
+ */
+export function copy(out: Box3, box: Box3): Box3;
+```
+
 #### `box3.set`
 
 ```ts
@@ -5750,6 +6000,41 @@ export function clone(box: Box3): Box3;
  * @returns The updated Box3
  */
 export function set(out: Box3, min: Vec3, max: Vec3): Box3;
+```
+
+#### `box3.empty`
+
+```ts
+/**
+ * Set a Box3 to empty (min to positive infinity, max to negative infinity)
+ * @param out - The Box3 to make empty
+ * @returns The emptied Box3
+ */
+export function empty(out: Box3): Box3;
+```
+
+#### `box3.exactEquals`
+
+```ts
+/**
+ * Returns whether or not the boxes have exactly the same elements in the same position (when compared with ===)
+ * @param a - The first box
+ * @param b - The second box
+ * @returns True if the boxes are equal, false otherwise
+ */
+export function exactEquals(a: Box3, b: Box3): boolean;
+```
+
+#### `box3.equals`
+
+```ts
+/**
+ * Returns whether or not the boxes have approximately the same elements in the same position
+ * @param a - The first box
+ * @param b - The second box
+ * @returns True if the boxes are equal, false otherwise
+ */
+export function equals(a: Box3, b: Box3): boolean;
 ```
 
 #### `box3.setFromCenterAndSize`
@@ -5776,6 +6061,122 @@ export function setFromCenterAndSize(out: Box3, center: Vec3, size: Vec3): Box3;
  * @returns The expanded Box3
  */
 export function expandByPoint(out: Box3, box: Box3, point: Vec3): Box3;
+```
+
+#### `box3.expandByExtents`
+
+```ts
+/**
+ * Widens a Box3 by a vector on both sides
+ * Subtracts the vector from min and adds it to max
+ * @param out - The output Box3
+ * @param box - The input Box3
+ * @param vector - The vector to expand by
+ * @returns The expanded Box3
+ */
+export function expandByExtents(out: Box3, box: Box3, vector: Vec3): Box3;
+```
+
+#### `box3.expandByMargin`
+
+```ts
+/**
+ * Expands a Box3 uniformly by a scalar margin on all sides
+ * Subtracts the margin from min and adds it to max on each axis
+ * @param out - The output Box3
+ * @param box - The input Box3
+ * @param margin - The uniform margin to expand by
+ * @returns The expanded Box3
+ */
+export function expandByMargin(out: Box3, box: Box3, margin: number): Box3;
+```
+
+#### `box3.union`
+
+```ts
+/**
+ * Computes the union of two bounding boxes
+ * Returns a Box3 that encompasses both input boxes
+ * @param out - The output Box3
+ * @param boxA - The first Box3
+ * @param boxB - The second Box3
+ * @returns The union Box3
+ */
+export function union(out: Box3, boxA: Box3, boxB: Box3): Box3;
+```
+
+#### `box3.center`
+
+```ts
+/**
+ * Calculate the center point of a bounding box
+ * @param out - The output Vec3 for the center
+ * @param box - The input Box3
+ * @returns The center point
+ */
+export function center(out: Vec3, box: Box3): Vec3;
+```
+
+#### `box3.extents`
+
+```ts
+/**
+ * Calculate the extents (half-size) of a bounding box
+ * @param out - The output Vec3 for the extents
+ * @param box - The input Box3
+ * @returns The extents (distance from center to each face)
+ */
+export function extents(out: Vec3, box: Box3): Vec3;
+```
+
+#### `box3.size`
+
+```ts
+/**
+ * Calculate the size (dimensions) of a bounding box
+ * @param out - The output Vec3 for the size
+ * @param box - The input Box3
+ * @returns The size (width, height, depth)
+ */
+export function size(out: Vec3, box: Box3): Vec3;
+```
+
+#### `box3.surfaceArea`
+
+```ts
+/**
+ * Calculate the surface area of a bounding box
+ * @param box - The input Box3
+ * @returns The surface area
+ */
+export function surfaceArea(box: Box3): number;
+```
+
+#### `box3.scale`
+
+```ts
+/**
+ * Scale a bounding box by a vector, handling non-uniform and negative scaling
+ * @param out - The output Box3
+ * @param box - The input Box3
+ * @param scale - The scale to apply (as a Vec3)
+ * @returns The scaled Box3
+ */
+export function scale(out: Box3, box: Box3, scale: Vec3): Box3;
+```
+
+#### `box3.transformMat4`
+
+```ts
+/**
+ * Transform a bounding box by a 4x4 matrix
+ * Transforms all 8 corners and creates a new AABB that encompasses them
+ * @param out - The output Box3
+ * @param box - The input Box3
+ * @param mat - The 4x4 transformation matrix
+ * @returns The transformed Box3
+ */
+export function transformMat4(out: Box3, box: Box3, mat: Mat4): Box3;
 ```
 
 #### `box3.containsPoint`
@@ -5814,7 +6215,7 @@ export function intersectsBox3(boxA: Box3, boxB: Box3): boolean;
 #### `box3.intersectsTriangle3`
 
 ```ts
-export function intersectsTriangle3(box: Box3, triangle: Triangle3): boolean;
+export function intersectsTriangle3(box: Box3, a: Vec3, b: Vec3, c: Vec3): boolean;
 ```
 
 #### `box3.intersectsSphere`
@@ -5833,22 +6234,6 @@ export function intersectsSphere(box: Box3, sphere: Sphere): boolean;
  * Test intersection between axis-aligned bounding box and plane.
  */
 export function intersectsPlane3(box: Box3, plane: Plane3): boolean;
-```
-
-#### `box3.intersectsRay`
-
-```ts
-/**
- * Test intersection between axis-aligned bounding box and a ray.
- * Ray is defined by start and end points.
- * Uses slab method for intersection testing.
- *
- * @param box - The bounding box
- * @param start - Ray start point
- * @param end - Ray end point
- * @returns true if the ray intersects the box, false otherwise
- */
-export function intersectsRay(box: Box3, start: Vec3, end: Vec3): boolean;
 ```
 
 ### obb3
@@ -5908,32 +6293,12 @@ export function containsPoint(obb: OBB3, point: Vec3): boolean;
 #### `obb3.clampPoint`
 
 ```ts
-/**
- * Clamps a point to the surface or interior of an OBB.
- * Reference: Closest Point on OBB to Point in Real-Time Collision Detection
- * by Christer Ericson (chapter 5.1.4)
- *
- * @param out - The clamped point result
- * @param obb - The OBB
- * @param point - The point to clamp
- * @returns out
- */
 export function clampPoint(out: Vec3, obb: OBB3, point: Vec3): Vec3;
 ```
 
 #### `obb3.intersectsOBB3`
 
 ```ts
-/**
- * Tests whether an OBB intersects with another OBB using the Separating Axis Theorem.
- * Reference: OBB-OBB Intersection in Real-Time Collision Detection
- * by Christer Ericson (chapter 4.4.1)
- *
- * @param a - The first OBB
- * @param b - The second OBB
- * @param epsilon - Small value to prevent arithmetic errors when edges are parallel
- * @returns true if the OBBs intersect
- */
 export function intersectsOBB3(a: OBB3, b: OBB3, epsilon = Number.EPSILON): boolean;
 ```
 
@@ -5953,17 +6318,207 @@ export function intersectsBox3(obb: OBB3, aabb: Box3): boolean;
 #### `obb3.applyMatrix4`
 
 ```ts
-/**
- * Applies a 4x4 transformation matrix to an OBB.
- * This can be used to transform the bounding volume with the world matrix
- * of a 3D object to keep both entities in sync.
- *
- * @param out - The transformed OBB
- * @param obb - The OBB to transform
- * @param matrix - The 4x4 transformation matrix
- * @returns out
- */
 export function applyMatrix4(out: OBB3, obb: OBB3, matrix: Mat4): OBB3;
+```
+
+### plane3
+
+#### `plane3.create`
+
+```ts
+/**
+ * Creates a new plane with normal (0, 1, 0) and constant 0
+ * @returns A new plane
+ */
+export function create(): Plane3;
+```
+
+#### `plane3.fromNormalAndConstant`
+
+```ts
+/**
+ * Creates a plane from a normal and constant
+ * @param out - The output plane
+ * @param normal - The plane normal (should be unit length)
+ * @param constant - The signed distance from origin
+ * @returns The output plane
+ */
+export function fromNormalAndConstant(out: Plane3, normal: Vec3, constant: number): Plane3;
+```
+
+#### `plane3.fromNormalAndPoint`
+
+```ts
+/**
+ * Creates a plane from a normal and a point on the plane
+ * @param out - The output plane
+ * @param normal - The plane normal (should be unit length)
+ * @param point - A point on the plane
+ * @returns The output plane
+ */
+export function fromNormalAndPoint(out: Plane3, normal: Vec3, point: Vec3): Plane3;
+```
+
+#### `plane3.fromCoplanarPoints`
+
+```ts
+/**
+ * Creates a plane from three coplanar points
+ * @param out - The output plane
+ * @param a - First point
+ * @param b - Second point
+ * @param c - Third point
+ * @returns The output plane
+ */
+export function fromCoplanarPoints(out: Plane3, a: Vec3, b: Vec3, c: Vec3): Plane3;
+```
+
+#### `plane3.clone`
+
+```ts
+/**
+ * Clones a plane
+ * @param plane - The plane to clone
+ * @returns A new plane
+ */
+export function clone(plane: Plane3): Plane3;
+```
+
+#### `plane3.copy`
+
+```ts
+/**
+ * Copies one plane to another
+ * @param out - The output plane
+ * @param plane - The source plane
+ * @returns The output plane
+ */
+export function copy(out: Plane3, plane: Plane3): Plane3;
+```
+
+#### `plane3.normalize`
+
+```ts
+/**
+ * Normalizes a plane (ensures the normal vector is unit length)
+ * @param out - The output plane
+ * @param plane - The input plane
+ * @returns The normalized plane
+ */
+export function normalize(out: Plane3, plane: Plane3): Plane3;
+```
+
+#### `plane3.negate`
+
+```ts
+/**
+ * Negates a plane (flips the normal and constant)
+ * @param out - The output plane
+ * @param plane - The input plane
+ * @returns The negated plane
+ */
+export function negate(out: Plane3, plane: Plane3): Plane3;
+```
+
+#### `plane3.offset`
+
+```ts
+/**
+ * Offsets a plane by a distance along its normal
+ * @param out - The output plane
+ * @param plane - The input plane
+ * @param distance - The distance to offset (positive = in direction of normal)
+ * @returns The offset plane
+ */
+export function offset(out: Plane3, plane: Plane3, distance: number): Plane3;
+```
+
+#### `plane3.distanceToPoint`
+
+```ts
+/**
+ * Calculates the signed distance from a point to the plane
+ * @param plane - The plane
+ * @param point - The point
+ * @returns The signed distance (positive = in direction of normal)
+ */
+export function distanceToPoint(plane: Plane3, point: Vec3): number;
+```
+
+#### `plane3.projectPoint`
+
+```ts
+/**
+ * Projects a point onto the plane
+ * @param out - The output point
+ * @param plane - The plane
+ * @param point - The point to project
+ * @returns The projected point
+ */
+export function projectPoint(out: Vec3, plane: Plane3, point: Vec3): Vec3;
+```
+
+#### `plane3.transform`
+
+```ts
+/**
+ * Transforms a plane by a 4x4 matrix
+ * @param out - The output plane
+ * @param plane - The plane to transform
+ * @param matrix - The transformation matrix
+ * @returns The transformed plane
+ */
+export function transform(out: Plane3, plane: Plane3, matrix: Mat4): Plane3;
+```
+
+#### `plane3.intersectsSphere`
+
+```ts
+/**
+ * Tests if a sphere intersects the plane
+ * @param plane - The plane
+ * @param sphere - The sphere
+ * @returns True if they intersect
+ */
+export function intersectsSphere(plane: Plane3, sphere: Sphere): boolean;
+```
+
+#### `plane3.exactEquals`
+
+```ts
+/**
+ * Tests if two planes are exactly equal
+ * @param a - First plane
+ * @param b - Second plane
+ * @returns True if planes are exactly equal
+ */
+export function exactEquals(a: Plane3, b: Plane3): boolean;
+```
+
+#### `plane3.intersect`
+
+```ts
+/**
+ * Finds the intersection point of three planes
+ * @param p1 - First plane
+ * @param p2 - Second plane
+ * @param p3 - Third plane
+ * @param out - The output point where the three planes intersect
+ * @returns True if intersection exists, false if planes are degenerate or parallel
+ */
+export function intersect(p1: Plane3, p2: Plane3, p3: Plane3, out: Vec3): boolean;
+```
+
+#### `plane3.equals`
+
+```ts
+/**
+ * Tests if two planes are equal
+ * @param a - First plane
+ * @param b - Second plane
+ * @returns True if planes are equal
+ */
+export function equals(a: Plane3, b: Plane3): boolean;
 ```
 
 ### sphere
@@ -5980,10 +6535,142 @@ export function create(): Sphere;
 
 ### triangle3
 
-#### `triangle3.create`
+#### `triangle3.bounds`
 
 ```ts
-export function create(): Triangle3;
+export function bounds(out: Box3, a: Vec3, b: Vec3, c: Vec3): Box3;
+```
+
+#### `triangle3.normal`
+
+```ts
+export function normal(out: Vec3, a: Vec3, b: Vec3, c: Vec3): Vec3;
+```
+
+#### `triangle3.centroid`
+
+```ts
+export function centroid(out: Vec3, a: Vec3, b: Vec3, c: Vec3): Vec3;
+```
+
+### raycast3
+
+#### `raycast3.create`
+
+```ts
+/**
+ * Creates a new Raycast3 with default values (origin at (0,0,0), direction (0,0,0), length 1.
+ * @returns A new Raycast3.
+ */
+export function create(): Raycast3;
+```
+
+#### `raycast3.fromValues`
+
+```ts
+/**
+ * Creates a new Raycast3 from given values.
+ * @param origin The origin Vec3.
+ * @param direction The direction Vec3.
+ * @param length The length of the ray.
+ * @returns A new Raycast3.
+ */
+export function fromValues(origin: Vec3, direction: Vec3, length: number): Raycast3;
+```
+
+#### `raycast3.set`
+
+```ts
+/**
+ * Sets the components of a Raycast3.
+ * @param out The output Raycast3.
+ * @param origin The origin Vec3.
+ * @param direction The direction Vec3.
+ * @param length The length of the ray.
+ * @returns The output Raycast3.
+ */
+export function set(out: Raycast3, origin: Vec3, direction: Vec3, length: number): Raycast3;
+```
+
+#### `raycast3.copy`
+
+```ts
+/**
+ * Copies a Raycast3.
+ * @param out The output Raycast3.
+ * @param a The input Raycast3.
+ * @returns The output Raycast3.
+ */
+export function copy(out: Raycast3, a: Raycast3): Raycast3;
+```
+
+#### `raycast3.fromSegment`
+
+```ts
+/**
+ * Creates a Raycast3 from two points.
+ * @param out The output Raycast3.
+ * @param a The starting point.
+ * @param b The ending point.
+ * @returns The output Raycast3.
+ */
+export function fromSegment(out: Raycast3, a: Vec3, b: Vec3): Raycast3;
+```
+
+#### `raycast3.IntersectsTriangleResult`
+
+```ts
+/**
+ * Result of a ray-triangle intersection test
+ * @see createIntersectsTriangleResult
+ * @see intersectsTriangle
+ */
+export type IntersectsTriangleResult = {
+    fraction: number;
+    hit: boolean;
+    frontFacing: boolean;
+};
+```
+
+#### `raycast3.createIntersectsTriangleResult`
+
+```ts
+/**
+ * Creates a new IntersectsTriangleResult with default values.
+ * @returns A new IntersectsTriangleResult.
+ */
+export function createIntersectsTriangleResult(): IntersectsTriangleResult;
+```
+
+#### `raycast3.intersectsTriangle`
+
+```ts
+/**
+ * Ray-triangle intersection test.
+ * Based on https://github.com/pmjoniak/GeometricTools/blob/master/GTEngine/Include/Mathematics/GteIntrRay3Triangle3.h
+ *
+ * @param out output object to store result (hit boolean, fraction, frontFacing)
+ * @param ray ray to test (with origin, direction, and length)
+ * @param a first vertex of triangle
+ * @param b second vertex of triangle
+ * @param c third vertex of triangle
+ * @param backfaceCulling if true, backfaces will not be considered hits
+ */
+export function intersectsTriangle(out: IntersectsTriangleResult, ray: Raycast3, a: Vec3, b: Vec3, c: Vec3, backfaceCulling: boolean): void;
+```
+
+#### `raycast3.intersectsBox3`
+
+```ts
+/**
+ * Test if a ray intersects an axis-aligned bounding box.
+ * Uses slab-based algorithm that handles parallel rays correctly.
+ *
+ * @param ray Ray to test (with origin, direction, and length)
+ * @param aabb AABB to test against
+ * @returns true if ray intersects the AABB, false otherwise
+ */
+export function intersectsBox3(ray: Raycast3, aabb: Box3): boolean;
 ```
 
 ### quickhull3
@@ -6015,6 +6702,20 @@ export function quickhull3(points: number[]): number[];
  * @returns indices of hull vertices in ccw order
  */
 export function quickhull2(points: number[]): number[];
+```
+
+### circumcircle
+
+#### `circumcircle`
+
+```ts
+/**
+ * Calculates the circumcircle of three points and stores the center in the output parameter.
+ * @param out The circle to store the result in
+ * @param triangle The triangle defined by three points
+ * @returns
+ */
+export function circumcircle(out: Circle, a: Vec2, b: Vec2, c: Vec2): Circle;
 ```
 
 ### easing

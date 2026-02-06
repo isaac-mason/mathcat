@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## 0.0.8
+
+- feat: documentation regeneration, no functional changes to 0.0.7
+
 ## 0.0.7
 
 - feat: add `raycast3` module and `Raycast3` type for rays with origin, direction, and length in 3D space
