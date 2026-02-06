@@ -1,6 +1,6 @@
 # CHANGELOG
 
-## 0.0.7 (Unreleased)
+## 0.0.7
 
 - feat: add `raycast3` module and `Raycast3` type for rays with origin, direction, and length in 3D space
     - add `raycast3.create`, `raycast3.set`, `raycast3.copy`, `raycast3.fromSegment`
