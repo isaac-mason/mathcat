@@ -6,6 +6,7 @@
     "keywords": ["math", "vector", "matrix", "quaternion", "euler", "random", "noise"],
     "license": "MIT",
     "type": "module",
+    "sideEffects": false,
     "main": "dist/index.js",
     "types": "dist/index.d.ts",
     "files": [

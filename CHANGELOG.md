@@ -1,5 +1,10 @@
 # CHANGELOG
 
+## 0.0.9 (Unreleased)
+
+- fix: tree-shaking, preserve modules in the build output so that namespaces like `vec3`, `quat` can be properly treeshaken when using individual functions like `vec3.add` or `quat.multiply`
+- fix: added missing `/*@__PURE__*/` annotations to IIFEs for tree-shaking 
+
 ## 0.0.8
 
 - feat: documentation regeneration, no functional changes to 0.0.7

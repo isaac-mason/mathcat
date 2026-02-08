@@ -12,6 +12,8 @@ export default [
         format: 'es',
         sourcemap: true,
         exports: 'named',
+        preserveModules: true,
+        preserveModulesRoot: 'src',
       },
     ],
     plugins: [
