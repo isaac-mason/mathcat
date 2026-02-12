@@ -3,6 +3,7 @@
 ## 0.0.10 (Unreleased)
 
 - feat: change `OBB3` to store rotation as a `Mat3` instead of a `Quat`
+- fix: obb3.applyMatrix4 calculation errors
 
 ## 0.0.9
 
