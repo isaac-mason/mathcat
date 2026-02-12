@@ -22,10 +22,26 @@ export function copy(out: OBB3, a: OBB3): OBB3 {
     out.halfExtents[0] = a.halfExtents[0];
     out.halfExtents[1] = a.halfExtents[1];
     out.halfExtents[2] = a.halfExtents[2];
-    mat3.copy(out.rotation, a.rotation);
+    out.rotation[0] = a.rotation[0];
+    out.rotation[1] = a.rotation[1];
+    out.rotation[2] = a.rotation[2];
+    out.rotation[3] = a.rotation[3];
+    out.rotation[4] = a.rotation[4];
+    out.rotation[5] = a.rotation[5];
+    out.rotation[6] = a.rotation[6];
+    out.rotation[7] = a.rotation[7];
+    out.rotation[8] = a.rotation[8];
     return out;
 }
 
+/**
+ * Sets an OBB from center, half extents, and a rotation matrix.
+ * @param out the OBB to store the result
+ * @param center the center of the OBB
+ * @param halfExtents the half extents of the OBB
+ * @param rotation the Mat3 rotation matrix
+ * @returns the OBB with the given center, half extents, and rotation
+ */
 export function set(out: OBB3, center: Vec3, halfExtents: Vec3, rotation: Mat3): OBB3 {
     out.center[0] = center[0];
     out.center[1] = center[1];
@@ -33,7 +49,15 @@ export function set(out: OBB3, center: Vec3, halfExtents: Vec3, rotation: Mat3):
     out.halfExtents[0] = halfExtents[0];
     out.halfExtents[1] = halfExtents[1];
     out.halfExtents[2] = halfExtents[2];
-    mat3.copy(out.rotation, rotation);
+    out.rotation[0] = rotation[0];
+    out.rotation[1] = rotation[1];
+    out.rotation[2] = rotation[2];
+    out.rotation[3] = rotation[3];
+    out.rotation[4] = rotation[4];
+    out.rotation[5] = rotation[5];
+    out.rotation[6] = rotation[6];
+    out.rotation[7] = rotation[7];
+    out.rotation[8] = rotation[8];
     return out;
 }
 
@@ -372,7 +396,6 @@ export function intersectsBox3(obb: OBB3, aabb: Box3): boolean {
  * @returns out
  */
 const _applyMatrix4_rotationMat = /*@__PURE__*/ mat3.create();
-const _applyMatrix4_translation = /*@__PURE__*/ vec3.create();
 
 export function applyMatrix4(out: OBB3, obb: OBB3, matrix: Mat4): OBB3 {
     const e = matrix;
@@ -404,19 +427,16 @@ export function applyMatrix4(out: OBB3, obb: OBB3, matrix: Mat4): OBB3 {
     _applyMatrix4_rotationMat[7] *= invSZ;
     _applyMatrix4_rotationMat[8] *= invSZ;
 
-    // Combine rotations: out.rotation = obb.rotation * extractedRotation
-    mat3.multiply(out.rotation, obb.rotation, _applyMatrix4_rotationMat);
+    // Combine rotations: out.rotation = extractedRotation * obb.rotation
+    mat3.multiply(out.rotation, _applyMatrix4_rotationMat, obb.rotation);
 
     // Scale half extents
     out.halfExtents[0] = obb.halfExtents[0] * Math.abs(sx);
     out.halfExtents[1] = obb.halfExtents[1] * Math.abs(sy);
     out.halfExtents[2] = obb.halfExtents[2] * Math.abs(sz);
 
-    // Transform center
-    _applyMatrix4_translation[0] = e[12];
-    _applyMatrix4_translation[1] = e[13];
-    _applyMatrix4_translation[2] = e[14];
-    vec3.add(out.center, obb.center, _applyMatrix4_translation);
+    // Transform center through the full matrix (rotation + translation)
+    vec3.transformMat4(out.center, obb.center, matrix);
 
     return out;
 }

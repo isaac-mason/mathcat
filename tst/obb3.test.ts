@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest';
 import * as box3 from '../src/box3';
 import * as euler from '../src/euler';
 import * as mat3 from '../src/mat3';
+import * as mat4 from '../src/mat4';
 import * as obb3 from '../src/obb3';
 import * as quat from '../src/quat';
 import * as vec3 from '../src/vec3';
@@ -152,6 +153,88 @@ describe('obb3', () => {
             box3.set(aabb, [3, 3, 3], [4, 4, 4]);
 
             expect(obb3.intersectsBox3(obb, aabb)).toBe(false);
+        });
+    });
+
+    describe('applyMatrix4', () => {
+        it('transforms center correctly with rotation', () => {
+            // OBB at [1, 0, 0] with identity rotation
+            const obb = obb3.create();
+            obb3.setFromCenterHalfExtentsQuaternion(obb, [1, 0, 0], [0.5, 0.5, 0.5], [0, 0, 0, 1]);
+
+            // 90° rotation around Z axis: (1,0,0) -> (0,1,0)
+            const matrix = mat4.create();
+            const rotation = quat.create();
+            quat.fromEuler(rotation, euler.fromValues(0, 0, Math.PI / 2, 'xyz'));
+            mat4.fromRotationTranslation(matrix, rotation, [0, 0, 0]);
+
+            const result = obb3.create();
+            obb3.applyMatrix4(result, obb, matrix);
+
+            // Center should rotate from [1,0,0] to [0,1,0]
+            expect(result.center[0]).toBeCloseTo(0);
+            expect(result.center[1]).toBeCloseTo(1);
+            expect(result.center[2]).toBeCloseTo(0);
+        });
+
+        it('transforms center correctly with translation', () => {
+            const obb = obb3.create();
+            obb3.setFromCenterHalfExtentsQuaternion(obb, [1, 2, 3], [0.5, 0.5, 0.5], [0, 0, 0, 1]);
+
+            // Pure translation
+            const matrix = mat4.create();
+            mat4.fromTranslation(matrix, [10, 20, 30]);
+
+            const result = obb3.create();
+            obb3.applyMatrix4(result, obb, matrix);
+
+            expect(result.center[0]).toBeCloseTo(11);
+            expect(result.center[1]).toBeCloseTo(22);
+            expect(result.center[2]).toBeCloseTo(33);
+        });
+
+        it('applies rotation in correct order', () => {
+            // OBB rotated 90° around Y (X-axis points toward +Z)
+            const obb = obb3.create();
+            const obbRotation = quat.create();
+            quat.fromEuler(obbRotation, euler.fromValues(0, Math.PI / 2, 0, 'xyz'));
+            obb3.setFromCenterHalfExtentsQuaternion(obb, [0, 0, 0], [1, 1, 1], obbRotation);
+
+            // Matrix: 90° rotation around Z (Y-axis points toward -X)
+            const matrix = mat4.create();
+            const matRotation = quat.create();
+            quat.fromEuler(matRotation, euler.fromValues(0, 0, Math.PI / 2, 'xyz'));
+            mat4.fromRotationTranslation(matrix, matRotation, [0, 0, 0]);
+
+            const result = obb3.create();
+            obb3.applyMatrix4(result, obb, matrix);
+
+            // Combined rotation: first Y then Z
+            // Original X-axis [1,0,0] -> after Y rot -> [0,0,-1] -> after Z rot -> [0,0,-1]
+            // Original Y-axis [0,1,0] -> after Y rot -> [0,1,0] -> after Z rot -> [-1,0,0]
+            // Original Z-axis [0,0,1] -> after Y rot -> [1,0,0] -> after Z rot -> [0,1,0]
+            const r = result.rotation;
+            expect(r[0]).toBeCloseTo(0);  // X-axis x
+            expect(r[1]).toBeCloseTo(0);  // X-axis y
+            expect(r[2]).toBeCloseTo(-1); // X-axis z
+            expect(r[3]).toBeCloseTo(-1); // Y-axis x
+            expect(r[4]).toBeCloseTo(0);  // Y-axis y
+            expect(r[5]).toBeCloseTo(0);  // Y-axis z
+        });
+
+        it('scales half extents correctly', () => {
+            const obb = obb3.create();
+            obb3.setFromCenterHalfExtentsQuaternion(obb, [0, 0, 0], [1, 2, 3], [0, 0, 0, 1]);
+
+            const matrix = mat4.create();
+            mat4.fromScaling(matrix, [2, 3, 4]);
+
+            const result = obb3.create();
+            obb3.applyMatrix4(result, obb, matrix);
+
+            expect(result.halfExtents[0]).toBeCloseTo(2);
+            expect(result.halfExtents[1]).toBeCloseTo(6);
+            expect(result.halfExtents[2]).toBeCloseTo(12);
         });
     });
 });
