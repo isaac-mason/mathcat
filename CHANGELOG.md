@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## 0.0.10 (Unreleased)
+
+- feat: change `OBB3` to store rotation as a `Mat3` instead of a `Quat`
+
 ## 0.0.9
 
 - fix: tree-shaking, preserve modules in the build output so that namespaces like `vec3`, `quat` can be properly treeshaken when using individual functions like `vec3.add` or `quat.multiply`

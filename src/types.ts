@@ -46,7 +46,7 @@ export type Mat2d = [e1: number, e2: number, e3: number, e4: number, e5: number,
 export type Box3 = [min: Vec3, max: Vec3];
 
 /** A oriented bounding box in 3D space */
-export type OBB3 = { center: Vec3; halfExtents: Vec3; quaternion: Quat };
+export type OBB3 = { center: Vec3; halfExtents: Vec3; rotation: Mat3 };
 
 /** Euler orders */
 export type EulerOrder = 'xyz' | 'xzy' | 'yxz' | 'yzx' | 'zxy' | 'zyx';

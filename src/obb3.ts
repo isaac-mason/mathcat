@@ -1,18 +1,17 @@
 import * as mat3 from './mat3';
 import * as mat4 from './mat4';
-import * as quat from './quat';
-import type { Box3, Mat4, OBB3, Quat, Vec3 } from './types';
+import type { Box3, Mat3, Mat4, OBB3, Quat, Vec3 } from './types';
 import * as vec3 from './vec3';
 
 export function create(): OBB3 {
-    return { center: [0, 0, 0], halfExtents: [1, 1, 1], quaternion: [0, 0, 0, 1] };
+    return { center: [0, 0, 0], halfExtents: [1, 1, 1], rotation: mat3.create() };
 }
 
 export function clone(a: OBB3): OBB3 {
     return {
         center: [a.center[0], a.center[1], a.center[2]],
         halfExtents: [a.halfExtents[0], a.halfExtents[1], a.halfExtents[2]],
-        quaternion: [a.quaternion[0], a.quaternion[1], a.quaternion[2], a.quaternion[3]],
+        rotation: mat3.clone(a.rotation),
     };
 }
 
@@ -23,24 +22,39 @@ export function copy(out: OBB3, a: OBB3): OBB3 {
     out.halfExtents[0] = a.halfExtents[0];
     out.halfExtents[1] = a.halfExtents[1];
     out.halfExtents[2] = a.halfExtents[2];
-    out.quaternion[0] = a.quaternion[0];
-    out.quaternion[1] = a.quaternion[1];
-    out.quaternion[2] = a.quaternion[2];
-    out.quaternion[3] = a.quaternion[3];
+    mat3.copy(out.rotation, a.rotation);
     return out;
 }
 
-export function set(out: OBB3, center: Vec3, halfExtents: Vec3, quaternion: Quat): OBB3 {
+export function set(out: OBB3, center: Vec3, halfExtents: Vec3, rotation: Mat3): OBB3 {
     out.center[0] = center[0];
     out.center[1] = center[1];
     out.center[2] = center[2];
     out.halfExtents[0] = halfExtents[0];
     out.halfExtents[1] = halfExtents[1];
     out.halfExtents[2] = halfExtents[2];
-    out.quaternion[0] = quaternion[0];
-    out.quaternion[1] = quaternion[1];
-    out.quaternion[2] = quaternion[2];
-    out.quaternion[3] = quaternion[3];
+    mat3.copy(out.rotation, rotation);
+    return out;
+}
+
+/**
+ * Sets an OBB from center, half extents, and a quaternion.
+ * Convenience helper for users who store orientation as a quaternion.
+ *
+ * @param out - The OBB to store the result
+ * @param center - The center of the OBB
+ * @param halfExtents - The half extents of the OBB
+ * @param q - The quaternion representing the OBB's orientation
+ * @returns out
+ */
+export function setFromCenterHalfExtentsQuaternion(out: OBB3, center: Vec3, halfExtents: Vec3, q: Quat): OBB3 {
+    out.center[0] = center[0];
+    out.center[1] = center[1];
+    out.center[2] = center[2];
+    out.halfExtents[0] = halfExtents[0];
+    out.halfExtents[1] = halfExtents[1];
+    out.halfExtents[2] = halfExtents[2];
+    mat3.fromQuat(out.rotation, q);
     return out;
 }
 
@@ -68,16 +82,12 @@ export function setFromBox3(out: OBB3, aabb: Box3): OBB3 {
     out.halfExtents[2] = (max[2] - min[2]) * 0.5;
 
     // Identity rotation
-    out.quaternion[0] = 0;
-    out.quaternion[1] = 0;
-    out.quaternion[2] = 0;
-    out.quaternion[3] = 1;
+    mat3.identity(out.rotation);
 
     return out;
 }
 
 const _containsPoint_localPoint = /*@__PURE__*/ vec3.create();
-const _containsPoint_invQuat = /*@__PURE__*/ quat.create();
 
 /**
  * Tests whether a point is contained within an OBB.
@@ -87,12 +97,21 @@ const _containsPoint_invQuat = /*@__PURE__*/ quat.create();
  * @returns true if the point is inside the OBB
  */
 export function containsPoint(obb: OBB3, point: Vec3): boolean {
-    // Transform point to OBB's local space
-    vec3.subtract(_containsPoint_localPoint, point, obb.center);
+    // Vector from center to point
+    const dx = point[0] - obb.center[0];
+    const dy = point[1] - obb.center[1];
+    const dz = point[2] - obb.center[2];
 
-    // Get inverse quaternion for rotation
-    quat.invert(_containsPoint_invQuat, obb.quaternion);
-    vec3.transformQuat(_containsPoint_localPoint, _containsPoint_localPoint, _containsPoint_invQuat);
+    // Project onto each axis using the transpose of the rotation matrix
+    // (transpose = inverse for orthonormal matrices)
+    const r = obb.rotation;
+
+    // Project onto x-axis (column 0 of rotation)
+    _containsPoint_localPoint[0] = dx * r[0] + dy * r[1] + dz * r[2];
+    // Project onto y-axis (column 1 of rotation)
+    _containsPoint_localPoint[1] = dx * r[3] + dy * r[4] + dz * r[5];
+    // Project onto z-axis (column 2 of rotation)
+    _containsPoint_localPoint[2] = dx * r[6] + dy * r[7] + dz * r[8];
 
     // Check if local coordinates are within half extents
     return (
@@ -112,46 +131,46 @@ export function containsPoint(obb: OBB3, point: Vec3): boolean {
  * @param point - The point to clamp
  * @returns out
  */
-const _clampPoint_rotation = mat3.create();
 const _clampPoint_xAxis = vec3.create();
 const _clampPoint_yAxis = vec3.create();
 const _clampPoint_zAxis = vec3.create();
-const _clampPoint_d = vec3.create();
 
 export function clampPoint(out: Vec3, obb: OBB3, point: Vec3): Vec3 {
-    // Get OBB basis vectors
-    mat3.fromQuat(_clampPoint_rotation, obb.quaternion);
+    const r = obb.rotation;
 
-    _clampPoint_xAxis[0] = _clampPoint_rotation[0];
-    _clampPoint_xAxis[1] = _clampPoint_rotation[1];
-    _clampPoint_xAxis[2] = _clampPoint_rotation[2];
-    _clampPoint_yAxis[0] = _clampPoint_rotation[3];
-    _clampPoint_yAxis[1] = _clampPoint_rotation[4];
-    _clampPoint_yAxis[2] = _clampPoint_rotation[5];
-    _clampPoint_zAxis[0] = _clampPoint_rotation[6];
-    _clampPoint_zAxis[1] = _clampPoint_rotation[7];
-    _clampPoint_zAxis[2] = _clampPoint_rotation[8];
+    // Extract axes directly from rotation matrix columns
+    _clampPoint_xAxis[0] = r[0];
+    _clampPoint_xAxis[1] = r[1];
+    _clampPoint_xAxis[2] = r[2];
+    _clampPoint_yAxis[0] = r[3];
+    _clampPoint_yAxis[1] = r[4];
+    _clampPoint_yAxis[2] = r[5];
+    _clampPoint_zAxis[0] = r[6];
+    _clampPoint_zAxis[1] = r[7];
+    _clampPoint_zAxis[2] = r[8];
 
     // Vector from center to point
-    vec3.subtract(_clampPoint_d, point, obb.center);
+    const dx = point[0] - obb.center[0];
+    const dy = point[1] - obb.center[1];
+    const dz = point[2] - obb.center[2];
 
     // Start at center
     vec3.copy(out, obb.center);
 
     // Project onto each axis and clamp
-    let dist = vec3.dot(_clampPoint_d, _clampPoint_xAxis);
+    let dist = dx * _clampPoint_xAxis[0] + dy * _clampPoint_xAxis[1] + dz * _clampPoint_xAxis[2];
     dist = Math.max(-obb.halfExtents[0], Math.min(obb.halfExtents[0], dist));
     out[0] += _clampPoint_xAxis[0] * dist;
     out[1] += _clampPoint_xAxis[1] * dist;
     out[2] += _clampPoint_xAxis[2] * dist;
 
-    dist = vec3.dot(_clampPoint_d, _clampPoint_yAxis);
+    dist = dx * _clampPoint_yAxis[0] + dy * _clampPoint_yAxis[1] + dz * _clampPoint_yAxis[2];
     dist = Math.max(-obb.halfExtents[1], Math.min(obb.halfExtents[1], dist));
     out[0] += _clampPoint_yAxis[0] * dist;
     out[1] += _clampPoint_yAxis[1] * dist;
     out[2] += _clampPoint_yAxis[2] * dist;
 
-    dist = vec3.dot(_clampPoint_d, _clampPoint_zAxis);
+    dist = dx * _clampPoint_zAxis[0] + dy * _clampPoint_zAxis[1] + dz * _clampPoint_zAxis[2];
     dist = Math.max(-obb.halfExtents[2], Math.min(obb.halfExtents[2], dist));
     out[0] += _clampPoint_zAxis[0] * dist;
     out[1] += _clampPoint_zAxis[1] * dist;
@@ -170,8 +189,6 @@ export function clampPoint(out: Vec3, obb: OBB3, point: Vec3): Vec3 {
  * @param epsilon - Small value to prevent arithmetic errors when edges are parallel
  * @returns true if the OBBs intersect
  */
-const _intersectsOBB3_rotA = /*@__PURE__*/ mat3.create();
-const _intersectsOBB3_rotB = /*@__PURE__*/ mat3.create();
 const _intersectsOBB3_R: number[][] = [
     [0, 0, 0],
     [0, 0, 0],
@@ -196,30 +213,29 @@ const _intersectsOBB3_bU: [Vec3, Vec3, Vec3] = [
 ];
 
 export function intersectsOBB3(a: OBB3, b: OBB3, epsilon = Number.EPSILON): boolean {
-    // Get basis vectors for both OBBs
-    mat3.fromQuat(_intersectsOBB3_rotA, a.quaternion);
-    mat3.fromQuat(_intersectsOBB3_rotB, b.quaternion);
+    const rotA = a.rotation;
+    const rotB = b.rotation;
 
-    // Extract axes (columns of rotation matrix)
-    _intersectsOBB3_aU[0][0] = _intersectsOBB3_rotA[0];
-    _intersectsOBB3_aU[0][1] = _intersectsOBB3_rotA[1];
-    _intersectsOBB3_aU[0][2] = _intersectsOBB3_rotA[2];
-    _intersectsOBB3_aU[1][0] = _intersectsOBB3_rotA[3];
-    _intersectsOBB3_aU[1][1] = _intersectsOBB3_rotA[4];
-    _intersectsOBB3_aU[1][2] = _intersectsOBB3_rotA[5];
-    _intersectsOBB3_aU[2][0] = _intersectsOBB3_rotA[6];
-    _intersectsOBB3_aU[2][1] = _intersectsOBB3_rotA[7];
-    _intersectsOBB3_aU[2][2] = _intersectsOBB3_rotA[8];
+    // Extract axes directly from rotation matrix columns
+    _intersectsOBB3_aU[0][0] = rotA[0];
+    _intersectsOBB3_aU[0][1] = rotA[1];
+    _intersectsOBB3_aU[0][2] = rotA[2];
+    _intersectsOBB3_aU[1][0] = rotA[3];
+    _intersectsOBB3_aU[1][1] = rotA[4];
+    _intersectsOBB3_aU[1][2] = rotA[5];
+    _intersectsOBB3_aU[2][0] = rotA[6];
+    _intersectsOBB3_aU[2][1] = rotA[7];
+    _intersectsOBB3_aU[2][2] = rotA[8];
 
-    _intersectsOBB3_bU[0][0] = _intersectsOBB3_rotB[0];
-    _intersectsOBB3_bU[0][1] = _intersectsOBB3_rotB[1];
-    _intersectsOBB3_bU[0][2] = _intersectsOBB3_rotB[2];
-    _intersectsOBB3_bU[1][0] = _intersectsOBB3_rotB[3];
-    _intersectsOBB3_bU[1][1] = _intersectsOBB3_rotB[4];
-    _intersectsOBB3_bU[1][2] = _intersectsOBB3_rotB[5];
-    _intersectsOBB3_bU[2][0] = _intersectsOBB3_rotB[6];
-    _intersectsOBB3_bU[2][1] = _intersectsOBB3_rotB[7];
-    _intersectsOBB3_bU[2][2] = _intersectsOBB3_rotB[8];
+    _intersectsOBB3_bU[0][0] = rotB[0];
+    _intersectsOBB3_bU[0][1] = rotB[1];
+    _intersectsOBB3_bU[0][2] = rotB[2];
+    _intersectsOBB3_bU[1][0] = rotB[3];
+    _intersectsOBB3_bU[1][1] = rotB[4];
+    _intersectsOBB3_bU[1][2] = rotB[5];
+    _intersectsOBB3_bU[2][0] = rotB[6];
+    _intersectsOBB3_bU[2][1] = rotB[7];
+    _intersectsOBB3_bU[2][2] = rotB[8];
 
     // Compute rotation matrix expressing b in a's coordinate frame
     for (let i = 0; i < 3; i++) {
@@ -356,7 +372,6 @@ export function intersectsBox3(obb: OBB3, aabb: Box3): boolean {
  * @returns out
  */
 const _applyMatrix4_rotationMat = /*@__PURE__*/ mat3.create();
-const _applyMatrix4_currentRot = /*@__PURE__*/ mat3.create();
 const _applyMatrix4_translation = /*@__PURE__*/ vec3.create();
 
 export function applyMatrix4(out: OBB3, obb: OBB3, matrix: Mat4): OBB3 {
@@ -389,11 +404,8 @@ export function applyMatrix4(out: OBB3, obb: OBB3, matrix: Mat4): OBB3 {
     _applyMatrix4_rotationMat[7] *= invSZ;
     _applyMatrix4_rotationMat[8] *= invSZ;
 
-    // Combine rotations
-    mat3.fromQuat(_applyMatrix4_currentRot, obb.quaternion);
-    mat3.multiply(_applyMatrix4_currentRot, _applyMatrix4_currentRot, _applyMatrix4_rotationMat);
-    quat.fromMat3(out.quaternion, _applyMatrix4_currentRot);
-    quat.normalize(out.quaternion, out.quaternion);
+    // Combine rotations: out.rotation = obb.rotation * extractedRotation
+    mat3.multiply(out.rotation, obb.rotation, _applyMatrix4_rotationMat);
 
     // Scale half extents
     out.halfExtents[0] = obb.halfExtents[0] * Math.abs(sx);
