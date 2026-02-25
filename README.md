@@ -416,37 +416,45 @@ mathcat is a collection of math helpers for 3D graphics and simulations.
 </tr><tr>
 <td><a href="#box3copy"><code>box3.copy</code></a></td><td><a href="#box3set"><code>box3.set</code></a></td>
 </tr><tr>
-<td><a href="#box3empty"><code>box3.empty</code></a></td><td><a href="#box3exactequals"><code>box3.exactEquals</code></a></td>
+<td><a href="#box3setfromvectors"><code>box3.setFromVectors</code></a></td><td><a href="#box3min"><code>box3.min</code></a></td>
 </tr><tr>
-<td><a href="#box3equals"><code>box3.equals</code></a></td><td><a href="#box3setfromcenterandsize"><code>box3.setFromCenterAndSize</code></a></td>
+<td><a href="#box3max"><code>box3.max</code></a></td><td><a href="#box3empty"><code>box3.empty</code></a></td>
 </tr><tr>
-<td><a href="#box3expandbypoint"><code>box3.expandByPoint</code></a></td><td><a href="#box3expandbyextents"><code>box3.expandByExtents</code></a></td>
+<td><a href="#box3exactequals"><code>box3.exactEquals</code></a></td><td><a href="#box3equals"><code>box3.equals</code></a></td>
 </tr><tr>
-<td><a href="#box3expandbymargin"><code>box3.expandByMargin</code></a></td><td><a href="#box3union"><code>box3.union</code></a></td>
+<td><a href="#box3setfromcenterandsize"><code>box3.setFromCenterAndSize</code></a></td><td><a href="#box3expandbypoint"><code>box3.expandByPoint</code></a></td>
 </tr><tr>
-<td><a href="#box3center"><code>box3.center</code></a></td><td><a href="#box3extents"><code>box3.extents</code></a></td>
+<td><a href="#box3expandbyextents"><code>box3.expandByExtents</code></a></td><td><a href="#box3expandbymargin"><code>box3.expandByMargin</code></a></td>
 </tr><tr>
-<td><a href="#box3size"><code>box3.size</code></a></td><td><a href="#box3surfacearea"><code>box3.surfaceArea</code></a></td>
+<td><a href="#box3union"><code>box3.union</code></a></td><td><a href="#box3center"><code>box3.center</code></a></td>
 </tr><tr>
-<td><a href="#box3scale"><code>box3.scale</code></a></td><td><a href="#box3transformmat4"><code>box3.transformMat4</code></a></td>
+<td><a href="#box3extents"><code>box3.extents</code></a></td><td><a href="#box3size"><code>box3.size</code></a></td>
 </tr><tr>
-<td><a href="#box3containspoint"><code>box3.containsPoint</code></a></td><td><a href="#box3containsbox3"><code>box3.containsBox3</code></a></td>
+<td><a href="#box3surfacearea"><code>box3.surfaceArea</code></a></td><td><a href="#box3scale"><code>box3.scale</code></a></td>
 </tr><tr>
-<td><a href="#box3intersectsbox3"><code>box3.intersectsBox3</code></a></td><td><a href="#box3intersectstriangle3"><code>box3.intersectsTriangle3</code></a></td>
+<td><a href="#box3transformmat4"><code>box3.transformMat4</code></a></td><td><a href="#box3containspoint"><code>box3.containsPoint</code></a></td>
 </tr><tr>
-<td><a href="#box3intersectssphere"><code>box3.intersectsSphere</code></a></td><td><a href="#box3intersectsplane3"><code>box3.intersectsPlane3</code></a></td>
+<td><a href="#box3containsbox3"><code>box3.containsBox3</code></a></td><td><a href="#box3intersectsbox3"><code>box3.intersectsBox3</code></a></td>
+</tr><tr>
+<td><a href="#box3intersectstriangle3"><code>box3.intersectsTriangle3</code></a></td><td><a href="#box3intersectssphere"><code>box3.intersectsSphere</code></a></td>
+</tr><tr>
+<td><a href="#box3intersectsplane3"><code>box3.intersectsPlane3</code></a></td><td></td>
 </tr></table>
 
 **obb3**
 
 <table><tr>
-<td><a href="#obb3create"><code>obb3.create</code></a></td><td><a href="#obb3clone"><code>obb3.clone</code></a></td><td><a href="#obb3copy"><code>obb3.copy</code></a></td>
+<td><a href="#obb3create"><code>obb3.create</code></a></td><td><a href="#obb3clone"><code>obb3.clone</code></a></td>
 </tr><tr>
-<td><a href="#obb3set"><code>obb3.set</code></a></td><td><a href="#obb3setfrombox3"><code>obb3.setFromBox3</code></a></td><td><a href="#obb3containspoint"><code>obb3.containsPoint</code></a></td>
+<td><a href="#obb3copy"><code>obb3.copy</code></a></td><td><a href="#obb3set"><code>obb3.set</code></a></td>
 </tr><tr>
-<td><a href="#obb3clamppoint"><code>obb3.clampPoint</code></a></td><td><a href="#obb3intersectsobb3"><code>obb3.intersectsOBB3</code></a></td><td><a href="#obb3intersectsbox3"><code>obb3.intersectsBox3</code></a></td>
+<td><a href="#obb3setfromcenterhalfextentsquaternion"><code>obb3.setFromCenterHalfExtentsQuaternion</code></a></td><td><a href="#obb3setfrombox3"><code>obb3.setFromBox3</code></a></td>
 </tr><tr>
-<td><a href="#obb3applymatrix4"><code>obb3.applyMatrix4</code></a></td><td></td><td></td>
+<td><a href="#obb3containspoint"><code>obb3.containsPoint</code></a></td><td><a href="#obb3clamppoint"><code>obb3.clampPoint</code></a></td>
+</tr><tr>
+<td><a href="#obb3intersectsobb3"><code>obb3.intersectsOBB3</code></a></td><td><a href="#obb3intersectsbox3"><code>obb3.intersectsBox3</code></a></td>
+</tr><tr>
+<td><a href="#obb3applymatrix4"><code>obb3.applyMatrix4</code></a></td><td></td>
 </tr></table>
 
 **plane3**
@@ -705,8 +713,12 @@ export type Mat2d = [
 ```ts
 /** A box in 3D space */
 export type Box3 = [
-    min: Vec3,
-    max: Vec3
+    minX: number,
+    minY: number,
+    minZ: number,
+    maxX: number,
+    maxY: number,
+    maxZ: number
 ];
 ```
 
@@ -717,7 +729,7 @@ export type Box3 = [
 export type OBB3 = {
     center: Vec3;
     halfExtents: Vec3;
-    quaternion: Quat;
+    rotation: Mat3;
 };
 ```
 
@@ -5995,11 +6007,52 @@ export function copy(out: Box3, box: Box3): Box3;
 /**
  * Sets the min and max values of a Box3
  * @param out - The output Box3
+ * @param minX - The minimum X coordinate
+ * @param minY - The minimum Y coordinate
+ * @param minZ - The minimum Z coordinate
+ * @param maxX - The maximum X coordinate
+ * @param maxY - The maximum Y coordinate
+ * @param maxZ - The maximum Z coordinate
+ * @returns The updated Box3
+ */
+export function set(out: Box3, minX: number, minY: number, minZ: number, maxX: number, maxY: number, maxZ: number): Box3;
+```
+
+#### `box3.setFromVectors`
+
+```ts
+/**
+ * Sets the min and max values of a Box3 from Vec3 vectors
+ * @param out - The output Box3
  * @param min - The minimum corner
  * @param max - The maximum corner
  * @returns The updated Box3
  */
-export function set(out: Box3, min: Vec3, max: Vec3): Box3;
+export function setFromVectors(out: Box3, min: Vec3, max: Vec3): Box3;
+```
+
+#### `box3.min`
+
+```ts
+/**
+ * Extracts the minimum corner of a Box3
+ * @param out - The output Vec3 for the minimum corner
+ * @param box - The input Box3
+ * @returns The minimum corner
+ */
+export function min(out: Vec3, box: Box3): Vec3;
+```
+
+#### `box3.max`
+
+```ts
+/**
+ * Extracts the maximum corner of a Box3
+ * @param out - The output Vec3 for the maximum corner
+ * @param box - The input Box3
+ * @returns The maximum corner
+ */
+export function max(out: Vec3, box: Box3): Vec3;
 ```
 
 #### `box3.empty`
@@ -6259,7 +6312,31 @@ export function copy(out: OBB3, a: OBB3): OBB3;
 #### `obb3.set`
 
 ```ts
-export function set(out: OBB3, center: Vec3, halfExtents: Vec3, quaternion: Quat): OBB3;
+/**
+ * Sets an OBB from center, half extents, and a rotation matrix.
+ * @param out the OBB to store the result
+ * @param center the center of the OBB
+ * @param halfExtents the half extents of the OBB
+ * @param rotation the Mat3 rotation matrix
+ * @returns the OBB with the given center, half extents, and rotation
+ */
+export function set(out: OBB3, center: Vec3, halfExtents: Vec3, rotation: Mat3): OBB3;
+```
+
+#### `obb3.setFromCenterHalfExtentsQuaternion`
+
+```ts
+/**
+ * Sets an OBB from center, half extents, and a quaternion.
+ * Convenience helper for users who store orientation as a quaternion.
+ *
+ * @param out - The OBB to store the result
+ * @param center - The center of the OBB
+ * @param halfExtents - The half extents of the OBB
+ * @param q - The quaternion representing the OBB's orientation
+ * @returns out
+ */
+export function setFromCenterHalfExtentsQuaternion(out: OBB3, center: Vec3, halfExtents: Vec3, q: Quat): OBB3;
 ```
 
 #### `obb3.setFromBox3`
@@ -6538,18 +6615,42 @@ export function create(): Sphere;
 #### `triangle3.bounds`
 
 ```ts
+/**
+ * Computes the axis-aligned bounding box of a triangle defined by three vertices.
+ * @param out the output box to store the result.
+ * @param a the first vertex of the triangle.
+ * @param b the second vertex of the triangle.
+ * @param c the third vertex of the triangle.
+ * @returns the output box containing the axis-aligned bounding box of the triangle.
+ */
 export function bounds(out: Box3, a: Vec3, b: Vec3, c: Vec3): Box3;
 ```
 
 #### `triangle3.normal`
 
 ```ts
+/**
+ * Computes the normal vector of a triangle defined by three vertices.
+ * @param out the output vector to store the result.
+ * @param a the first vertex of the triangle.
+ * @param b the second vertex of the triangle.
+ * @param c the third vertex of the triangle.
+ * @returns the output vector containing the normal of the triangle.
+ */
 export function normal(out: Vec3, a: Vec3, b: Vec3, c: Vec3): Vec3;
 ```
 
 #### `triangle3.centroid`
 
 ```ts
+/**
+ * Computes the centroid of a triangle defined by three vertices.
+ * @param out the output vector to store the result.
+ * @param a the first vertex of the triangle.
+ * @param b the second vertex of the triangle.
+ * @param c the third vertex of the triangle.
+ * @returns the output vector containing the centroid of the triangle.
+ */
 export function centroid(out: Vec3, a: Vec3, b: Vec3, c: Vec3): Vec3;
 ```
 
