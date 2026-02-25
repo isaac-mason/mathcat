@@ -9,8 +9,8 @@
         "description": "Demonstrates usage of the QuickHull algorithm to compute the convex hull of a set of 3D points.",
         "tags": ["geometry", "convex hull", "quickhull", "3d"]
     },
-    "example-triangle2-circumcircle": {
-        "title": "triangle2.circumcircle",
+    "example-circumcircle": {
+        "title": "circumcircle",
         "description": "Demonstrates the circumcircle calculation for 2D triangles - the circle passing through all three vertices.",
         "tags": ["geometry", "triangle", "circumcircle", "2d"]
     }
