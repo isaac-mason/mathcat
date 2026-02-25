@@ -9,15 +9,13 @@ import type { Box3, Vec3 } from './types';
  * @returns the output box containing the axis-aligned bounding box of the triangle.
  */
 export function bounds(out: Box3, a: Vec3, b: Vec3, c: Vec3): Box3 {
-    const [outMin, outMax] = out;
+    out[0] = Math.min(a[0], b[0], c[0]);
+    out[1] = Math.min(a[1], b[1], c[1]);
+    out[2] = Math.min(a[2], b[2], c[2]);
 
-    outMin[0] = Math.min(a[0], b[0], c[0]);
-    outMin[1] = Math.min(a[1], b[1], c[1]);
-    outMin[2] = Math.min(a[2], b[2], c[2]);
-
-    outMax[0] = Math.max(a[0], b[0], c[0]);
-    outMax[1] = Math.max(a[1], b[1], c[1]);
-    outMax[2] = Math.max(a[2], b[2], c[2]);
+    out[3] = Math.max(a[0], b[0], c[0]);
+    out[4] = Math.max(a[1], b[1], c[1]);
+    out[5] = Math.max(a[2], b[2], c[2]);
 
     return out;
 }

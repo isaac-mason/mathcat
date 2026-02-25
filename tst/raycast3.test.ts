@@ -193,10 +193,7 @@ describe('raycast3', () => {
                 length: 10,
             };
 
-            const box: Box3 = [
-                [-1, -1, 2],
-                [1, 1, 4],
-            ];
+            const box: Box3 = [-1, -1, 2, 1, 1, 4];
 
             expect(raycast3.intersectsBox3(ray, box)).toBe(true);
         });
@@ -208,10 +205,7 @@ describe('raycast3', () => {
                 length: 5,
             };
 
-            const box: Box3 = [
-                [-1, -1, 0],
-                [1, 1, 2],
-            ];
+            const box: Box3 = [-1, -1, 0, 1, 1, 2];
 
             expect(raycast3.intersectsBox3(ray, box)).toBe(false);
         });
@@ -223,10 +217,7 @@ describe('raycast3', () => {
                 length: 2,
             };
 
-            const box: Box3 = [
-                [-1, -1, 5],
-                [1, 1, 7],
-            ];
+            const box: Box3 = [-1, -1, 5, 1, 1, 7];
 
             expect(raycast3.intersectsBox3(ray, box)).toBe(false);
         });
@@ -238,10 +229,7 @@ describe('raycast3', () => {
                 length: 10,
             };
 
-            const box: Box3 = [
-                [-1, -1, -1],
-                [1, 1, 1],
-            ];
+            const box: Box3 = [-1, -1, -1, 1, 1, 1];
 
             expect(raycast3.intersectsBox3(ray, box)).toBe(true);
         });
@@ -253,10 +241,7 @@ describe('raycast3', () => {
                 length: 10,
             };
 
-            const box: Box3 = [
-                [-2, -1, -1],
-                [2, 1, 1],
-            ];
+            const box: Box3 = [-2, -1, -1, 2, 1, 1];
 
             expect(raycast3.intersectsBox3(ray, box)).toBe(true);
         });
@@ -268,10 +253,7 @@ describe('raycast3', () => {
                 length: 10,
             };
 
-            const box: Box3 = [
-                [-1, -1, -1],
-                [1, 1, 1],
-            ];
+            const box: Box3 = [-1, -1, -1, 1, 1, 1];
 
             expect(raycast3.intersectsBox3(ray, box)).toBe(false);
         });
@@ -283,10 +265,7 @@ describe('raycast3', () => {
                 length: 10,
             };
 
-            const box: Box3 = [
-                [-1, -1, -1],
-                [1, 1, 1],
-            ];
+            const box: Box3 = [-1, -1, -1, 1, 1, 1];
 
             expect(raycast3.intersectsBox3(ray, box)).toBe(true);
         });
@@ -298,10 +277,7 @@ describe('raycast3', () => {
                 length: 10,
             };
 
-            const box: Box3 = [
-                [-1, -1, -1],
-                [1, 1, 1],
-            ];
+            const box: Box3 = [-1, -1, -1, 1, 1, 1];
 
             expect(raycast3.intersectsBox3(ray, box)).toBe(true);
         });
@@ -313,10 +289,7 @@ describe('raycast3', () => {
                 length: 10,
             };
 
-            const box: Box3 = [
-                [-1, -1, -1],
-                [1, 1, 1],
-            ];
+            const box: Box3 = [-1, -1, -1, 1, 1, 1];
 
             expect(raycast3.intersectsBox3(ray, box)).toBe(true);
         });
@@ -328,10 +301,7 @@ describe('raycast3', () => {
                 length: 10,
             };
 
-            const box: Box3 = [
-                [0, -1, -1],
-                [2, 1, 1],
-            ];
+            const box: Box3 = [0, -1, -1, 2, 1, 1];
 
             expect(raycast3.intersectsBox3(ray, box)).toBe(false);
         });
@@ -343,10 +313,7 @@ describe('raycast3', () => {
                 length: 5,
             };
 
-            const box: Box3 = [
-                [-1, -1, -1],
-                [1, 1, 1],
-            ];
+            const box: Box3 = [-1, -1, -1, 1, 1, 1];
 
             expect(raycast3.intersectsBox3(ray, box)).toBe(true);
         });
@@ -358,10 +325,7 @@ describe('raycast3', () => {
                 length: 10,
             };
 
-            const box: Box3 = [
-                [0, 0, 2],
-                [0.1, 0.1, 4],
-            ];
+            const box: Box3 = [0, 0, 2, 0.1, 0.1, 4];
 
             expect(raycast3.intersectsBox3(ray, box)).toBe(false);
         });

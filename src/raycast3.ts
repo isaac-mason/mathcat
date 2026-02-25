@@ -231,14 +231,14 @@ export function intersectsBox3(ray: Raycast3, aabb: Box3): boolean {
 
         if (Math.abs(d) < 1e-10) {
             // ray is parallel to slab: check if origin is within slab
-            if (ray.origin[i] < aabb[0][i] || ray.origin[i] > aabb[1][i]) {
+            if (ray.origin[i] < aabb[i] || ray.origin[i] > aabb[i + 3]) {
                 return false;
             }
         } else {
             // compute intersection times with slab
             const invD = 1 / d;
-            let t0 = (aabb[0][i] - ray.origin[i]) * invD;
-            let t1 = (aabb[1][i] - ray.origin[i]) * invD;
+            let t0 = (aabb[i] - ray.origin[i]) * invD;
+            let t1 = (aabb[i + 3] - ray.origin[i]) * invD;
 
             if (invD < 0) {
                 const temp = t0;

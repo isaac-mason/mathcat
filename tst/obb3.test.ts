@@ -11,7 +11,7 @@ describe('obb3', () => {
     describe('setFromBox3', () => {
         it('converts AABB to OBB with identity rotation', () => {
             const aabb = box3.create();
-            box3.set(aabb, [-1, -2, -3], [1, 2, 3]);
+            box3.set(aabb, -1, -2, -3, 1, 2, 3);
             const obb = obb3.create();
             obb3.setFromBox3(obb, aabb);
 
@@ -140,7 +140,7 @@ describe('obb3', () => {
             obb3.setFromCenterHalfExtentsQuaternion(obb, [0, 0, 0], [1, 1, 1], [0, 0, 0, 1]);
 
             const aabb = box3.create();
-            box3.set(aabb, [-0.5, -0.5, -0.5], [0.5, 0.5, 0.5]);
+            box3.set(aabb, -0.5, -0.5, -0.5, 0.5, 0.5, 0.5);
 
             expect(obb3.intersectsBox3(obb, aabb)).toBe(true);
         });
@@ -150,7 +150,7 @@ describe('obb3', () => {
             obb3.setFromCenterHalfExtentsQuaternion(obb, [0, 0, 0], [1, 1, 1], [0, 0, 0, 1]);
 
             const aabb = box3.create();
-            box3.set(aabb, [3, 3, 3], [4, 4, 4]);
+            box3.set(aabb, 3, 3, 3, 4, 4, 4);
 
             expect(obb3.intersectsBox3(obb, aabb)).toBe(false);
         });

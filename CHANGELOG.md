@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## 0.0.11 (Unreleased)
+
+- feat: change `Box3` from `[Vec3, Vec3]` to a flat array `[minX, minY, minZ, maxX, maxY, maxZ]`, for performance improvement
+
 ## 0.0.10
 
 - feat: change `OBB3` to store rotation as a `Mat3` instead of a `Quat`

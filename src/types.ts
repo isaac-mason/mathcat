@@ -43,7 +43,7 @@ export type Mat4 = [
 export type Mat2d = [e1: number, e2: number, e3: number, e4: number, e5: number, e6: number];
 
 /** A box in 3D space */
-export type Box3 = [min: Vec3, max: Vec3];
+export type Box3 = [minX: number, minY: number, minZ: number, maxX: number, maxY: number, maxZ: number];
 
 /** A oriented bounding box in 3D space */
 export type OBB3 = { center: Vec3; halfExtents: Vec3; rotation: Mat3 };

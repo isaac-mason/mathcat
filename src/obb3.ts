@@ -92,18 +92,15 @@ export function setFromCenterHalfExtentsQuaternion(out: OBB3, center: Vec3, half
  * @returns out
  */
 export function setFromBox3(out: OBB3, aabb: Box3): OBB3 {
-    const min = aabb[0];
-    const max = aabb[1];
-
     // Center = (min + max) / 2
-    out.center[0] = (min[0] + max[0]) * 0.5;
-    out.center[1] = (min[1] + max[1]) * 0.5;
-    out.center[2] = (min[2] + max[2]) * 0.5;
+    out.center[0] = (aabb[0] + aabb[3]) * 0.5;
+    out.center[1] = (aabb[1] + aabb[4]) * 0.5;
+    out.center[2] = (aabb[2] + aabb[5]) * 0.5;
 
     // Half extents = (max - min) / 2
-    out.halfExtents[0] = (max[0] - min[0]) * 0.5;
-    out.halfExtents[1] = (max[1] - min[1]) * 0.5;
-    out.halfExtents[2] = (max[2] - min[2]) * 0.5;
+    out.halfExtents[0] = (aabb[3] - aabb[0]) * 0.5;
+    out.halfExtents[1] = (aabb[4] - aabb[1]) * 0.5;
+    out.halfExtents[2] = (aabb[5] - aabb[2]) * 0.5;
 
     // Identity rotation
     mat3.identity(out.rotation);

@@ -8,8 +8,8 @@ import * as vec3 from './vec3';
  */
 export function create(): Box3 {
     return [
-        [Number.POSITIVE_INFINITY, Number.POSITIVE_INFINITY, Number.POSITIVE_INFINITY],
-        [Number.NEGATIVE_INFINITY, Number.NEGATIVE_INFINITY, Number.NEGATIVE_INFINITY],
+        Number.POSITIVE_INFINITY, Number.POSITIVE_INFINITY, Number.POSITIVE_INFINITY,
+        Number.NEGATIVE_INFINITY, Number.NEGATIVE_INFINITY, Number.NEGATIVE_INFINITY,
     ];
 }
 
@@ -19,10 +19,7 @@ export function create(): Box3 {
  * @returns a clone of box
  */
 export function clone(box: Box3): Box3 {
-    return [
-        [box[0][0], box[0][1], box[0][2]],
-        [box[1][0], box[1][1], box[1][2]],
-    ];
+    return [box[0], box[1], box[2], box[3], box[4], box[5]];
 }
 
 /**
@@ -32,29 +29,76 @@ export function clone(box: Box3): Box3 {
  * @returns the output Box3
  */
 export function copy(out: Box3, box: Box3): Box3 {
-    out[0][0] = box[0][0];
-    out[0][1] = box[0][1];
-    out[0][2] = box[0][2];
-    out[1][0] = box[1][0];
-    out[1][1] = box[1][1];
-    out[1][2] = box[1][2];
+    out[0] = box[0];
+    out[1] = box[1];
+    out[2] = box[2];
+    out[3] = box[3];
+    out[4] = box[4];
+    out[5] = box[5];
     return out;
 }
 
 /**
  * Sets the min and max values of a Box3
  * @param out - The output Box3
+ * @param minX - The minimum X coordinate
+ * @param minY - The minimum Y coordinate
+ * @param minZ - The minimum Z coordinate
+ * @param maxX - The maximum X coordinate
+ * @param maxY - The maximum Y coordinate
+ * @param maxZ - The maximum Z coordinate
+ * @returns The updated Box3
+ */
+export function set(out: Box3, minX: number, minY: number, minZ: number, maxX: number, maxY: number, maxZ: number): Box3 {
+    out[0] = minX;
+    out[1] = minY;
+    out[2] = minZ;
+    out[3] = maxX;
+    out[4] = maxY;
+    out[5] = maxZ;
+    return out;
+}
+
+/**
+ * Sets the min and max values of a Box3 from Vec3 vectors
+ * @param out - The output Box3
  * @param min - The minimum corner
  * @param max - The maximum corner
  * @returns The updated Box3
  */
-export function set(out: Box3, min: Vec3, max: Vec3): Box3 {
-    out[0][0] = min[0];
-    out[0][1] = min[1];
-    out[0][2] = min[2];
-    out[1][0] = max[0];
-    out[1][1] = max[1];
-    out[1][2] = max[2];
+export function setFromVectors(out: Box3, min: Vec3, max: Vec3): Box3 {
+    out[0] = min[0];
+    out[1] = min[1];
+    out[2] = min[2];
+    out[3] = max[0];
+    out[4] = max[1];
+    out[5] = max[2];
+    return out;
+}
+
+/**
+ * Extracts the minimum corner of a Box3
+ * @param out - The output Vec3 for the minimum corner
+ * @param box - The input Box3
+ * @returns The minimum corner
+ */
+export function min(out: Vec3, box: Box3): Vec3 {
+    out[0] = box[0];
+    out[1] = box[1];
+    out[2] = box[2];
+    return out;
+}
+
+/**
+ * Extracts the maximum corner of a Box3
+ * @param out - The output Vec3 for the maximum corner
+ * @param box - The input Box3
+ * @returns The maximum corner
+ */
+export function max(out: Vec3, box: Box3): Vec3 {
+    out[0] = box[3];
+    out[1] = box[4];
+    out[2] = box[5];
     return out;
 }
 
@@ -64,12 +108,12 @@ export function set(out: Box3, min: Vec3, max: Vec3): Box3 {
  * @returns The emptied Box3
  */
 export function empty(out: Box3): Box3 {
-    out[0][0] = Number.POSITIVE_INFINITY;
-    out[0][1] = Number.POSITIVE_INFINITY;
-    out[0][2] = Number.POSITIVE_INFINITY;
-    out[1][0] = Number.NEGATIVE_INFINITY;
-    out[1][1] = Number.NEGATIVE_INFINITY;
-    out[1][2] = Number.NEGATIVE_INFINITY;
+    out[0] = Number.POSITIVE_INFINITY;
+    out[1] = Number.POSITIVE_INFINITY;
+    out[2] = Number.POSITIVE_INFINITY;
+    out[3] = Number.NEGATIVE_INFINITY;
+    out[4] = Number.NEGATIVE_INFINITY;
+    out[5] = Number.NEGATIVE_INFINITY;
     return out;
 }
 
@@ -81,12 +125,12 @@ export function empty(out: Box3): Box3 {
  */
 export function exactEquals(a: Box3, b: Box3): boolean {
     return (
-        a[0][0] === b[0][0] &&
-        a[0][1] === b[0][1] &&
-        a[0][2] === b[0][2] &&
-        a[1][0] === b[1][0] &&
-        a[1][1] === b[1][1] &&
-        a[1][2] === b[1][2]
+        a[0] === b[0] &&
+        a[1] === b[1] &&
+        a[2] === b[2] &&
+        a[3] === b[3] &&
+        a[4] === b[4] &&
+        a[5] === b[5]
     );
 }
 
@@ -97,18 +141,18 @@ export function exactEquals(a: Box3, b: Box3): boolean {
  * @returns True if the boxes are equal, false otherwise
  */
 export function equals(a: Box3, b: Box3): boolean {
-    const a0 = a[0][0];
-    const a1 = a[0][1];
-    const a2 = a[0][2];
-    const a3 = a[1][0];
-    const a4 = a[1][1];
-    const a5 = a[1][2];
-    const b0 = b[0][0];
-    const b1 = b[0][1];
-    const b2 = b[0][2];
-    const b3 = b[1][0];
-    const b4 = b[1][1];
-    const b5 = b[1][2];
+    const a0 = a[0];
+    const a1 = a[1];
+    const a2 = a[2];
+    const a3 = a[3];
+    const a4 = a[4];
+    const a5 = a[5];
+    const b0 = b[0];
+    const b1 = b[1];
+    const b2 = b[2];
+    const b3 = b[3];
+    const b4 = b[4];
+    const b5 = b[5];
     return (
         Math.abs(a0 - b0) <= common.EPSILON * Math.max(1.0, Math.abs(a0), Math.abs(b0)) &&
         Math.abs(a1 - b1) <= common.EPSILON * Math.max(1.0, Math.abs(a1), Math.abs(b1)) &&
@@ -120,6 +164,8 @@ export function equals(a: Box3, b: Box3): boolean {
 }
 
 const _setFromCenterAndSize_halfSize = /*@__PURE__*/ vec3.create();
+const _setFromCenterAndSize_min = /*@__PURE__*/ vec3.create();
+const _setFromCenterAndSize_max = /*@__PURE__*/ vec3.create();
 
 /**
  * Sets the box from a center point and size
@@ -130,8 +176,14 @@ const _setFromCenterAndSize_halfSize = /*@__PURE__*/ vec3.create();
  */
 export function setFromCenterAndSize(out: Box3, center: Vec3, size: Vec3): Box3 {
     const halfSize = vec3.scale(_setFromCenterAndSize_halfSize, size, 0.5);
-    vec3.sub(out[0], center, halfSize);
-    vec3.add(out[1], center, halfSize);
+    vec3.sub(_setFromCenterAndSize_min, center, halfSize);
+    vec3.add(_setFromCenterAndSize_max, center, halfSize);
+    out[0] = _setFromCenterAndSize_min[0];
+    out[1] = _setFromCenterAndSize_min[1];
+    out[2] = _setFromCenterAndSize_min[2];
+    out[3] = _setFromCenterAndSize_max[0];
+    out[4] = _setFromCenterAndSize_max[1];
+    out[5] = _setFromCenterAndSize_max[2];
     return out;
 }
 
@@ -143,12 +195,12 @@ export function setFromCenterAndSize(out: Box3, center: Vec3, size: Vec3): Box3 
  * @returns The expanded Box3
  */
 export function expandByPoint(out: Box3, box: Box3, point: Vec3): Box3 {
-    out[0][0] = Math.min(box[0][0], point[0]);
-    out[0][1] = Math.min(box[0][1], point[1]);
-    out[0][2] = Math.min(box[0][2], point[2]);
-    out[1][0] = Math.max(box[1][0], point[0]);
-    out[1][1] = Math.max(box[1][1], point[1]);
-    out[1][2] = Math.max(box[1][2], point[2]);
+    out[0] = Math.min(box[0], point[0]);
+    out[1] = Math.min(box[1], point[1]);
+    out[2] = Math.min(box[2], point[2]);
+    out[3] = Math.max(box[3], point[0]);
+    out[4] = Math.max(box[4], point[1]);
+    out[5] = Math.max(box[5], point[2]);
     return out;
 }
 
@@ -161,12 +213,12 @@ export function expandByPoint(out: Box3, box: Box3, point: Vec3): Box3 {
  * @returns The expanded Box3
  */
 export function expandByExtents(out: Box3, box: Box3, vector: Vec3): Box3 {
-    out[0][0] = box[0][0] - vector[0];
-    out[0][1] = box[0][1] - vector[1];
-    out[0][2] = box[0][2] - vector[2];
-    out[1][0] = box[1][0] + vector[0];
-    out[1][1] = box[1][1] + vector[1];
-    out[1][2] = box[1][2] + vector[2];
+    out[0] = box[0] - vector[0];
+    out[1] = box[1] - vector[1];
+    out[2] = box[2] - vector[2];
+    out[3] = box[3] + vector[0];
+    out[4] = box[4] + vector[1];
+    out[5] = box[5] + vector[2];
     return out;
 }
 
@@ -179,12 +231,12 @@ export function expandByExtents(out: Box3, box: Box3, vector: Vec3): Box3 {
  * @returns The expanded Box3
  */
 export function expandByMargin(out: Box3, box: Box3, margin: number): Box3 {
-    out[0][0] = box[0][0] - margin;
-    out[0][1] = box[0][1] - margin;
-    out[0][2] = box[0][2] - margin;
-    out[1][0] = box[1][0] + margin;
-    out[1][1] = box[1][1] + margin;
-    out[1][2] = box[1][2] + margin;
+    out[0] = box[0] - margin;
+    out[1] = box[1] - margin;
+    out[2] = box[2] - margin;
+    out[3] = box[3] + margin;
+    out[4] = box[4] + margin;
+    out[5] = box[5] + margin;
     return out;
 }
 
@@ -197,12 +249,12 @@ export function expandByMargin(out: Box3, box: Box3, margin: number): Box3 {
  * @returns The union Box3
  */
 export function union(out: Box3, boxA: Box3, boxB: Box3): Box3 {
-    out[0][0] = Math.min(boxA[0][0], boxB[0][0]);
-    out[0][1] = Math.min(boxA[0][1], boxB[0][1]);
-    out[0][2] = Math.min(boxA[0][2], boxB[0][2]);
-    out[1][0] = Math.max(boxA[1][0], boxB[1][0]);
-    out[1][1] = Math.max(boxA[1][1], boxB[1][1]);
-    out[1][2] = Math.max(boxA[1][2], boxB[1][2]);
+    out[0] = Math.min(boxA[0], boxB[0]);
+    out[1] = Math.min(boxA[1], boxB[1]);
+    out[2] = Math.min(boxA[2], boxB[2]);
+    out[3] = Math.max(boxA[3], boxB[3]);
+    out[4] = Math.max(boxA[4], boxB[4]);
+    out[5] = Math.max(boxA[5], boxB[5]);
     return out;
 }
 
@@ -213,9 +265,9 @@ export function union(out: Box3, boxA: Box3, boxB: Box3): Box3 {
  * @returns The center point
  */
 export function center(out: Vec3, box: Box3): Vec3 {
-    out[0] = (box[0][0] + box[1][0]) * 0.5;
-    out[1] = (box[0][1] + box[1][1]) * 0.5;
-    out[2] = (box[0][2] + box[1][2]) * 0.5;
+    out[0] = (box[0] + box[3]) * 0.5;
+    out[1] = (box[1] + box[4]) * 0.5;
+    out[2] = (box[2] + box[5]) * 0.5;
     return out;
 }
 
@@ -226,9 +278,9 @@ export function center(out: Vec3, box: Box3): Vec3 {
  * @returns The extents (distance from center to each face)
  */
 export function extents(out: Vec3, box: Box3): Vec3 {
-    out[0] = (box[1][0] - box[0][0]) * 0.5;
-    out[1] = (box[1][1] - box[0][1]) * 0.5;
-    out[2] = (box[1][2] - box[0][2]) * 0.5;
+    out[0] = (box[3] - box[0]) * 0.5;
+    out[1] = (box[4] - box[1]) * 0.5;
+    out[2] = (box[5] - box[2]) * 0.5;
     return out;
 }
 
@@ -239,9 +291,9 @@ export function extents(out: Vec3, box: Box3): Vec3 {
  * @returns The size (width, height, depth)
  */
 export function size(out: Vec3, box: Box3): Vec3 {
-    out[0] = box[1][0] - box[0][0];
-    out[1] = box[1][1] - box[0][1];
-    out[2] = box[1][2] - box[0][2];
+    out[0] = box[3] - box[0];
+    out[1] = box[4] - box[1];
+    out[2] = box[5] - box[2];
     return out;
 }
 
@@ -251,9 +303,9 @@ export function size(out: Vec3, box: Box3): Vec3 {
  * @returns The surface area
  */
 export function surfaceArea(box: Box3): number {
-    const width = box[1][0] - box[0][0];
-    const height = box[1][1] - box[0][1];
-    const depth = box[1][2] - box[0][2];
+    const width = box[3] - box[0];
+    const height = box[4] - box[1];
+    const depth = box[5] - box[2];
     return 2 * (width * height + width * depth + height * depth);
 }
 
@@ -265,23 +317,20 @@ export function surfaceArea(box: Box3): number {
  * @returns The scaled Box3
  */
 export function scale(out: Box3, box: Box3, scale: Vec3): Box3 {
-    const min = box[0];
-    const max = box[1];
-    
-    const minX = min[0] * scale[0];
-    const maxX = max[0] * scale[0];
-    const minY = min[1] * scale[1];
-    const maxY = max[1] * scale[1];
-    const minZ = min[2] * scale[2];
-    const maxZ = max[2] * scale[2];
+    const minX = box[0] * scale[0];
+    const maxX = box[3] * scale[0];
+    const minY = box[1] * scale[1];
+    const maxY = box[4] * scale[1];
+    const minZ = box[2] * scale[2];
+    const maxZ = box[5] * scale[2];
 
     // handle negative scaling by ensuring min <= max for each axis
-    out[0][0] = Math.min(minX, maxX);
-    out[1][0] = Math.max(minX, maxX);
-    out[0][1] = Math.min(minY, maxY);
-    out[1][1] = Math.max(minY, maxY);
-    out[0][2] = Math.min(minZ, maxZ);
-    out[1][2] = Math.max(minZ, maxZ);
+    out[0] = Math.min(minX, maxX);
+    out[3] = Math.max(minX, maxX);
+    out[1] = Math.min(minY, maxY);
+    out[4] = Math.max(minY, maxY);
+    out[2] = Math.min(minZ, maxZ);
+    out[5] = Math.max(minZ, maxZ);
 
     return out;
 }
@@ -297,32 +346,29 @@ const _transformMat4_corner = /*@__PURE__*/ vec3.create();
  * @returns The transformed Box3
  */
 export function transformMat4(out: Box3, box: Box3, mat: Mat4): Box3 {
-    const min = box[0];
-    const max = box[1];
-
-    out[0][0] = Number.POSITIVE_INFINITY;
-    out[0][1] = Number.POSITIVE_INFINITY;
-    out[0][2] = Number.POSITIVE_INFINITY;
-    out[1][0] = Number.NEGATIVE_INFINITY;
-    out[1][1] = Number.NEGATIVE_INFINITY;
-    out[1][2] = Number.NEGATIVE_INFINITY;
+    out[0] = Number.POSITIVE_INFINITY;
+    out[1] = Number.POSITIVE_INFINITY;
+    out[2] = Number.POSITIVE_INFINITY;
+    out[3] = Number.NEGATIVE_INFINITY;
+    out[4] = Number.NEGATIVE_INFINITY;
+    out[5] = Number.NEGATIVE_INFINITY;
 
     // transform all 8 corners of the box and expand the output AABB
     for (let i = 0; i < 8; i++) {
-        _transformMat4_corner[0] = (i & 1) === 0 ? min[0] : max[0];
-        _transformMat4_corner[1] = (i & 2) === 0 ? min[1] : max[1];
-        _transformMat4_corner[2] = (i & 4) === 0 ? min[2] : max[2];
+        _transformMat4_corner[0] = (i & 1) === 0 ? box[0] : box[3];
+        _transformMat4_corner[1] = (i & 2) === 0 ? box[1] : box[4];
+        _transformMat4_corner[2] = (i & 4) === 0 ? box[2] : box[5];
 
         vec3.transformMat4(_transformMat4_corner, _transformMat4_corner, mat);
 
-        if (_transformMat4_corner[0] < out[0][0]) out[0][0] = _transformMat4_corner[0];
-        if (_transformMat4_corner[0] > out[1][0]) out[1][0] = _transformMat4_corner[0];
+        if (_transformMat4_corner[0] < out[0]) out[0] = _transformMat4_corner[0];
+        if (_transformMat4_corner[0] > out[3]) out[3] = _transformMat4_corner[0];
 
-        if (_transformMat4_corner[1] < out[0][1]) out[0][1] = _transformMat4_corner[1];
-        if (_transformMat4_corner[1] > out[1][1]) out[1][1] = _transformMat4_corner[1];
+        if (_transformMat4_corner[1] < out[1]) out[1] = _transformMat4_corner[1];
+        if (_transformMat4_corner[1] > out[4]) out[4] = _transformMat4_corner[1];
 
-        if (_transformMat4_corner[2] < out[0][2]) out[0][2] = _transformMat4_corner[2];
-        if (_transformMat4_corner[2] > out[1][2]) out[1][2] = _transformMat4_corner[2];
+        if (_transformMat4_corner[2] < out[2]) out[2] = _transformMat4_corner[2];
+        if (_transformMat4_corner[2] > out[5]) out[5] = _transformMat4_corner[2];
     }
 
     return out;
@@ -335,11 +381,9 @@ export function transformMat4(out: Box3, box: Box3, mat: Mat4): Box3 {
  * @returns true if the point is inside or on the boundary of the box
  */
 export function containsPoint(box: Box3, point: Vec3): boolean {
-    const min = box[0];
-    const max = box[1];
-    return point[0] >= min[0] && point[0] <= max[0] &&
-           point[1] >= min[1] && point[1] <= max[1] &&
-           point[2] >= min[2] && point[2] <= max[2];
+    return point[0] >= box[0] && point[0] <= box[3] &&
+           point[1] >= box[1] && point[1] <= box[4] &&
+           point[2] >= box[2] && point[2] <= box[5];
 }
 
 /**
@@ -349,30 +393,22 @@ export function containsPoint(box: Box3, point: Vec3): boolean {
  * @returns true if the container Box3 completely contains the contained Box3
  */
 export function containsBox3(container: Box3, contained: Box3): boolean {
-    const containerMin = container[0];
-    const containerMax = container[1];
-    const containedMin = contained[0];
-    const containedMax = contained[1];
-    
-    return containedMin[0] >= containerMin[0] && containedMax[0] <= containerMax[0] &&
-           containedMin[1] >= containerMin[1] && containedMax[1] <= containerMax[1] &&
-           containedMin[2] >= containerMin[2] && containedMax[2] <= containerMax[2];
+    return contained[0] >= container[0] && contained[3] <= container[3] &&
+           contained[1] >= container[1] && contained[4] <= container[4] &&
+           contained[2] >= container[2] && contained[5] <= container[5];
 }
 
 /**
  * Check whether two bounding boxes intersect
  */
 export function intersectsBox3(boxA: Box3, boxB: Box3): boolean {
-    const [minA, maxA] = boxA;
-    const [minB, maxB] = boxB;
-
     return (
-        minA[0] <= maxB[0] &&
-        maxA[0] >= minB[0] &&
-        minA[1] <= maxB[1] &&
-        maxA[1] >= minB[1] &&
-        minA[2] <= maxB[2] &&
-        maxA[2] >= minB[2]
+        boxA[0] <= boxB[3] &&
+        boxA[3] >= boxB[0] &&
+        boxA[1] <= boxB[4] &&
+        boxA[4] >= boxB[1] &&
+        boxA[2] <= boxB[5] &&
+        boxA[5] >= boxB[2]
     );
 }
 
@@ -418,19 +454,16 @@ function _satForAxes(axes: number[], axisCount: number): boolean {
 }
 
 export function intersectsTriangle3(box: Box3, a: Vec3, b: Vec3, c: Vec3): boolean {
-    const min = box[0];
-    const max = box[1];
-
     // Empty box quick reject
-    if (min[0] > max[0] || min[1] > max[1] || min[2] > max[2]) return false;
+    if (box[0] > box[3] || box[1] > box[4] || box[2] > box[5]) return false;
 
     // Center ( (min+max) * 0.5 ) and half-extents ( max - center )
-    _center[0] = (min[0] + max[0]) * 0.5;
-    _center[1] = (min[1] + max[1]) * 0.5;
-    _center[2] = (min[2] + max[2]) * 0.5;
-    _extents[0] = max[0] - _center[0];
-    _extents[1] = max[1] - _center[1];
-    _extents[2] = max[2] - _center[2];
+    _center[0] = (box[0] + box[3]) * 0.5;
+    _center[1] = (box[1] + box[4]) * 0.5;
+    _center[2] = (box[2] + box[5]) * 0.5;
+    _extents[0] = box[3] - _center[0];
+    _extents[1] = box[4] - _center[1];
+    _extents[2] = box[5] - _center[2];
 
     // Translate triangle vertices so box center = origin
     _v0[0] = a[0] - _center[0];
@@ -503,13 +536,11 @@ export function intersectsTriangle3(box: Box3, a: Vec3, b: Vec3, c: Vec3): boole
  * Test intersection between axis-aligned bounding box and a sphere.
  */
 export function intersectsSphere(box: Box3, sphere: Sphere): boolean {
-    const min = box[0];
-    const max = box[1];
     const { center, radius } = sphere;
     // Clamp center to box to obtain closest point
-    _closestPoint[0] = center[0] < min[0] ? min[0] : center[0] > max[0] ? max[0] : center[0];
-    _closestPoint[1] = center[1] < min[1] ? min[1] : center[1] > max[1] ? max[1] : center[1];
-    _closestPoint[2] = center[2] < min[2] ? min[2] : center[2] > max[2] ? max[2] : center[2];
+    _closestPoint[0] = center[0] < box[0] ? box[0] : center[0] > box[3] ? box[3] : center[0];
+    _closestPoint[1] = center[1] < box[1] ? box[1] : center[1] > box[4] ? box[4] : center[1];
+    _closestPoint[2] = center[2] < box[2] ? box[2] : center[2] > box[5] ? box[5] : center[2];
     const dx = _closestPoint[0] - center[0];
     const dy = _closestPoint[1] - center[1];
     const dz = _closestPoint[2] - center[2];
@@ -520,8 +551,6 @@ export function intersectsSphere(box: Box3, sphere: Sphere): boolean {
  * Test intersection between axis-aligned bounding box and plane.
  */
 export function intersectsPlane3(box: Box3, plane: Plane3): boolean {
-    const min = box[0];
-    const max = box[1];
     const { normal, constant } = plane;
 
     // Select extreme points along plane normal
@@ -529,25 +558,25 @@ export function intersectsPlane3(box: Box3, plane: Plane3): boolean {
     let maxDot = 0;
 
     if (normal[0] > 0) {
-        minDot = normal[0] * min[0];
-        maxDot = normal[0] * max[0];
+        minDot = normal[0] * box[0];
+        maxDot = normal[0] * box[3];
     } else {
-        minDot = normal[0] * max[0];
-        maxDot = normal[0] * min[0];
+        minDot = normal[0] * box[3];
+        maxDot = normal[0] * box[0];
     }
     if (normal[1] > 0) {
-        minDot += normal[1] * min[1];
-        maxDot += normal[1] * max[1];
+        minDot += normal[1] * box[1];
+        maxDot += normal[1] * box[4];
     } else {
-        minDot += normal[1] * max[1];
-        maxDot += normal[1] * min[1];
+        minDot += normal[1] * box[4];
+        maxDot += normal[1] * box[1];
     }
     if (normal[2] > 0) {
-        minDot += normal[2] * min[2];
-        maxDot += normal[2] * max[2];
+        minDot += normal[2] * box[2];
+        maxDot += normal[2] * box[5];
     } else {
-        minDot += normal[2] * max[2];
-        maxDot += normal[2] * min[2];
+        minDot += normal[2] * box[5];
+        maxDot += normal[2] * box[2];
     }
 
     // Plane intersection occurs if the interval [minDot + constant, maxDot + constant] straddles zero
