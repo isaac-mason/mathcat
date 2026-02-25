@@ -1,6 +1,6 @@
 {
     "name": "mathcat",
-    "version": "0.0.10",
+    "version": "0.0.11",
     "author": "Isaac Mason <isaac@isaacmason.com>",
     "description": "a collection of math helpers for 3D graphics and simulations",
     "keywords": ["math", "vector", "matrix", "quaternion", "euler", "random", "noise"],
