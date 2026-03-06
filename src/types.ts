@@ -64,6 +64,14 @@ export type Plane3 = { normal: Vec3; constant: number };
 /** A sphere in 3D space */
 export type Sphere = { center: Vec3; radius: number };
 
+/**
+ * A point in spherical coordinates [r, theta, phi] (Three.js / OpenGL convention)
+ *  r     - radial distance from the origin
+ *  theta - azimuthal angle in the XZ plane from the +Z axis (radians, range [-π, π])
+ *  phi   - polar angle from the +Y axis (radians, range [0, π])
+ */
+export type Spherical = [r: number, theta: number, phi: number];
+
 /** A circle in 2D space */
 export type Circle = { center: Vec2; radius: number };
 
@@ -71,7 +79,7 @@ export type Circle = { center: Vec2; radius: number };
 export type Ray3 = {
     origin: Vec3;
     direction: Vec3;
-}
+};
 
 /** A raycast in 3D space */
 export type Raycast3 = {

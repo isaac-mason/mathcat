@@ -23,6 +23,7 @@ export * as box3 from './box3';
 export * as obb3 from './obb3';
 export * as plane3 from './plane3';
 export * as sphere from './sphere';
+export * as spherical from './spherical';
 export * as triangle3 from './triangle3';
 
 export * as raycast3 from './raycast3';
@@ -30,7 +31,7 @@ export * as raycast3 from './raycast3';
 export * from './quickhull3';
 export * from './quickhull2';
 
-export * from "./circumcircle";
+export * from './circumcircle';
 
 export * as easing from './easing';
 

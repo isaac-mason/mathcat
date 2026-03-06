@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## 0.0.12 (Unreleased)
+
+- feat: add `spherical` module with common spherical coordinate operations for `Spherical` type
+
 ## 0.0.11
 
 - feat: change `Box3` from `[Vec3, Vec3]` to a flat array `[minX, minY, minZ, maxX, maxY, maxZ]`, for performance improvement
