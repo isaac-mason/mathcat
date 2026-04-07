@@ -1,0 +1,1 @@
+{"version":3,"file":"circle.js","sources":["../src/circle.ts"],"sourcesContent":["import type { Circle } from './types';\n\nexport function create(): Circle {\n    return { center: [0, 0], radius: 0 };\n}\n"],"names":[],"mappings":"SAEgB,MAAM,GAAA;AAClB,IAAA,OAAO,EAAE,MAAM,EAAE,CAAC,CAAC,EAAE,CAAC,CAAC,EAAE,MAAM,EAAE,CAAC,EAAE;AACxC;;;;"}
