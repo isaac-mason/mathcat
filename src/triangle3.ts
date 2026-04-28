@@ -1,4 +1,4 @@
-import type { Box3, Vec3 } from './types';
+import type { Box3, Vec3 } from './types.js';
 
 /**
  * Computes the axis-aligned bounding box of a triangle defined by three vertices.

@@ -1,5 +1,5 @@
-import * as common from './common';
-import type { Mat3, Mat4, MutableArrayLike, Quat, Vec3 } from './types';
+import * as common from './common.js';
+import type { Mat3, Mat4, MutableArrayLike, Quat, Vec3 } from './types.js';
 
 /**
  * Creates a new, empty vec3

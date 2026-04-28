@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
-import type { Mat2d, Vec2 } from '../dist';
-import { mat2d } from '../dist';
+import type { Mat2d, Vec2 } from '../dist/index.js';
+import { mat2d } from '../dist/index.js';
 
 describe('mat2d', () => {
     describe('create', () => {

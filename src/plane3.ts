@@ -1,5 +1,5 @@
-import type { Mat4, Plane3, Sphere, Vec3 } from './types';
-import * as vec3 from './vec3';
+import type { Mat4, Plane3, Sphere, Vec3 } from './types.js';
+import * as vec3 from './vec3.js';
 
 /**
  * Creates a new plane with normal (0, 1, 0) and constant 0

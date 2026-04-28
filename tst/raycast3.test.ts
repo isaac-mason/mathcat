@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
-import type { Box3, Vec3, Raycast3 } from '../dist';
-import { raycast3, vec3 } from '../dist';
+import type { Box3, Vec3, Raycast3 } from '../dist/index.js';
+import { raycast3, vec3 } from '../dist/index.js';
 
 describe('raycast3', () => {
     describe('create', () => {

@@ -1,5 +1,5 @@
-import { fade, lerp } from './common';
-import type { Vec3 } from './types';
+import { fade, lerp } from './common.js';
+import type { Vec3 } from './types.js';
 
 // adapted from maath:
 // https://github.com/pmndrs/maath/blob/main/packages/maath/src/random/noise.ts

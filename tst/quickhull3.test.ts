@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { quickhull3 } from '../dist';
+import { quickhull3 } from '../dist/index.js';
 
 const EPS = 1e-6;
 

@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { type Circle, circumcircle, type Vec2 } from '../dist';
+import { type Circle, circumcircle, type Vec2 } from '../dist/index.js';
 
 describe('circumcircle', () => {
     it('calculates circumcircle for a simple triangle', () => {

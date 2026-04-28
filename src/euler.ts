@@ -1,7 +1,7 @@
-import { clamp, EPSILON } from './common';
-import * as mat4 from './mat4';
-import * as quat from './quat';
-import type { Euler, EulerOrder, Mat4, Quat } from './types';
+import { clamp, EPSILON } from './common.js';
+import * as mat4 from './mat4.js';
+import * as quat from './quat.js';
+import type { Euler, EulerOrder, Mat4, Quat } from './types.js';
 
 /**
  * Creates a new Euler with default values (0, 0, 0, 'xyz').

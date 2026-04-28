@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
-import type { Quat, Quat2, Vec3 } from '../dist';
-import { mat4, quat, quat2 } from '../dist';
+import type { Quat, Quat2, Vec3 } from '../dist/index.js';
+import { mat4, quat, quat2 } from '../dist/index.js';
 
 describe('quat2', () => {
     describe('create', () => {

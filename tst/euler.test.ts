@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
-import type { Euler, EulerOrder } from '../dist';
-import { euler, mat4, quat } from '../dist';
+import type { Euler, EulerOrder } from '../dist/index.js';
+import { euler, mat4, quat } from '../dist/index.js';
 
 describe('euler', () => {
     describe('create', () => {

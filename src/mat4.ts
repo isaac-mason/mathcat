@@ -1,5 +1,5 @@
-import * as common from './common';
-import type { Mat4, Quat, Quat2, Vec3 } from './types';
+import * as common from './common.js';
+import type { Mat4, Quat, Quat2, Vec3 } from './types.js';
 
 /**
  * Creates a new identity mat4

@@ -1,7 +1,7 @@
-import * as common from './common';
-import * as mat4 from './mat4';
-import * as quat from './quat';
-import type { Mat4, Quat, Quat2, Vec3 } from './types';
+import * as common from './common.js';
+import * as mat4 from './mat4.js';
+import * as quat from './quat.js';
+import type { Mat4, Quat, Quat2, Vec3 } from './types.js';
 
 /**
  * Creates a new identity dual quat

@@ -1,7 +1,7 @@
-import * as mat3 from './mat3';
-import * as mat4 from './mat4';
-import type { Box3, Mat3, Mat4, OBB3, Quat, Vec3 } from './types';
-import * as vec3 from './vec3';
+import * as mat3 from './mat3.js';
+import * as mat4 from './mat4.js';
+import type { Box3, Mat3, Mat4, OBB3, Quat, Vec3 } from './types.js';
+import * as vec3 from './vec3.js';
 
 export function create(): OBB3 {
     return { center: [0, 0, 0], halfExtents: [1, 1, 1], rotation: mat3.create() };

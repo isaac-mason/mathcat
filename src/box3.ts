@@ -1,6 +1,6 @@
-import type { Box3, Mat4, Plane3, Sphere, Vec3 } from './types';
-import * as common from './common';
-import * as vec3 from './vec3';
+import type { Box3, Mat4, Plane3, Sphere, Vec3 } from './types.js';
+import * as common from './common.js';
+import * as vec3 from './vec3.js';
 
 /**
  * Create a new empty Box3 with "min" set to positive infinity and "max" set to negative infinity

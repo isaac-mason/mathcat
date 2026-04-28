@@ -1,40 +1,40 @@
 /** biome-ignore-all assist/source/organizeImports: ordering */
 
-export * from './types';
+export * from './types.js';
 
-export * as vec2 from './vec2';
-export * as vec3 from './vec3';
-export * as vec4 from './vec4';
+export * as vec2 from './vec2.js';
+export * as vec3 from './vec3.js';
+export * as vec4 from './vec4.js';
 
-export * as euler from './euler';
+export * as euler from './euler.js';
 
-export * as quat from './quat';
-export * as quat2 from './quat2';
+export * as quat from './quat.js';
+export * as quat2 from './quat2.js';
 
-export * as mat2 from './mat2';
-export * as mat2d from './mat2d';
-export * as mat3 from './mat3';
-export * as mat4 from './mat4';
+export * as mat2 from './mat2.js';
+export * as mat2d from './mat2d.js';
+export * as mat3 from './mat3.js';
+export * as mat4 from './mat4.js';
 
-export * as circle from './circle';
-export * as segment2 from './segment2';
+export * as circle from './circle.js';
+export * as segment2 from './segment2.js';
 
-export * as box3 from './box3';
-export * as obb3 from './obb3';
-export * as plane3 from './plane3';
-export * as sphere from './sphere';
-export * as triangle3 from './triangle3';
+export * as box3 from './box3.js';
+export * as obb3 from './obb3.js';
+export * as plane3 from './plane3.js';
+export * as sphere from './sphere.js';
+export * as triangle3 from './triangle3.js';
 
-export * as raycast3 from './raycast3';
+export * as raycast3 from './raycast3.js';
 
-export * from './quickhull3';
-export * from './quickhull2';
+export * from './quickhull3.js';
+export * from './quickhull2.js';
 
-export * from "./circumcircle";
+export * from "./circumcircle.js";
 
-export * as easing from './easing';
+export * as easing from './easing.js';
 
-export * from './noise';
-export * from './random';
+export * from './noise.js';
+export * from './random.js';
 
-export * from './common';
+export * from './common.js';

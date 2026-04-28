@@ -1,6 +1,6 @@
-import { EPSILON } from './common';
-import type { Circle, Vec2 } from './types';
-import * as vec2 from './vec2';
+import { EPSILON } from './common.js';
+import type { Circle, Vec2 } from './types.js';
+import * as vec2 from './vec2.js';
 
 const _circumcircleV1 = /*@__PURE__*/ vec2.create();
 const _circumcircleV2 = /*@__PURE__*/ vec2.create();

@@ -1,11 +1,11 @@
 import { describe, expect, it } from 'vitest';
-import * as box3 from '../src/box3';
-import * as euler from '../src/euler';
-import * as mat3 from '../src/mat3';
-import * as mat4 from '../src/mat4';
-import * as obb3 from '../src/obb3';
-import * as quat from '../src/quat';
-import * as vec3 from '../src/vec3';
+import * as box3 from '../src/box3.js';
+import * as euler from '../src/euler.js';
+import * as mat3 from '../src/mat3.js';
+import * as mat4 from '../src/mat4.js';
+import * as obb3 from '../src/obb3.js';
+import * as quat from '../src/quat.js';
+import * as vec3 from '../src/vec3.js';
 
 describe('obb3', () => {
     describe('setFromBox3', () => {

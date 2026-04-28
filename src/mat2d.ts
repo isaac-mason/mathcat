@@ -1,5 +1,5 @@
-import * as common from './common';
-import type { Mat2d, Vec2 } from './types';
+import * as common from './common.js';
+import type { Mat2d, Vec2 } from './types.js';
 
 /**
  * Creates a new identity mat2d

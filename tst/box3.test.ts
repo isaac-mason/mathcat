@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
-import type { Box3, Mat4, Plane3, Sphere, Vec3 } from '../dist';
-import { box3 } from '../dist';
+import type { Box3, Mat4, Plane3, Sphere, Vec3 } from '../dist/index.js';
+import { box3 } from '../dist/index.js';
 
 describe('box3', () => {
     describe('create', () => {

@@ -1,8 +1,8 @@
-import * as common from './common';
-import * as mat3 from './mat3';
-import type { Euler, EulerOrder, Mat3, Mat4, Quat, Vec3 } from './types';
-import * as vec3 from './vec3';
-import * as vec4 from './vec4';
+import * as common from './common.js';
+import * as mat3 from './mat3.js';
+import type { Euler, EulerOrder, Mat3, Mat4, Quat, Vec3 } from './types.js';
+import * as vec3 from './vec3.js';
+import * as vec4 from './vec4.js';
 
 /**
  * Creates a new identity quat

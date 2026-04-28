@@ -1,5 +1,5 @@
 import { beforeEach, describe, expect, it } from 'vitest';
-import { type Vec4, vec4 } from '../dist';
+import { type Vec4, vec4 } from '../dist/index.js';
 
 describe('vec4', () => {
     let a: Vec4;

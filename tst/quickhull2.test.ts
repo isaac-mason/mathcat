@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { quickhull2 } from '../dist';
+import { quickhull2 } from '../dist/index.js';
 
 describe('hull2', () => {
     describe('quickhull2', () => {

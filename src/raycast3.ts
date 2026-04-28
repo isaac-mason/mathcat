@@ -1,5 +1,5 @@
-import type { Box3, Raycast3, Vec3 } from './types';
-import * as vec3 from './vec3';
+import type { Box3, Raycast3, Vec3 } from './types.js';
+import * as vec3 from './vec3.js';
 
 /**
  * Creates a new Raycast3 with default values (origin at (0,0,0), direction (0,0,0), length 1.
