@@ -1,4 +1,4 @@
-import type { Euler, EulerOrder, Mat4, Quat } from './types';
+import type { Euler, EulerOrder, Mat4, Quat } from './types.js';
 /**
  * Creates a new Euler with default values (0, 0, 0, 'xyz').
  */

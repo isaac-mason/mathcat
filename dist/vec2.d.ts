@@ -1,4 +1,4 @@
-import type { Mat2, Mat2d, Mat3, Mat4, Vec2, Vec3 } from './types';
+import type { Mat2, Mat2d, Mat3, Mat4, Vec2, Vec3 } from './types.js';
 /**
  * Creates a new, empty vec2
  *

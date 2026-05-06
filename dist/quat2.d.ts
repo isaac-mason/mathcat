@@ -1,4 +1,4 @@
-import type { Mat4, Quat, Quat2, Vec3 } from './types';
+import type { Mat4, Quat, Quat2, Vec3 } from './types.js';
 /**
  * Creates a new identity dual quat
  *

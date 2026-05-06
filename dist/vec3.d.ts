@@ -1,4 +1,4 @@
-import type { Mat3, Mat4, MutableArrayLike, Quat, Vec3 } from './types';
+import type { Mat3, Mat4, MutableArrayLike, Quat, Vec3 } from './types.js';
 /**
  * Creates a new, empty vec3
  *

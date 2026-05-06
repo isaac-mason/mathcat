@@ -1,4 +1,4 @@
-import type { Mat4, Plane3, Sphere, Vec3 } from './types';
+import type { Mat4, Plane3, Sphere, Vec3 } from './types.js';
 /**
  * Creates a new plane with normal (0, 1, 0) and constant 0
  * @returns A new plane

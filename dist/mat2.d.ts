@@ -1,4 +1,4 @@
-import type { Mat2, Vec2 } from './types';
+import type { Mat2, Vec2 } from './types.js';
 /**
  * Creates a new identity mat2
  *

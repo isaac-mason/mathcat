@@ -1,4 +1,4 @@
-import type { Mat4, Quat, Vec4 } from './types';
+import type { Mat4, Quat, Vec4 } from './types.js';
 /**
  * Creates a new, empty vec4
  *

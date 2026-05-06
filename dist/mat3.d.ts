@@ -1,4 +1,4 @@
-import type { Mat2d, Mat3, Mat4, Quat, Vec2 } from './types';
+import type { Mat2d, Mat3, Mat4, Quat, Vec2 } from './types.js';
 /**
  * Creates a new identity mat3
  *

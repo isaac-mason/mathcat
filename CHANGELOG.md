@@ -3,6 +3,9 @@
 ## 0.0.12 (Unreleased)
 
 - feat: add `spherical` module with common spherical coordinate operations for `Spherical` type
+- feat: change `box3.transformMat4` to use Arvo's trick for better performance, transforming the center and building new half-extents from the absolute value of the matrix multiplied by the original extents, instead of transforming all 8 corners of the box
+- fix: `box3.transformMat4` support for `out` === `box`
+- build: post-process emitted `.d.ts` files to add explicit `.js` extensions on relative specifiers, so consumers can use TypeScript's NodeNext module resolution
 
 ## 0.0.11
 

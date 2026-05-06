@@ -1,4 +1,4 @@
-import type { Vec2 } from './types';
+import type { Vec2 } from './types.js';
 /**
  * Calculates the closest point on a line segment to a given point
  * @param out Output parameter for the closest point

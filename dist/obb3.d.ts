@@ -1,4 +1,4 @@
-import type { Box3, Mat3, Mat4, OBB3, Quat, Vec3 } from './types';
+import type { Box3, Mat3, Mat4, OBB3, Quat, Vec3 } from './types.js';
 export declare function create(): OBB3;
 export declare function clone(a: OBB3): OBB3;
 export declare function copy(out: OBB3, a: OBB3): OBB3;

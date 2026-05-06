@@ -1,4 +1,4 @@
-import type { Box3, Mat4, Plane3, Sphere, Vec3 } from './types';
+import type { Box3, Mat4, Plane3, Sphere, Vec3 } from './types.js';
 /**
  * Create a new empty Box3 with "min" set to positive infinity and "max" set to negative infinity
  * @returns A new Box3

@@ -1,5 +1,5 @@
-import type { Euler, EulerOrder, Mat3, Mat4, Quat, Vec3 } from './types';
-import * as vec4 from './vec4';
+import type { Euler, EulerOrder, Mat3, Mat4, Quat, Vec3 } from './types.js';
+import * as vec4 from './vec4.js';
 /**
  * Creates a new identity quat
  *

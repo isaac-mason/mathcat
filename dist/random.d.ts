@@ -1,4 +1,4 @@
-import type { Quat, Vec2, Vec3, Vec4 } from './types';
+import type { Quat, Vec2, Vec3, Vec4 } from './types.js';
 /**
  * Creates a Mulberry32 seeded pseudo-random number generator.
  * Mulberry32 is a simple, fast, and effective PRNG that passes statistical tests

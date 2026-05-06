@@ -1,4 +1,4 @@
-import type { Spherical, Vec2, Vec3 } from './types';
+import type { Spherical, Vec2, Vec3 } from './types.js';
 /**
  * Creates a new spherical coordinate at r=1, theta=0, phi=0
  *
