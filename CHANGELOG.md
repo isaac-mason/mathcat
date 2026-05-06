@@ -1,6 +1,6 @@
 # CHANGELOG
 
-## 0.0.12 (Unreleased)
+## 0.0.12
 
 - feat: add `spherical` module with common spherical coordinate operations for `Spherical` type
 - feat: change `box3.transformMat4` to use Arvo's trick for better performance, transforming the center and building new half-extents from the absolute value of the matrix multiplied by the original extents, instead of transforming all 8 corners of the box
