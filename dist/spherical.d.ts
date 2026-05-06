@@ -57,9 +57,8 @@ export declare function normalize(out: Spherical, a: Spherical): Spherical;
  */
 export declare function scale(out: Spherical, a: Spherical, s: number): Spherical;
 /**
- * Linearly interpolates between two Spherical coordinates.
- * Interpolates r, theta, and phi independently.
- * Note: does not take the shortest angular path — use with care near ±π.
+ * Linearly interpolates between two Spherical coordinates taking the shortest
+ * angular path for theta and phi.
  *
  * @param out the receiving Spherical
  * @param a the first operand
@@ -144,3 +143,15 @@ export declare function exactEquals(a: Spherical, b: Spherical): boolean;
  * @returns string representation
  */
 export declare function str(a: Spherical): string;
+/**
+ * Returns the great-circle angle (in radians) between two spherical coordinates,
+ * ignoring r. Equivalent to the central angle between the two directions on a
+ * unit sphere.
+ *
+ * Uses the numerically stable haversine formula.
+ *
+ * @param a the first Spherical
+ * @param b the second Spherical
+ * @returns angle in radians in [0, π]
+ */
+export declare function angleTo(a: Spherical, b: Spherical): number;

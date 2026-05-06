@@ -150,8 +150,16 @@ export declare function surfaceArea(box: Box3): number;
  */
 export declare function scale(out: Box3, box: Box3, scale: Vec3): Box3;
 /**
- * Transform a bounding box by a 4x4 matrix
- * Transforms all 8 corners and creates a new AABB that encompasses them
+ * Transform a bounding box by a 4x4 matrix.
+ * Uses Arvo's trick — transform the center, build new half-extents from
+ * |M| · extents — which is ~4× fewer ops than transforming all 8 corners.
+ * Reference: Jim Arvo, "Transforming Axis-Aligned Bounding Boxes",
+ * Graphics Gems I (1990).
+ * https://github.com/erich666/GraphicsGems/blob/master/gems/TransBox.c
+ * Assumes mat is affine (no perspective), which is always true for AABB
+ * transforms in practice.
+ * Safe under aliasing (out and box may be the same array): all six box
+ * components are read into locals before out is written.
  * @param out - The output Box3
  * @param box - The input Box3
  * @param mat - The 4x4 transformation matrix

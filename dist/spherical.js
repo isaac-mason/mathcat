@@ -92,9 +92,15 @@ function scale(out, a, s) {
     return out;
 }
 /**
- * Linearly interpolates between two Spherical coordinates.
- * Interpolates r, theta, and phi independently.
- * Note: does not take the shortest angular path — use with care near ±π.
+ * Wraps an angle (in radians) into the range [-π, π].
+ */
+function wrapAngle(a) {
+    const TAU = Math.PI * 2;
+    return a - TAU * Math.floor((a + Math.PI) / TAU);
+}
+/**
+ * Linearly interpolates between two Spherical coordinates taking the shortest
+ * angular path for theta and phi.
  *
  * @param out the receiving Spherical
  * @param a the first operand
@@ -104,8 +110,8 @@ function scale(out, a, s) {
  */
 function lerp(out, a, b, t) {
     out[0] = lerp$1(a[0], b[0], t);
-    out[1] = lerp$1(a[1], b[1], t);
-    out[2] = lerp$1(a[2], b[2], t);
+    out[1] = a[1] + wrapAngle(b[1] - a[1]) * t;
+    out[2] = a[2] + wrapAngle(b[2] - a[2]) * t;
     return out;
 }
 /**
@@ -230,6 +236,25 @@ function exactEquals(a, b) {
 function str(a) {
     return `Spherical(${a[0]}, ${a[1]}, ${a[2]})`;
 }
+/**
+ * Returns the great-circle angle (in radians) between two spherical coordinates,
+ * ignoring r. Equivalent to the central angle between the two directions on a
+ * unit sphere.
+ *
+ * Uses the numerically stable haversine formula.
+ *
+ * @param a the first Spherical
+ * @param b the second Spherical
+ * @returns angle in radians in [0, π]
+ */
+function angleTo(a, b) {
+    const phiA = a[2];
+    const phiB = b[2];
+    const dTheta = b[1] - a[1];
+    // hav(c) = hav(phiB - phiA) + sin(phiA) * sin(phiB) * hav(dTheta)
+    const hav = Math.sin((phiB - phiA) / 2) ** 2 + Math.sin(phiA) * Math.sin(phiB) * Math.sin(dTheta / 2) ** 2;
+    return 2 * Math.asin(Math.sqrt(Math.max(0, Math.min(1, hav))));
+}
 
-export { clone, copy, create, equals, exactEquals, fromValues, fromVec2, fromVec3, lerp, makeSafe, normalize, scale, set, setFromVec3, str, toVec2, toVec3 };
+export { angleTo, clone, copy, create, equals, exactEquals, fromValues, fromVec2, fromVec3, lerp, makeSafe, normalize, scale, set, setFromVec3, str, toVec2, toVec3 };
 //# sourceMappingURL=spherical.js.map
