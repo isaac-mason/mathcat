@@ -1,5 +1,13 @@
 # CHANGELOG
 
+## 0.0.13 (Unreleased)
+
+- breaking: make WebGL/WebGPU clip-space convention explicit on all `mat4` projection helpers. Callers must now choose the `NO` (WebGL/OpenGL, NDC z ∈ [-1, 1]) or `ZO` (WebGPU/Vulkan/DirectX/Metal, NDC z ∈ [0, 1]) variant:
+    - rename `mat4.frustum` → `mat4.frustumNO`, add `mat4.frustumZO`
+    - rename `mat4.perspectiveFromFieldOfView` → `mat4.perspectiveFromFieldOfViewZO` (its existing math has always been ZO despite the unsuffixed name — runtime behavior is unchanged), add `mat4.perspectiveFromFieldOfViewNO`
+    - remove the `mat4.perspective` alias (use `mat4.perspectiveNO` or `mat4.perspectiveZO`)
+    - remove the `mat4.ortho` alias (use `mat4.orthoNO` or `mat4.orthoZO`)
+
 ## 0.0.12
 
 - feat: add `spherical` module with common spherical coordinate operations for `Spherical` type

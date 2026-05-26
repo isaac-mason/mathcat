@@ -421,7 +421,9 @@ export declare function fromRotationTranslationScaleOrigin(out: Mat4, q: Quat, v
  */
 export declare function fromQuat(out: Mat4, q: Quat): Mat4;
 /**
- * Generates a frustum matrix with the given bounds
+ * Generates a frustum matrix with the given bounds.
+ * The near/far clip planes correspond to a normalized device coordinate Z range of [-1, 1],
+ * which matches WebGL/OpenGL's clip volume.
  *
  * @param out mat4 frustum matrix will be written into
  * @param left Left bound of the frustum
@@ -432,7 +434,22 @@ export declare function fromQuat(out: Mat4, q: Quat): Mat4;
  * @param far Far bound of the frustum
  * @returns out
  */
-export declare function frustum(out: Mat4, left: number, right: number, bottom: number, top: number, near: number, far: number): Mat4;
+export declare function frustumNO(out: Mat4, left: number, right: number, bottom: number, top: number, near: number, far: number): Mat4;
+/**
+ * Generates a frustum matrix with the given bounds, suitable for WebGPU.
+ * The near/far clip planes correspond to a normalized device coordinate Z range of [0, 1],
+ * which matches WebGPU/Vulkan/DirectX/Metal's clip volume.
+ *
+ * @param out mat4 frustum matrix will be written into
+ * @param left Left bound of the frustum
+ * @param right Right bound of the frustum
+ * @param bottom Bottom bound of the frustum
+ * @param top Top bound of the frustum
+ * @param near Near bound of the frustum
+ * @param far Far bound of the frustum
+ * @returns out
+ */
+export declare function frustumZO(out: Mat4, left: number, right: number, bottom: number, top: number, near: number, far: number): Mat4;
 /**
  * Generates a perspective projection matrix with the given bounds.
  * The near/far clip planes correspond to a normalized device coordinate Z range of [-1, 1],
@@ -447,11 +464,6 @@ export declare function frustum(out: Mat4, left: number, right: number, bottom: 
  * @returns out
  */
 export declare function perspectiveNO(out: Mat4, fovy: number, aspect: number, near: number, far: number): Mat4;
-/**
- * Alias for {@link mat4.perspectiveNO}
- * @function
- */
-export declare const perspective: typeof perspectiveNO;
 /**
  * Generates a perspective projection matrix suitable for WebGPU with the given bounds.
  * The near/far clip planes correspond to a normalized device coordinate Z range of [0, 1],
@@ -469,7 +481,9 @@ export declare function perspectiveZO(out: Mat4, fovy: number, aspect: number, n
 /**
  * Generates a perspective projection matrix with the given field of view.
  * This is primarily useful for generating projection matrices to be used
- * with the still experiemental WebVR API.
+ * with the still experimental WebVR API.
+ * The near/far clip planes correspond to a normalized device coordinate Z range of [-1, 1],
+ * which matches WebGL/OpenGL's clip volume.
  *
  * @param out mat4 frustum matrix will be written into
  * @param fov Object containing the following values: upDegrees, downDegrees, leftDegrees, rightDegrees
@@ -477,7 +491,26 @@ export declare function perspectiveZO(out: Mat4, fovy: number, aspect: number, n
  * @param far Far bound of the frustum
  * @returns out
  */
-export declare function perspectiveFromFieldOfView(out: Mat4, fov: {
+export declare function perspectiveFromFieldOfViewNO(out: Mat4, fov: {
+    upDegrees: number;
+    downDegrees: number;
+    leftDegrees: number;
+    rightDegrees: number;
+}, near: number, far: number): Mat4;
+/**
+ * Generates a perspective projection matrix with the given field of view, suitable for WebGPU.
+ * This is primarily useful for generating projection matrices to be used
+ * with the still experimental WebVR API.
+ * The near/far clip planes correspond to a normalized device coordinate Z range of [0, 1],
+ * which matches WebGPU/Vulkan/DirectX/Metal's clip volume.
+ *
+ * @param out mat4 frustum matrix will be written into
+ * @param fov Object containing the following values: upDegrees, downDegrees, leftDegrees, rightDegrees
+ * @param near Near bound of the frustum
+ * @param far Far bound of the frustum
+ * @returns out
+ */
+export declare function perspectiveFromFieldOfViewZO(out: Mat4, fov: {
     upDegrees: number;
     downDegrees: number;
     leftDegrees: number;
@@ -498,11 +531,6 @@ export declare function perspectiveFromFieldOfView(out: Mat4, fov: {
  * @returns out
  */
 export declare function orthoNO(out: Mat4, left: number, right: number, bottom: number, top: number, near: number, far: number): Mat4;
-/**
- * Alias for {@link mat4.orthoNO}
- * @function
- */
-export declare const ortho: typeof orthoNO;
 /**
  * Generates a orthogonal projection matrix with the given bounds.
  * The near/far clip planes correspond to a normalized device coordinate Z range of [0, 1],

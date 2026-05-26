@@ -1551,7 +1551,9 @@ function fromQuat(out, q) {
     return out;
 }
 /**
- * Generates a frustum matrix with the given bounds
+ * Generates a frustum matrix with the given bounds.
+ * The near/far clip planes correspond to a normalized device coordinate Z range of [-1, 1],
+ * which matches WebGL/OpenGL's clip volume.
  *
  * @param out mat4 frustum matrix will be written into
  * @param left Left bound of the frustum
@@ -1562,7 +1564,7 @@ function fromQuat(out, q) {
  * @param far Far bound of the frustum
  * @returns out
  */
-function frustum(out, left, right, bottom, top, near, far) {
+function frustumNO(out, left, right, bottom, top, near, far) {
     const rl = 1 / (right - left);
     const tb = 1 / (top - bottom);
     const nf = 1 / (near - far);
@@ -1581,6 +1583,42 @@ function frustum(out, left, right, bottom, top, near, far) {
     out[12] = 0;
     out[13] = 0;
     out[14] = far * near * 2 * nf;
+    out[15] = 0;
+    return out;
+}
+/**
+ * Generates a frustum matrix with the given bounds, suitable for WebGPU.
+ * The near/far clip planes correspond to a normalized device coordinate Z range of [0, 1],
+ * which matches WebGPU/Vulkan/DirectX/Metal's clip volume.
+ *
+ * @param out mat4 frustum matrix will be written into
+ * @param left Left bound of the frustum
+ * @param right Right bound of the frustum
+ * @param bottom Bottom bound of the frustum
+ * @param top Top bound of the frustum
+ * @param near Near bound of the frustum
+ * @param far Far bound of the frustum
+ * @returns out
+ */
+function frustumZO(out, left, right, bottom, top, near, far) {
+    const rl = 1 / (right - left);
+    const tb = 1 / (top - bottom);
+    const nf = 1 / (near - far);
+    out[0] = near * 2 * rl;
+    out[1] = 0;
+    out[2] = 0;
+    out[3] = 0;
+    out[4] = 0;
+    out[5] = near * 2 * tb;
+    out[6] = 0;
+    out[7] = 0;
+    out[8] = (right + left) * rl;
+    out[9] = (top + bottom) * tb;
+    out[10] = far * nf;
+    out[11] = -1;
+    out[12] = 0;
+    out[13] = 0;
+    out[14] = far * near * nf;
     out[15] = 0;
     return out;
 }
@@ -1625,11 +1663,6 @@ function perspectiveNO(out, fovy, aspect, near, far) {
     return out;
 }
 /**
- * Alias for {@link mat4.perspectiveNO}
- * @function
- */
-const perspective = perspectiveNO;
-/**
  * Generates a perspective projection matrix suitable for WebGPU with the given bounds.
  * The near/far clip planes correspond to a normalized device coordinate Z range of [0, 1],
  * which matches WebGPU/Vulkan/DirectX/Metal's clip volume.
@@ -1672,7 +1705,9 @@ function perspectiveZO(out, fovy, aspect, near, far) {
 /**
  * Generates a perspective projection matrix with the given field of view.
  * This is primarily useful for generating projection matrices to be used
- * with the still experiemental WebVR API.
+ * with the still experimental WebVR API.
+ * The near/far clip planes correspond to a normalized device coordinate Z range of [-1, 1],
+ * which matches WebGL/OpenGL's clip volume.
  *
  * @param out mat4 frustum matrix will be written into
  * @param fov Object containing the following values: upDegrees, downDegrees, leftDegrees, rightDegrees
@@ -1680,7 +1715,46 @@ function perspectiveZO(out, fovy, aspect, near, far) {
  * @param far Far bound of the frustum
  * @returns out
  */
-function perspectiveFromFieldOfView(out, fov, near, far) {
+function perspectiveFromFieldOfViewNO(out, fov, near, far) {
+    const upTan = Math.tan((fov.upDegrees * Math.PI) / 180.0);
+    const downTan = Math.tan((fov.downDegrees * Math.PI) / 180.0);
+    const leftTan = Math.tan((fov.leftDegrees * Math.PI) / 180.0);
+    const rightTan = Math.tan((fov.rightDegrees * Math.PI) / 180.0);
+    const xScale = 2.0 / (leftTan + rightTan);
+    const yScale = 2.0 / (upTan + downTan);
+    const nf = 1.0 / (near - far);
+    out[0] = xScale;
+    out[1] = 0.0;
+    out[2] = 0.0;
+    out[3] = 0.0;
+    out[4] = 0.0;
+    out[5] = yScale;
+    out[6] = 0.0;
+    out[7] = 0.0;
+    out[8] = -((leftTan - rightTan) * xScale * 0.5);
+    out[9] = (upTan - downTan) * yScale * 0.5;
+    out[10] = (far + near) * nf;
+    out[11] = -1;
+    out[12] = 0.0;
+    out[13] = 0.0;
+    out[14] = 2.0 * far * near * nf;
+    out[15] = 0.0;
+    return out;
+}
+/**
+ * Generates a perspective projection matrix with the given field of view, suitable for WebGPU.
+ * This is primarily useful for generating projection matrices to be used
+ * with the still experimental WebVR API.
+ * The near/far clip planes correspond to a normalized device coordinate Z range of [0, 1],
+ * which matches WebGPU/Vulkan/DirectX/Metal's clip volume.
+ *
+ * @param out mat4 frustum matrix will be written into
+ * @param fov Object containing the following values: upDegrees, downDegrees, leftDegrees, rightDegrees
+ * @param near Near bound of the frustum
+ * @param far Far bound of the frustum
+ * @returns out
+ */
+function perspectiveFromFieldOfViewZO(out, fov, near, far) {
     const upTan = Math.tan((fov.upDegrees * Math.PI) / 180.0);
     const downTan = Math.tan((fov.downDegrees * Math.PI) / 180.0);
     const leftTan = Math.tan((fov.leftDegrees * Math.PI) / 180.0);
@@ -1741,11 +1815,6 @@ function orthoNO(out, left, right, bottom, top, near, far) {
     out[15] = 1;
     return out;
 }
-/**
- * Alias for {@link mat4.orthoNO}
- * @function
- */
-const ortho = orthoNO;
 /**
  * Generates a orthogonal projection matrix with the given bounds.
  * The near/far clip planes correspond to a normalized device coordinate Z range of [0, 1],
@@ -2161,5 +2230,5 @@ const mul = multiply;
  */
 const sub = subtract;
 
-export { add, adjoint, clone, copy, create, crossProductMatrix, decompose, determinant, equals, exactEquals, frob, fromQuat, fromQuat2, fromRotation, fromRotationTranslation, fromRotationTranslationScale, fromRotationTranslationScaleOrigin, fromScaling, fromTranslation, fromValues, fromXRotation, fromYRotation, fromZRotation, frustum, getRotation, getScaling, getTranslation, identity, invert, invert3x3, lookAt, mul, multiply, multiply3x3, multiply3x3RightTransposed, multiply3x3TransposedVec, multiply3x3Vec, multiplyScalar, multiplyScalarAndAdd, ortho, orthoNO, orthoZO, perspective, perspectiveFromFieldOfView, perspectiveNO, perspectiveZO, rotate, rotateX, rotateY, rotateZ, scale, set, str, sub, subtract, targetTo, translate, transpose, zero };
+export { add, adjoint, clone, copy, create, crossProductMatrix, decompose, determinant, equals, exactEquals, frob, fromQuat, fromQuat2, fromRotation, fromRotationTranslation, fromRotationTranslationScale, fromRotationTranslationScaleOrigin, fromScaling, fromTranslation, fromValues, fromXRotation, fromYRotation, fromZRotation, frustumNO, frustumZO, getRotation, getScaling, getTranslation, identity, invert, invert3x3, lookAt, mul, multiply, multiply3x3, multiply3x3RightTransposed, multiply3x3TransposedVec, multiply3x3Vec, multiplyScalar, multiplyScalarAndAdd, orthoNO, orthoZO, perspectiveFromFieldOfViewNO, perspectiveFromFieldOfViewZO, perspectiveNO, perspectiveZO, rotate, rotateX, rotateY, rotateZ, scale, set, str, sub, subtract, targetTo, translate, transpose, zero };
 //# sourceMappingURL=mat4.js.map
