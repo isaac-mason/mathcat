@@ -87,6 +87,33 @@ describe('obb3', () => {
             expect(result[1]).toBeCloseTo(0.5);
             expect(result[2]).toBeCloseTo(0.5);
         });
+
+        it('clamps along a rotated axis (90° about Z, long side along world +Y)', () => {
+            const obb = obb3.create();
+            const rot = quat.create();
+            quat.fromEuler(rot, euler.fromValues(0, 0, Math.PI / 2, 'xyz'));
+            // half extents (2,1,1): after +90° about Z the "2" axis points along world +Y
+            obb3.setFromCenterHalfExtentsQuaternion(obb, [0, 0, 0], [2, 1, 1], rot);
+
+            const result = vec3.create();
+            obb3.clampPoint(result, obb, [0, 5, 0]);
+
+            // projection onto the long (first) axis is 5, clamped to 2, back in world space → (0,2,0)
+            expect(result[0]).toBeCloseTo(0);
+            expect(result[1]).toBeCloseTo(2);
+            expect(result[2]).toBeCloseTo(0);
+        });
+
+        it('does not corrupt the result when out === point (reads offset first)', () => {
+            const obb = obb3.create();
+            obb3.setFromCenterHalfExtentsQuaternion(obb, [0, 0, 0], [1, 1, 1], [0, 0, 0, 1]);
+
+            const p = vec3.fromValues(2, 0, 0);
+            obb3.clampPoint(p, obb, p); // aliased out/point
+            expect(p[0]).toBeCloseTo(1);
+            expect(p[1]).toBeCloseTo(0);
+            expect(p[2]).toBeCloseTo(0);
+        });
     });
 
     describe('intersectsOBB', () => {
@@ -132,6 +159,19 @@ describe('obb3', () => {
 
             expect(obb3.intersectsOBB3(obb1, obb2)).toBe(true);
         });
+
+        it('returns false for two rotated OBBs separated by a large gap', () => {
+            // both tilted 45° about Z so the R/AbsR/tInA path runs fully on a false result
+            const rot = quat.create();
+            quat.fromEuler(rot, euler.fromValues(0, 0, Math.PI / 4, 'xyz'));
+            const obb1 = obb3.create();
+            obb3.setFromCenterHalfExtentsQuaternion(obb1, [0, 0, 0], [1, 1, 1], rot);
+            const obb2 = obb3.create();
+            obb3.setFromCenterHalfExtentsQuaternion(obb2, [10, 0, 0], [1, 1, 1], rot);
+
+            expect(obb3.intersectsOBB3(obb1, obb2)).toBe(false);
+        });
+
     });
 
     describe('intersectsBox3', () => {

@@ -3,6 +3,7 @@
 ## 0.0.13 (Unreleased)
 
 - perf: `plane3.intersect`, `plane3.fromCoplanarPoints`, and `plane3.transform` are now fully scalar with zero internal allocations (previously they allocated 6, 2, and 2 temporary `Vec3`s per call respectively via `vec3.create()`). Results are unchanged. `plane3.intersect` — a hot path for convex-hull convex-radius shrinking — benchmarks ~2.7× faster steady-state, with a larger win under GC pressure. Adds a `plane3` test suite (previously untested).
+- perf: simplify `obb3.containsPoint`/`clampPoint`/`intersectsOBB3` to scalar locals instead of scratch vectors (no behavior change); add `clampPoint`/`intersectsOBB3` tests.
 - breaking: make WebGL/WebGPU clip-space convention explicit on all `mat4` projection helpers. Callers must now choose the `NO` (WebGL/OpenGL, NDC z ∈ [-1, 1]) or `ZO` (WebGPU/Vulkan/DirectX/Metal, NDC z ∈ [0, 1]) variant:
     - rename `mat4.frustum` → `mat4.frustumNO`, add `mat4.frustumZO`
     - rename `mat4.perspectiveFromFieldOfView` → `mat4.perspectiveFromFieldOfViewZO` (its existing math has always been ZO despite the unsuffixed name — runtime behavior is unchanged), add `mat4.perspectiveFromFieldOfViewNO`

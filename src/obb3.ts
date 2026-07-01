@@ -108,8 +108,6 @@ export function setFromBox3(out: OBB3, aabb: Box3): OBB3 {
     return out;
 }
 
-const _containsPoint_localPoint = /*@__PURE__*/ vec3.create();
-
 /**
  * Tests whether a point is contained within an OBB.
  *
@@ -123,22 +121,17 @@ export function containsPoint(obb: OBB3, point: Vec3): boolean {
     const dy = point[1] - obb.center[1];
     const dz = point[2] - obb.center[2];
 
-    // Project onto each axis using the transpose of the rotation matrix
-    // (transpose = inverse for orthonormal matrices)
+    // Project onto each OBB axis (columns of the rotation matrix) and compare against
+    // the half extents. The projections are used once, so keep them as scalars.
     const r = obb.rotation;
+    const lx = dx * r[0] + dy * r[1] + dz * r[2];
+    const ly = dx * r[3] + dy * r[4] + dz * r[5];
+    const lz = dx * r[6] + dy * r[7] + dz * r[8];
 
-    // Project onto x-axis (column 0 of rotation)
-    _containsPoint_localPoint[0] = dx * r[0] + dy * r[1] + dz * r[2];
-    // Project onto y-axis (column 1 of rotation)
-    _containsPoint_localPoint[1] = dx * r[3] + dy * r[4] + dz * r[5];
-    // Project onto z-axis (column 2 of rotation)
-    _containsPoint_localPoint[2] = dx * r[6] + dy * r[7] + dz * r[8];
-
-    // Check if local coordinates are within half extents
     return (
-        Math.abs(_containsPoint_localPoint[0]) <= obb.halfExtents[0] &&
-        Math.abs(_containsPoint_localPoint[1]) <= obb.halfExtents[1] &&
-        Math.abs(_containsPoint_localPoint[2]) <= obb.halfExtents[2]
+        Math.abs(lx) <= obb.halfExtents[0] &&
+        Math.abs(ly) <= obb.halfExtents[1] &&
+        Math.abs(lz) <= obb.halfExtents[2]
     );
 }
 
@@ -152,50 +145,40 @@ export function containsPoint(obb: OBB3, point: Vec3): boolean {
  * @param point - The point to clamp
  * @returns out
  */
-const _clampPoint_xAxis = vec3.create();
-const _clampPoint_yAxis = vec3.create();
-const _clampPoint_zAxis = vec3.create();
-
 export function clampPoint(out: Vec3, obb: OBB3, point: Vec3): Vec3 {
+    // OBB axes are the columns of the rotation matrix, read directly from r[].
     const r = obb.rotation;
 
-    // Extract axes directly from rotation matrix columns
-    _clampPoint_xAxis[0] = r[0];
-    _clampPoint_xAxis[1] = r[1];
-    _clampPoint_xAxis[2] = r[2];
-    _clampPoint_yAxis[0] = r[3];
-    _clampPoint_yAxis[1] = r[4];
-    _clampPoint_yAxis[2] = r[5];
-    _clampPoint_zAxis[0] = r[6];
-    _clampPoint_zAxis[1] = r[7];
-    _clampPoint_zAxis[2] = r[8];
-
-    // Vector from center to point
+    // Vector from center to point (captured before writing out, in case out === point)
     const dx = point[0] - obb.center[0];
     const dy = point[1] - obb.center[1];
     const dz = point[2] - obb.center[2];
 
-    // Start at center
-    vec3.copy(out, obb.center);
+    // Start at center, then walk along each axis by the clamped projection distance.
+    out[0] = obb.center[0];
+    out[1] = obb.center[1];
+    out[2] = obb.center[2];
 
-    // Project onto each axis and clamp
-    let dist = dx * _clampPoint_xAxis[0] + dy * _clampPoint_xAxis[1] + dz * _clampPoint_xAxis[2];
+    // x axis = r[0..2]
+    let dist = dx * r[0] + dy * r[1] + dz * r[2];
     dist = Math.max(-obb.halfExtents[0], Math.min(obb.halfExtents[0], dist));
-    out[0] += _clampPoint_xAxis[0] * dist;
-    out[1] += _clampPoint_xAxis[1] * dist;
-    out[2] += _clampPoint_xAxis[2] * dist;
+    out[0] += r[0] * dist;
+    out[1] += r[1] * dist;
+    out[2] += r[2] * dist;
 
-    dist = dx * _clampPoint_yAxis[0] + dy * _clampPoint_yAxis[1] + dz * _clampPoint_yAxis[2];
+    // y axis = r[3..5]
+    dist = dx * r[3] + dy * r[4] + dz * r[5];
     dist = Math.max(-obb.halfExtents[1], Math.min(obb.halfExtents[1], dist));
-    out[0] += _clampPoint_yAxis[0] * dist;
-    out[1] += _clampPoint_yAxis[1] * dist;
-    out[2] += _clampPoint_yAxis[2] * dist;
+    out[0] += r[3] * dist;
+    out[1] += r[4] * dist;
+    out[2] += r[5] * dist;
 
-    dist = dx * _clampPoint_zAxis[0] + dy * _clampPoint_zAxis[1] + dz * _clampPoint_zAxis[2];
+    // z axis = r[6..8]
+    dist = dx * r[6] + dy * r[7] + dz * r[8];
     dist = Math.max(-obb.halfExtents[2], Math.min(obb.halfExtents[2], dist));
-    out[0] += _clampPoint_zAxis[0] * dist;
-    out[1] += _clampPoint_zAxis[1] * dist;
-    out[2] += _clampPoint_zAxis[2] * dist;
+    out[0] += r[6] * dist;
+    out[1] += r[7] * dist;
+    out[2] += r[8] * dist;
 
     return out;
 }
@@ -215,19 +198,8 @@ const _intersectsOBB3_R: number[][] = [
     [0, 0, 0],
     [0, 0, 0],
 ];
-const _intersectsOBB3_t = /*@__PURE__*/ vec3.create();
 const _intersectsOBB3_tInA = /*@__PURE__*/ vec3.create();
 const _intersectsOBB3_AbsR: number[][] = [
-    [0, 0, 0],
-    [0, 0, 0],
-    [0, 0, 0],
-];
-const _intersectsOBB3_aU: [Vec3, Vec3, Vec3] = [
-    [0, 0, 0],
-    [0, 0, 0],
-    [0, 0, 0],
-];
-const _intersectsOBB3_bU: [Vec3, Vec3, Vec3] = [
     [0, 0, 0],
     [0, 0, 0],
     [0, 0, 0],
@@ -237,41 +209,26 @@ export function intersectsOBB3(a: OBB3, b: OBB3, epsilon = Number.EPSILON): bool
     const rotA = a.rotation;
     const rotB = b.rotation;
 
-    // Extract axes directly from rotation matrix columns
-    _intersectsOBB3_aU[0][0] = rotA[0];
-    _intersectsOBB3_aU[0][1] = rotA[1];
-    _intersectsOBB3_aU[0][2] = rotA[2];
-    _intersectsOBB3_aU[1][0] = rotA[3];
-    _intersectsOBB3_aU[1][1] = rotA[4];
-    _intersectsOBB3_aU[1][2] = rotA[5];
-    _intersectsOBB3_aU[2][0] = rotA[6];
-    _intersectsOBB3_aU[2][1] = rotA[7];
-    _intersectsOBB3_aU[2][2] = rotA[8];
-
-    _intersectsOBB3_bU[0][0] = rotB[0];
-    _intersectsOBB3_bU[0][1] = rotB[1];
-    _intersectsOBB3_bU[0][2] = rotB[2];
-    _intersectsOBB3_bU[1][0] = rotB[3];
-    _intersectsOBB3_bU[1][1] = rotB[4];
-    _intersectsOBB3_bU[1][2] = rotB[5];
-    _intersectsOBB3_bU[2][0] = rotB[6];
-    _intersectsOBB3_bU[2][1] = rotB[7];
-    _intersectsOBB3_bU[2][2] = rotB[8];
-
-    // Compute rotation matrix expressing b in a's coordinate frame
+    // R[i][j] = dot(A axis i, B axis j); the OBB axes are the columns of the rotation
+    // matrices (axis i of A = rotA[3i..3i+2]), computed inline without scratch vectors.
     for (let i = 0; i < 3; i++) {
+        const ai = i * 3;
+        const ax = rotA[ai];
+        const ay = rotA[ai + 1];
+        const az = rotA[ai + 2];
         for (let j = 0; j < 3; j++) {
-            _intersectsOBB3_R[i][j] = vec3.dot(_intersectsOBB3_aU[i], _intersectsOBB3_bU[j]);
+            const bj = j * 3;
+            _intersectsOBB3_R[i][j] = ax * rotB[bj] + ay * rotB[bj + 1] + az * rotB[bj + 2];
         }
     }
 
-    // Translation vector
-    vec3.subtract(_intersectsOBB3_t, b.center, a.center);
-
-    // Bring translation into a's coordinate frame
-    _intersectsOBB3_tInA[0] = vec3.dot(_intersectsOBB3_t, _intersectsOBB3_aU[0]);
-    _intersectsOBB3_tInA[1] = vec3.dot(_intersectsOBB3_t, _intersectsOBB3_aU[1]);
-    _intersectsOBB3_tInA[2] = vec3.dot(_intersectsOBB3_t, _intersectsOBB3_aU[2]);
+    // Translation (b.center - a.center) brought into a's frame: tInA[i] = dot(t, A axis i)
+    const tx = b.center[0] - a.center[0];
+    const ty = b.center[1] - a.center[1];
+    const tz = b.center[2] - a.center[2];
+    _intersectsOBB3_tInA[0] = tx * rotA[0] + ty * rotA[1] + tz * rotA[2];
+    _intersectsOBB3_tInA[1] = tx * rotA[3] + ty * rotA[4] + tz * rotA[5];
+    _intersectsOBB3_tInA[2] = tx * rotA[6] + ty * rotA[7] + tz * rotA[8];
 
     // Compute common subexpressions with epsilon
     for (let i = 0; i < 3; i++) {
