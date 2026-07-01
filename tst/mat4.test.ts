@@ -454,11 +454,11 @@ describe('mat4', () => {
         });
     });
 
-    describe('frustum', () => {
+    describe('frustumNO', () => {
         it('should create frustum projection matrix', () => {
             const result = mat4.create();
 
-            mat4.frustum(result, -1, 1, -1, 1, 1, 100);
+            mat4.frustumNO(result, -1, 1, -1, 1, 1, 100);
 
             expect(result[0]).toBe(1);
             expect(result[5]).toBe(1);
@@ -467,7 +467,7 @@ describe('mat4', () => {
         });
     });
 
-    describe('perspective', () => {
+    describe('perspectiveNO', () => {
         it('should create perspective projection matrix', () => {
             const result = mat4.create();
             const fovy = Math.PI / 4;
@@ -475,7 +475,7 @@ describe('mat4', () => {
             const near = 0.1;
             const far = 100;
 
-            mat4.perspective(result, fovy, aspect, near, far);
+            mat4.perspectiveNO(result, fovy, aspect, near, far);
 
             expect(result[5]).toBeCloseTo(1 / Math.tan(fovy / 2));
             expect(result[0]).toBeCloseTo(1 / Math.tan(fovy / 2) / aspect);
@@ -483,11 +483,11 @@ describe('mat4', () => {
         });
     });
 
-    describe('ortho', () => {
+    describe('orthoNO', () => {
         it('should create orthographic projection matrix', () => {
             const result = mat4.create();
 
-            mat4.ortho(result, -10, 10, -10, 10, 0.1, 100);
+            mat4.orthoNO(result, -10, 10, -10, 10, 0.1, 100);
 
             expect(result[0]).toBeCloseTo(0.1);
             expect(result[5]).toBeCloseTo(0.1);
@@ -670,7 +670,7 @@ describe('mat4', () => {
             mat4.perspectiveZO(result, Math.PI / 4, 16 / 9, 0.1, 100);
 
             expect(result[15]).toBe(0);
-            expect(result[10]).not.toBe(mat4.perspective(mat4.create(), Math.PI / 4, 16 / 9, 0.1, 100)[10]);
+            expect(result[10]).not.toBe(mat4.perspectiveNO(mat4.create(), Math.PI / 4, 16 / 9, 0.1, 100)[10]);
         });
 
         it('orthoZO should create zero-to-one depth range orthographic', () => {
@@ -678,7 +678,42 @@ describe('mat4', () => {
             mat4.orthoZO(result, -1, 1, -1, 1, 0.1, 100);
 
             expect(result[15]).toBe(1);
-            expect(result[10]).not.toBe(mat4.ortho(mat4.create(), -1, 1, -1, 1, 0.1, 100)[10]);
+            expect(result[10]).not.toBe(mat4.orthoNO(mat4.create(), -1, 1, -1, 1, 0.1, 100)[10]);
+        });
+
+        it('frustumZO should create zero-to-one depth range frustum', () => {
+            const result = mat4.create();
+            mat4.frustumZO(result, -1, 1, -1, 1, 1, 100);
+
+            expect(result[15]).toBe(0);
+            expect(result[10]).toBeCloseTo(100 / (1 - 100));
+            expect(result[14]).toBeCloseTo((100 * 1) / (1 - 100));
+            expect(result[10]).not.toBe(mat4.frustumNO(mat4.create(), -1, 1, -1, 1, 1, 100)[10]);
+        });
+
+        it('perspectiveFromFieldOfViewNO should create negative-one-to-one depth range projection', () => {
+            const result = mat4.create();
+            const fov = { upDegrees: 30, downDegrees: 30, leftDegrees: 40, rightDegrees: 40 };
+            mat4.perspectiveFromFieldOfViewNO(result, fov, 0.1, 100);
+
+            expect(result[15]).toBe(0);
+            expect(result[11]).toBe(-1);
+            expect(result[10]).toBeCloseTo((100 + 0.1) / (0.1 - 100));
+            expect(result[14]).toBeCloseTo((2 * 100 * 0.1) / (0.1 - 100));
+        });
+
+        it('perspectiveFromFieldOfViewZO should create zero-to-one depth range projection', () => {
+            const result = mat4.create();
+            const fov = { upDegrees: 30, downDegrees: 30, leftDegrees: 40, rightDegrees: 40 };
+            mat4.perspectiveFromFieldOfViewZO(result, fov, 0.1, 100);
+
+            expect(result[15]).toBe(0);
+            expect(result[11]).toBe(-1);
+            expect(result[10]).toBeCloseTo(100 / (0.1 - 100));
+            expect(result[14]).toBeCloseTo((100 * 0.1) / (0.1 - 100));
+            expect(result[10]).not.toBe(
+                mat4.perspectiveFromFieldOfViewNO(mat4.create(), fov, 0.1, 100)[10],
+            );
         });
     });
 

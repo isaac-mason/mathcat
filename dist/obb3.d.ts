@@ -40,6 +40,16 @@ export declare function setFromBox3(out: OBB3, aabb: Box3): OBB3;
  * @returns true if the point is inside the OBB
  */
 export declare function containsPoint(obb: OBB3, point: Vec3): boolean;
+/**
+ * Clamps a point to the surface or interior of an OBB.
+ * Reference: Closest Point on OBB to Point in Real-Time Collision Detection
+ * by Christer Ericson (chapter 5.1.4)
+ *
+ * @param out - The clamped point result
+ * @param obb - The OBB
+ * @param point - The point to clamp
+ * @returns out
+ */
 export declare function clampPoint(out: Vec3, obb: OBB3, point: Vec3): Vec3;
 export declare function intersectsOBB3(a: OBB3, b: OBB3, epsilon?: number): boolean;
 /**

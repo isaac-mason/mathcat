@@ -34,9 +34,9 @@ mathcat is a collection of math helpers for 3D graphics and simulations.
 </tr><tr>
 <td><a href="#mat2d"><code>Mat2d</code></a></td><td><a href="#box3"><code>Box3</code></a></td><td><a href="#obb3"><code>OBB3</code></a></td><td><a href="#eulerorder"><code>EulerOrder</code></a></td>
 </tr><tr>
-<td><a href="#euler"><code>Euler</code></a></td><td><a href="#plane3"><code>Plane3</code></a></td><td><a href="#sphere"><code>Sphere</code></a></td><td><a href="#circle"><code>Circle</code></a></td>
+<td><a href="#euler"><code>Euler</code></a></td><td><a href="#plane3"><code>Plane3</code></a></td><td><a href="#sphere"><code>Sphere</code></a></td><td><a href="#spherical"><code>Spherical</code></a></td>
 </tr><tr>
-<td><a href="#ray3"><code>Ray3</code></a></td><td><a href="#raycast3"><code>Raycast3</code></a></td><td><a href="#mutablearraylike"><code>MutableArrayLike</code></a></td><td></td>
+<td><a href="#circle"><code>Circle</code></a></td><td><a href="#ray3"><code>Ray3</code></a></td><td><a href="#raycast3"><code>Raycast3</code></a></td><td><a href="#mutablearraylike"><code>MutableArrayLike</code></a></td>
 </tr></table>
 
 **vec2**
@@ -374,13 +374,13 @@ mathcat is a collection of math helpers for 3D graphics and simulations.
 </tr><tr>
 <td><a href="#mat4fromrotationtranslationscale"><code>mat4.fromRotationTranslationScale</code></a></td><td><a href="#mat4fromrotationtranslationscaleorigin"><code>mat4.fromRotationTranslationScaleOrigin</code></a></td>
 </tr><tr>
-<td><a href="#mat4fromquat"><code>mat4.fromQuat</code></a></td><td><a href="#mat4frustum"><code>mat4.frustum</code></a></td>
+<td><a href="#mat4fromquat"><code>mat4.fromQuat</code></a></td><td><a href="#mat4frustumno"><code>mat4.frustumNO</code></a></td>
 </tr><tr>
-<td><a href="#mat4perspectiveno"><code>mat4.perspectiveNO</code></a></td><td><a href="#mat4perspective"><code>mat4.perspective</code></a></td>
+<td><a href="#mat4frustumzo"><code>mat4.frustumZO</code></a></td><td><a href="#mat4perspectiveno"><code>mat4.perspectiveNO</code></a></td>
 </tr><tr>
-<td><a href="#mat4perspectivezo"><code>mat4.perspectiveZO</code></a></td><td><a href="#mat4perspectivefromfieldofview"><code>mat4.perspectiveFromFieldOfView</code></a></td>
+<td><a href="#mat4perspectivezo"><code>mat4.perspectiveZO</code></a></td><td><a href="#mat4perspectivefromfieldofviewno"><code>mat4.perspectiveFromFieldOfViewNO</code></a></td>
 </tr><tr>
-<td><a href="#mat4orthono"><code>mat4.orthoNO</code></a></td><td><a href="#mat4ortho"><code>mat4.ortho</code></a></td>
+<td><a href="#mat4perspectivefromfieldofviewzo"><code>mat4.perspectiveFromFieldOfViewZO</code></a></td><td><a href="#mat4orthono"><code>mat4.orthoNO</code></a></td>
 </tr><tr>
 <td><a href="#mat4orthozo"><code>mat4.orthoZO</code></a></td><td><a href="#mat4lookat"><code>mat4.lookAt</code></a></td>
 </tr><tr>
@@ -481,6 +481,22 @@ mathcat is a collection of math helpers for 3D graphics and simulations.
 
 <table><tr>
 <td><a href="#spherecreate"><code>sphere.create</code></a></td>
+</tr></table>
+
+**spherical**
+
+<table><tr>
+<td><a href="#sphericalcreate"><code>spherical.create</code></a></td><td><a href="#sphericalfromvalues"><code>spherical.fromValues</code></a></td><td><a href="#sphericalclone"><code>spherical.clone</code></a></td>
+</tr><tr>
+<td><a href="#sphericalcopy"><code>spherical.copy</code></a></td><td><a href="#sphericalset"><code>spherical.set</code></a></td><td><a href="#sphericalnormalize"><code>spherical.normalize</code></a></td>
+</tr><tr>
+<td><a href="#sphericalscale"><code>spherical.scale</code></a></td><td><a href="#sphericallerp"><code>spherical.lerp</code></a></td><td><a href="#sphericalsetfromvec3"><code>spherical.setFromVec3</code></a></td>
+</tr><tr>
+<td><a href="#sphericalfromvec3"><code>spherical.fromVec3</code></a></td><td><a href="#sphericalmakesafe"><code>spherical.makeSafe</code></a></td><td><a href="#sphericaltovec3"><code>spherical.toVec3</code></a></td>
+</tr><tr>
+<td><a href="#sphericalfromvec2"><code>spherical.fromVec2</code></a></td><td><a href="#sphericaltovec2"><code>spherical.toVec2</code></a></td><td><a href="#sphericalequals"><code>spherical.equals</code></a></td>
+</tr><tr>
+<td><a href="#sphericalexactequals"><code>spherical.exactEquals</code></a></td><td><a href="#sphericalstr"><code>spherical.str</code></a></td><td><a href="#sphericalangleto"><code>spherical.angleTo</code></a></td>
 </tr></table>
 
 **triangle3**
@@ -774,6 +790,22 @@ export type Sphere = {
     center: Vec3;
     radius: number;
 };
+```
+
+#### `Spherical`
+
+```ts
+/**
+ * A point in spherical coordinates [r, theta, phi] (Three.js / OpenGL convention)
+ *  r     - radial distance from the origin
+ *  theta - azimuthal angle in the XZ plane from the +Z axis (radians, range [-π, π])
+ *  phi   - polar angle from the +Y axis (radians, range [0, π])
+ */
+export type Spherical = [
+    r: number,
+    theta: number,
+    phi: number
+];
 ```
 
 #### `Circle`
@@ -5647,11 +5679,13 @@ export function fromRotationTranslationScaleOrigin(out: Mat4, q: Quat, v: Vec3, 
 export function fromQuat(out: Mat4, q: Quat): Mat4;
 ```
 
-#### `mat4.frustum`
+#### `mat4.frustumNO`
 
 ```ts
 /**
- * Generates a frustum matrix with the given bounds
+ * Generates a frustum matrix with the given bounds.
+ * The near/far clip planes correspond to a normalized device coordinate Z range of [-1, 1],
+ * which matches WebGL/OpenGL's clip volume.
  *
  * @param out mat4 frustum matrix will be written into
  * @param left Left bound of the frustum
@@ -5662,7 +5696,27 @@ export function fromQuat(out: Mat4, q: Quat): Mat4;
  * @param far Far bound of the frustum
  * @returns out
  */
-export function frustum(out: Mat4, left: number, right: number, bottom: number, top: number, near: number, far: number): Mat4;
+export function frustumNO(out: Mat4, left: number, right: number, bottom: number, top: number, near: number, far: number): Mat4;
+```
+
+#### `mat4.frustumZO`
+
+```ts
+/**
+ * Generates a frustum matrix with the given bounds, suitable for WebGPU.
+ * The near/far clip planes correspond to a normalized device coordinate Z range of [0, 1],
+ * which matches WebGPU/Vulkan/DirectX/Metal's clip volume.
+ *
+ * @param out mat4 frustum matrix will be written into
+ * @param left Left bound of the frustum
+ * @param right Right bound of the frustum
+ * @param bottom Bottom bound of the frustum
+ * @param top Top bound of the frustum
+ * @param near Near bound of the frustum
+ * @param far Far bound of the frustum
+ * @returns out
+ */
+export function frustumZO(out: Mat4, left: number, right: number, bottom: number, top: number, near: number, far: number): Mat4;
 ```
 
 #### `mat4.perspectiveNO`
@@ -5684,16 +5738,6 @@ export function frustum(out: Mat4, left: number, right: number, bottom: number, 
 export function perspectiveNO(out: Mat4, fovy: number, aspect: number, near: number, far: number): Mat4;
 ```
 
-#### `mat4.perspective`
-
-```ts
-/**
- * Alias for {@link mat4.perspectiveNO}
- * @function
- */
-export const perspective = perspectiveNO;
-```
-
 #### `mat4.perspectiveZO`
 
 ```ts
@@ -5713,13 +5757,15 @@ export const perspective = perspectiveNO;
 export function perspectiveZO(out: Mat4, fovy: number, aspect: number, near: number, far: number): Mat4;
 ```
 
-#### `mat4.perspectiveFromFieldOfView`
+#### `mat4.perspectiveFromFieldOfViewNO`
 
 ```ts
 /**
  * Generates a perspective projection matrix with the given field of view.
  * This is primarily useful for generating projection matrices to be used
- * with the still experiemental WebVR API.
+ * with the still experimental WebVR API.
+ * The near/far clip planes correspond to a normalized device coordinate Z range of [-1, 1],
+ * which matches WebGL/OpenGL's clip volume.
  *
  * @param out mat4 frustum matrix will be written into
  * @param fov Object containing the following values: upDegrees, downDegrees, leftDegrees, rightDegrees
@@ -5727,7 +5773,31 @@ export function perspectiveZO(out: Mat4, fovy: number, aspect: number, near: num
  * @param far Far bound of the frustum
  * @returns out
  */
-export function perspectiveFromFieldOfView(out: Mat4, fov: {
+export function perspectiveFromFieldOfViewNO(out: Mat4, fov: {
+    upDegrees: number;
+    downDegrees: number;
+    leftDegrees: number;
+    rightDegrees: number;
+}, near: number, far: number): Mat4;
+```
+
+#### `mat4.perspectiveFromFieldOfViewZO`
+
+```ts
+/**
+ * Generates a perspective projection matrix with the given field of view, suitable for WebGPU.
+ * This is primarily useful for generating projection matrices to be used
+ * with the still experimental WebVR API.
+ * The near/far clip planes correspond to a normalized device coordinate Z range of [0, 1],
+ * which matches WebGPU/Vulkan/DirectX/Metal's clip volume.
+ *
+ * @param out mat4 frustum matrix will be written into
+ * @param fov Object containing the following values: upDegrees, downDegrees, leftDegrees, rightDegrees
+ * @param near Near bound of the frustum
+ * @param far Far bound of the frustum
+ * @returns out
+ */
+export function perspectiveFromFieldOfViewZO(out: Mat4, fov: {
     upDegrees: number;
     downDegrees: number;
     leftDegrees: number;
@@ -5753,16 +5823,6 @@ export function perspectiveFromFieldOfView(out: Mat4, fov: {
  * @returns out
  */
 export function orthoNO(out: Mat4, left: number, right: number, bottom: number, top: number, near: number, far: number): Mat4;
-```
-
-#### `mat4.ortho`
-
-```ts
-/**
- * Alias for {@link mat4.orthoNO}
- * @function
- */
-export const ortho = orthoNO;
 ```
 
 #### `mat4.orthoZO`
@@ -6222,8 +6282,16 @@ export function scale(out: Box3, box: Box3, scale: Vec3): Box3;
 
 ```ts
 /**
- * Transform a bounding box by a 4x4 matrix
- * Transforms all 8 corners and creates a new AABB that encompasses them
+ * Transform a bounding box by a 4x4 matrix.
+ * Uses Arvo's trick — transform the center, build new half-extents from
+ * |M| · extents — which is ~4× fewer ops than transforming all 8 corners.
+ * Reference: Jim Arvo, "Transforming Axis-Aligned Bounding Boxes",
+ * Graphics Gems I (1990).
+ * https://github.com/erich666/GraphicsGems/blob/master/gems/TransBox.c
+ * Assumes mat is affine (no perspective), which is always true for AABB
+ * transforms in practice.
+ * Safe under aliasing (out and box may be the same array): all six box
+ * components are read into locals before out is written.
  * @param out - The output Box3
  * @param box - The input Box3
  * @param mat - The 4x4 transformation matrix
@@ -6370,6 +6438,16 @@ export function containsPoint(obb: OBB3, point: Vec3): boolean;
 #### `obb3.clampPoint`
 
 ```ts
+/**
+ * Clamps a point to the surface or interior of an OBB.
+ * Reference: Closest Point on OBB to Point in Real-Time Collision Detection
+ * by Christer Ericson (chapter 5.1.4)
+ *
+ * @param out - The clamped point result
+ * @param obb - The OBB
+ * @param point - The point to clamp
+ * @returns out
+ */
 export function clampPoint(out: Vec3, obb: OBB3, point: Vec3): Vec3;
 ```
 
@@ -6608,6 +6686,254 @@ export function equals(a: Plane3, b: Plane3): boolean;
  * @returns A new sphere.
  */
 export function create(): Sphere;
+```
+
+### spherical
+
+#### `spherical.create`
+
+```ts
+/**
+ * Creates a new spherical coordinate at r=1, theta=0, phi=0
+ *
+ * @returns a new Spherical
+ */
+export function create(): Spherical;
+```
+
+#### `spherical.fromValues`
+
+```ts
+/**
+ * Creates a new Spherical initialized with the given values
+ *
+ * @param r radial distance
+ * @param theta azimuthal angle in the XZ plane from +Z (radians)
+ * @param phi polar angle from +Y axis (radians)
+ * @returns a new Spherical
+ */
+export function fromValues(r: number, theta: number, phi: number): Spherical;
+```
+
+#### `spherical.clone`
+
+```ts
+/**
+ * Creates a new Spherical initialized with values from an existing one
+ *
+ * @param a the source Spherical
+ * @returns a new Spherical
+ */
+export function clone(a: Spherical): Spherical;
+```
+
+#### `spherical.copy`
+
+```ts
+/**
+ * Copies values from one Spherical to another
+ *
+ * @param out the receiving Spherical
+ * @param a the source Spherical
+ * @returns out
+ */
+export function copy(out: Spherical, a: Spherical): Spherical;
+```
+
+#### `spherical.set`
+
+```ts
+/**
+ * Sets the components of a Spherical
+ *
+ * @param out the receiving Spherical
+ * @param r radial distance
+ * @param theta azimuthal angle in the XZ plane from +Z (radians)
+ * @param phi polar angle from +Y axis (radians)
+ * @returns out
+ */
+export function set(out: Spherical, r: number, theta: number, phi: number): Spherical;
+```
+
+#### `spherical.normalize`
+
+```ts
+/**
+ * Sets r=1, preserving the angles. No-op if r is already zero.
+ *
+ * @param out the receiving Spherical
+ * @param a the source Spherical
+ * @returns out
+ */
+export function normalize(out: Spherical, a: Spherical): Spherical;
+```
+
+#### `spherical.scale`
+
+```ts
+/**
+ * Scales the radial distance r by a scalar
+ *
+ * @param out the receiving Spherical
+ * @param a the source Spherical
+ * @param s scalar to multiply r by
+ * @returns out
+ */
+export function scale(out: Spherical, a: Spherical, s: number): Spherical;
+```
+
+#### `spherical.lerp`
+
+```ts
+/**
+ * Linearly interpolates between two Spherical coordinates taking the shortest
+ * angular path for theta and phi.
+ *
+ * @param out the receiving Spherical
+ * @param a the first operand
+ * @param b the second operand
+ * @param t interpolation factor in [0, 1]
+ * @returns out
+ */
+export function lerp(out: Spherical, a: Spherical, b: Spherical, t: number): Spherical;
+```
+
+#### `spherical.setFromVec3`
+
+```ts
+/**
+ * Sets a Spherical from Cartesian Vec3 coordinates (Three.js / OpenGL convention):
+ *   r     = sqrt(x² + y² + z²)
+ *   theta = atan2(x, z)   (azimuthal angle in XZ plane from +Z)
+ *   phi   = acos(y / r)   (polar angle from +Y)
+ *
+ * @param out the receiving Spherical
+ * @param v the source Vec3
+ * @returns out
+ */
+export function setFromVec3(out: Spherical, v: Vec3): Spherical;
+```
+
+#### `spherical.fromVec3`
+
+```ts
+/** @alias setFromVec3 */
+export const fromVec3 = setFromVec3;
+```
+
+#### `spherical.makeSafe`
+
+```ts
+/**
+ * Clamps phi to the range [EPSILON, π - EPSILON] to avoid coordinate
+ * singularities at the poles (gimbal lock / division by zero).
+ * r and theta are left unchanged.
+ *
+ * @param out the receiving Spherical
+ * @param a the source Spherical
+ * @returns out
+ */
+export function makeSafe(out: Spherical, a: Spherical): Spherical;
+```
+
+#### `spherical.toVec3`
+
+```ts
+/**
+ * Converts spherical coordinates to a Cartesian Vec3 (Three.js / OpenGL convention):
+ *   x = r * sin(phi) * sin(theta)
+ *   y = r * cos(phi)
+ *   z = r * sin(phi) * cos(theta)
+ *
+ * @param out the receiving Vec3
+ * @param a the source Spherical
+ * @returns out
+ */
+export function toVec3(out: Vec3, a: Spherical): Vec3;
+```
+
+#### `spherical.fromVec2`
+
+```ts
+/**
+ * Converts a Vec2 (x, z) in the horizontal XZ plane to spherical coordinates.
+ * The point is treated as lying on the equator (phi = π/2, y = 0).
+ *
+ * @param out the receiving Spherical
+ * @param v the source Vec2 interpreted as (x, z)
+ * @returns out
+ */
+export function fromVec2(out: Spherical, v: Vec2): Spherical;
+```
+
+#### `spherical.toVec2`
+
+```ts
+/**
+ * Projects spherical coordinates onto the XZ plane, returning a Vec2 (x, z).
+ * Equivalent to taking the horizontal footprint of the 3D point.
+ *
+ * @param out the receiving Vec2
+ * @param a the source Spherical
+ * @returns out
+ */
+export function toVec2(out: Vec2, a: Spherical): Vec2;
+```
+
+#### `spherical.equals`
+
+```ts
+/**
+ * Returns true if two Spherical coordinates are approximately equal,
+ * within an absolute/relative tolerance of EPSILON.
+ *
+ * @param a the first Spherical
+ * @param b the second Spherical
+ * @returns true if approximately equal
+ */
+export function equals(a: Spherical, b: Spherical): boolean;
+```
+
+#### `spherical.exactEquals`
+
+```ts
+/**
+ * Returns true if two Spherical coordinates are exactly equal (===).
+ *
+ * @param a the first Spherical
+ * @param b the second Spherical
+ * @returns true if exactly equal
+ */
+export function exactEquals(a: Spherical, b: Spherical): boolean;
+```
+
+#### `spherical.str`
+
+```ts
+/**
+ * Returns a string representation of a Spherical
+ *
+ * @param a the source Spherical
+ * @returns string representation
+ */
+export function str(a: Spherical): string;
+```
+
+#### `spherical.angleTo`
+
+```ts
+/**
+ * Returns the great-circle angle (in radians) between two spherical coordinates,
+ * ignoring r. Equivalent to the central angle between the two directions on a
+ * unit sphere.
+ *
+ * Uses the numerically stable haversine formula.
+ *
+ * @param a the first Spherical
+ * @param b the second Spherical
+ * @returns angle in radians in [0, π]
+ */
+export function angleTo(a: Spherical, b: Spherical): number;
 ```
 
 ### triangle3
