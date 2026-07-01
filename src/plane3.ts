@@ -44,10 +44,34 @@ export function fromNormalAndPoint(out: Plane3, normal: Vec3, point: Vec3): Plan
  * @returns The output plane
  */
 export function fromCoplanarPoints(out: Plane3, a: Vec3, b: Vec3, c: Vec3): Plane3 {
-    const v1: Vec3 = vec3.subtract(vec3.create(), b, a);
-    const v2: Vec3 = vec3.subtract(vec3.create(), c, a);
-    vec3.normalize(out.normal, vec3.cross(out.normal, v1, v2));
-    out.constant = -vec3.dot(out.normal, a);
+    const ax = a[0];
+    const ay = a[1];
+    const az = a[2];
+
+    // edge vectors v1 = b - a, v2 = c - a
+    const v1x = b[0] - ax;
+    const v1y = b[1] - ay;
+    const v1z = b[2] - az;
+    const v2x = c[0] - ax;
+    const v2y = c[1] - ay;
+    const v2z = c[2] - az;
+
+    // normal = normalize(v1 × v2) (matches vec3.normalize: zero-length stays zero)
+    let nx = v1y * v2z - v1z * v2y;
+    let ny = v1z * v2x - v1x * v2z;
+    let nz = v1x * v2y - v1y * v2x;
+    let len = nx * nx + ny * ny + nz * nz;
+    if (len > 0) {
+        len = 1 / Math.sqrt(len);
+    }
+    nx *= len;
+    ny *= len;
+    nz *= len;
+
+    out.normal[0] = nx;
+    out.normal[1] = ny;
+    out.normal[2] = nz;
+    out.constant = -(nx * ax + ny * ay + nz * az);
 
     return out;
 }
@@ -146,23 +170,41 @@ export function projectPoint(out: Vec3, plane: Plane3, point: Vec3): Vec3 {
 export function transform(out: Plane3, plane: Plane3, matrix: Mat4): Plane3 {
     // Transform the normal by the inverse transpose of the matrix
     // For a proper implementation, you'd need mat4.invert and proper normal transformation
-    // This is a simplified version
-    const point: Vec3 = vec3.scale(vec3.create(), plane.normal, -plane.constant);
+    // This is a simplified version (rotation-only normal transform). fully scalar, no allocations.
+    const inx = plane.normal[0];
+    const iny = plane.normal[1];
+    const inz = plane.normal[2];
 
-    // Transform normal (rotation only)
-    const nx = plane.normal[0],
-        ny = plane.normal[1],
-        nz = plane.normal[2];
-    out.normal[0] = matrix[0] * nx + matrix[4] * ny + matrix[8] * nz;
-    out.normal[1] = matrix[1] * nx + matrix[5] * ny + matrix[9] * nz;
-    out.normal[2] = matrix[2] * nx + matrix[6] * ny + matrix[10] * nz;
+    // a point on the plane: normal * -constant
+    const px = inx * -plane.constant;
+    const py = iny * -plane.constant;
+    const pz = inz * -plane.constant;
 
-    // Transform point
-    const transformedPoint: Vec3 = vec3.transformMat4(vec3.create(), point, matrix);
+    // transform normal (rotation part only)
+    let nx = matrix[0] * inx + matrix[4] * iny + matrix[8] * inz;
+    let ny = matrix[1] * inx + matrix[5] * iny + matrix[9] * inz;
+    let nz = matrix[2] * inx + matrix[6] * iny + matrix[10] * inz;
 
-    // Recalculate constant
-    vec3.normalize(out.normal, out.normal);
-    out.constant = -vec3.dot(out.normal, transformedPoint);
+    // transform the point by the full matrix (matches vec3.transformMat4, incl. w divide)
+    let w = matrix[3] * px + matrix[7] * py + matrix[11] * pz + matrix[15];
+    w = w || 1.0;
+    const tpx = (matrix[0] * px + matrix[4] * py + matrix[8] * pz + matrix[12]) / w;
+    const tpy = (matrix[1] * px + matrix[5] * py + matrix[9] * pz + matrix[13]) / w;
+    const tpz = (matrix[2] * px + matrix[6] * py + matrix[10] * pz + matrix[14]) / w;
+
+    // normalize transformed normal (matches vec3.normalize)
+    let len = nx * nx + ny * ny + nz * nz;
+    if (len > 0) {
+        len = 1 / Math.sqrt(len);
+    }
+    nx *= len;
+    ny *= len;
+    nz *= len;
+
+    out.normal[0] = nx;
+    out.normal[1] = ny;
+    out.normal[2] = nz;
+    out.constant = -(nx * tpx + ny * tpy + nz * tpz);
 
     return out;
 }
@@ -197,38 +239,50 @@ export function exactEquals(a: Plane3, b: Plane3): boolean {
  * @returns True if intersection exists, false if planes are degenerate or parallel
  */
 export function intersect(p1: Plane3, p2: Plane3, p3: Plane3, out: Vec3): boolean {
-    // Using the formula: point = -(d1*N2×N3 + d2*N3×N1 + d3*N1×N2) / (N1·(N2×N3))
-    // where N1, N2, N3 are normals and d1, d2, d3 are constants
+    // point = -(d1*(N2×N3) + d2*(N3×N1) + d3*(N1×N2)) / (N1·(N2×N3))
+    // Cramer's rule: the three cross products are the columns of adj(M) and are reused
+    // between the determinant and the numerator. fully scalar, zero allocations.
+    const n1x = p1.normal[0];
+    const n1y = p1.normal[1];
+    const n1z = p1.normal[2];
+    const n2x = p2.normal[0];
+    const n2y = p2.normal[1];
+    const n2z = p2.normal[2];
+    const n3x = p3.normal[0];
+    const n3y = p3.normal[1];
+    const n3z = p3.normal[2];
 
-    const n1 = p1.normal;
-    const n2 = p2.normal;
-    const n3 = p3.normal;
+    // N2 × N3
+    const c1x = n2y * n3z - n2z * n3y;
+    const c1y = n2z * n3x - n2x * n3z;
+    const c1z = n2x * n3y - n2y * n3x;
 
-    // Calculate N2 × N3
-    const n2_cross_n3: Vec3 = vec3.cross(vec3.create(), n2, n3);
+    // denominator: N1 · (N2 × N3)
+    const denom = n1x * c1x + n1y * c1y + n1z * c1z;
 
-    // Calculate the denominator: N1 · (N2 × N3)
-    const denom = vec3.dot(n1, n2_cross_n3);
-
-    // Check if planes are parallel or degenerate (determinant is zero)
+    // planes are parallel or degenerate (determinant is zero)
     if (Math.abs(denom) < 0.000001) {
         return false;
     }
 
-    // Calculate N3 × N1
-    const n3_cross_n1: Vec3 = vec3.cross(vec3.create(), n3, n1);
+    // N3 × N1
+    const c2x = n3y * n1z - n3z * n1y;
+    const c2y = n3z * n1x - n3x * n1z;
+    const c2z = n3x * n1y - n3y * n1x;
 
-    // Calculate N1 × N2
-    const n1_cross_n2: Vec3 = vec3.cross(vec3.create(), n1, n2);
+    // N1 × N2
+    const c3x = n1y * n2z - n1z * n2y;
+    const c3y = n1z * n2x - n1x * n2z;
+    const c3z = n1x * n2y - n1y * n2x;
 
-    // Calculate the numerator: -(d1*N2×N3 + d2*N3×N1 + d3*N1×N2)
-    const term1: Vec3 = vec3.scale(vec3.create(), n2_cross_n3, p1.constant);
-    const term2: Vec3 = vec3.scale(vec3.create(), n3_cross_n1, p2.constant);
-    const term3: Vec3 = vec3.scale(vec3.create(), n1_cross_n2, p3.constant);
+    const d1 = p1.constant;
+    const d2 = p2.constant;
+    const d3 = p3.constant;
+    const s = -1 / denom;
 
-    vec3.add(out, term1, term2);
-    vec3.add(out, out, term3);
-    vec3.scale(out, out, -1 / denom);
+    out[0] = (d1 * c1x + d2 * c2x + d3 * c3x) * s;
+    out[1] = (d1 * c1y + d2 * c2y + d3 * c3y) * s;
+    out[2] = (d1 * c1z + d2 * c2z + d3 * c3z) * s;
 
     return true;
 }
