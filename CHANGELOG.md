@@ -1,6 +1,10 @@
 # CHANGELOG
 
-## 0.0.13 (Unreleased)
+## 0.0.14 (Unreleased)
+
+- feat!: remove the `Raycast3` struct and its helpers (`raycast3.create`/`fromValues`/`set`/`copy`/`fromSegment`). `raycast3.intersectsTriangle` and `raycast3.intersectsBox3` now take the ray in form (`origin: Vec3`, `direction: Vec3`, `length: number`) instead of a `Raycast3` object.
+
+## 0.0.13
 
 - perf: `plane3.intersect`, `plane3.fromCoplanarPoints`, and `plane3.transform` are now fully scalar with zero internal allocations (previously they allocated 6, 2, and 2 temporary `Vec3`s per call respectively via `vec3.create()`). Results are unchanged. `plane3.intersect` — a hot path for convex-hull convex-radius shrinking — benchmarks ~2.7× faster steady-state, with a larger win under GC pressure. Adds a `plane3` test suite (previously untested).
 - perf: simplify `obb3.containsPoint`/`clampPoint`/`intersectsOBB3` to scalar locals instead of scratch vectors (no behavior change); add `clampPoint`/`intersectsOBB3` tests.

@@ -1,70 +1,3 @@
-import { fromValues as fromValues$1, create as create$1, clone, copy as copy$1, subtract, length, normalize } from './vec3.js';
-
-/**
- * Creates a new Raycast3 with default values (origin at (0,0,0), direction (0,0,0), length 1.
- * @returns A new Raycast3.
- */
-function create() {
-    return {
-        origin: create$1(),
-        direction: fromValues$1(0, 0, 0),
-        length: 1,
-    };
-}
-/**
- * Creates a new Raycast3 from given values.
- * @param origin The origin Vec3.
- * @param direction The direction Vec3.
- * @param length The length of the ray.
- * @returns A new Raycast3.
- */
-function fromValues(origin, direction, length) {
-    return {
-        origin: clone(origin),
-        direction: clone(direction),
-        length,
-    };
-}
-/**
- * Sets the components of a Raycast3.
- * @param out The output Raycast3.
- * @param origin The origin Vec3.
- * @param direction The direction Vec3.
- * @param length The length of the ray.
- * @returns The output Raycast3.
- */
-function set(out, origin, direction, length) {
-    copy$1(out.origin, origin);
-    copy$1(out.direction, direction);
-    out.length = length;
-    return out;
-}
-/**
- * Copies a Raycast3.
- * @param out The output Raycast3.
- * @param a The input Raycast3.
- * @returns The output Raycast3.
- */
-function copy(out, a) {
-    copy$1(out.origin, a.origin);
-    copy$1(out.direction, a.direction);
-    out.length = a.length;
-    return out;
-}
-/**
- * Creates a Raycast3 from two points.
- * @param out The output Raycast3.
- * @param a The starting point.
- * @param b The ending point.
- * @returns The output Raycast3.
- */
-function fromSegment(out, a, b) {
-    copy$1(out.origin, a);
-    subtract(out.direction, b, a);
-    out.length = length(out.direction);
-    normalize(out.direction, out.direction);
-    return out;
-}
 /**
  * Creates a new IntersectsTriangleResult with default values.
  * @returns A new IntersectsTriangleResult.
@@ -81,13 +14,15 @@ function createIntersectsTriangleResult() {
  * Based on https://github.com/pmjoniak/GeometricTools/blob/master/GTEngine/Include/Mathematics/GteIntrRay3Triangle3.h
  *
  * @param out output object to store result (hit boolean, fraction, frontFacing)
- * @param ray ray to test (with origin, direction, and length)
+ * @param origin ray origin
+ * @param direction ray direction
+ * @param length ray length
  * @param a first vertex of triangle
  * @param b second vertex of triangle
  * @param c third vertex of triangle
  * @param backfaceCulling if true, backfaces will not be considered hits
  */
-function intersectsTriangle(out, ray, a, b, c, backfaceCulling) {
+function intersectsTriangle(out, origin, direction, length, a, b, c, backfaceCulling) {
     // compute edge1 = b - a
     const e1x = b[0] - a[0];
     const e1y = b[1] - a[1];
@@ -101,9 +36,9 @@ function intersectsTriangle(out, ray, a, b, c, backfaceCulling) {
     const ny = e1z * e2x - e1x * e2z;
     const nz = e1x * e2y - e1y * e2x;
     // determine front vs back facing
-    const dx = ray.direction[0];
-    const dy = ray.direction[1];
-    const dz = ray.direction[2];
+    const dx = direction[0];
+    const dy = direction[1];
+    const dz = direction[2];
     let DdN = dx * nx + dy * ny + dz * nz;
     let sign;
     if (DdN > 0) {
@@ -128,10 +63,10 @@ function intersectsTriangle(out, ray, a, b, c, backfaceCulling) {
         out.frontFacing = false;
         return;
     }
-    // compute diff = ray.origin - a
-    const diffx = ray.origin[0] - a[0];
-    const diffy = ray.origin[1] - a[1];
-    const diffz = ray.origin[2] - a[2];
+    // compute diff = origin - a
+    const diffx = origin[0] - a[0];
+    const diffy = origin[1] - a[1];
+    const diffz = origin[2] - a[2];
     // compute barycentric coordinate b1
     // DdQxE2 = sign * D · (diff × edge2)
     const diffCrossE2x = diffy * e2z - diffz * e2y;
@@ -173,9 +108,9 @@ function intersectsTriangle(out, ray, a, b, c, backfaceCulling) {
     }
     const t = QdN / DdN;
     // check if intersection is within ray length
-    if (t <= ray.length) {
+    if (t <= length) {
         out.hit = true;
-        out.fraction = t / ray.length;
+        out.fraction = t / length;
         out.frontFacing = sign < 0;
     }
     else {
@@ -188,26 +123,28 @@ function intersectsTriangle(out, ray, a, b, c, backfaceCulling) {
  * Test if a ray intersects an axis-aligned bounding box.
  * Uses slab-based algorithm that handles parallel rays correctly.
  *
- * @param ray Ray to test (with origin, direction, and length)
+ * @param origin ray origin
+ * @param direction ray direction
+ * @param length ray length
  * @param aabb AABB to test against
  * @returns true if ray intersects the AABB, false otherwise
  */
-function intersectsBox3(ray, aabb) {
+function intersectsBox3(origin, direction, length, aabb) {
     let tmin = 0;
-    let tmax = ray.length;
+    let tmax = length;
     for (let i = 0; i < 3; i++) {
-        const d = ray.direction[i];
+        const d = direction[i];
         if (Math.abs(d) < 1e-10) {
             // ray is parallel to slab: check if origin is within slab
-            if (ray.origin[i] < aabb[i] || ray.origin[i] > aabb[i + 3]) {
+            if (origin[i] < aabb[i] || origin[i] > aabb[i + 3]) {
                 return false;
             }
         }
         else {
             // compute intersection times with slab
             const invD = 1 / d;
-            let t0 = (aabb[i] - ray.origin[i]) * invD;
-            let t1 = (aabb[i + 3] - ray.origin[i]) * invD;
+            let t0 = (aabb[i] - origin[i]) * invD;
+            let t1 = (aabb[i + 3] - origin[i]) * invD;
             if (invD < 0) {
                 const temp = t0;
                 t0 = t1;
@@ -223,5 +160,5 @@ function intersectsBox3(ray, aabb) {
     return true;
 }
 
-export { copy, create, createIntersectsTriangleResult, fromSegment, fromValues, intersectsBox3, intersectsTriangle, set };
+export { createIntersectsTriangleResult, intersectsBox3, intersectsTriangle };
 //# sourceMappingURL=raycast3.js.map

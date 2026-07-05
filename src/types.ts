@@ -81,13 +81,6 @@ export type Ray3 = {
     direction: Vec3;
 };
 
-/** A raycast in 3D space */
-export type Raycast3 = {
-    origin: Vec3;
-    direction: Vec3;
-    length: number;
-};
-
 export type MutableArrayLike<T> = {
     [index: number]: T;
     length: number;
