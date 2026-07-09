@@ -1,6 +1,6 @@
 # CHANGELOG
 
-## 0.0.14 (Unreleased)
+## 0.0.14
 
 - feat!: remove the `Raycast3` struct and its helpers (`raycast3.create`/`fromValues`/`set`/`copy`/`fromSegment`). `raycast3.intersectsTriangle` and `raycast3.intersectsBox3` now take the ray in form (`origin: Vec3`, `direction: Vec3`, `length: number`) instead of a `Raycast3` object.
 
