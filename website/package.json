@@ -1,5 +1,5 @@
 {
-    "name": "mathcat-examples",
+    "name": "website",
     "private": true,
     "version": "0.0.0",
     "type": "module",
@@ -8,13 +8,7 @@
         "build": "rm -rf ./dist && vite build",
         "preview": "vite preview"
     },
-    "dependencies": {
-        "mathcat": "workspace:*",
-        "three": "^0.134.0"
-    },
     "devDependencies": {
-        "@types/three": "^0.134.0",
-        "typescript": "^5.9.2",
         "vite": "^7.3.1"
     }
 }
