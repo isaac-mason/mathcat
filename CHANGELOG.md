@@ -1,5 +1,21 @@
 # CHANGELOG
 
+## 0.1.0 (Unreleased)
+
+A large restructure into namespaced subpath entrypoints, plus new color, time, and noise modules.
+
+- feat!: reorganise the library into subpath entrypoints. Core vector/matrix/quaternion/euler/spherical/scalar math stays on the main `mathcat` entry; shape primitives and spatial queries move to `mathcat/shapes`; computational-geometry algorithms (`quickhull2`/`quickhull3`/`circumcircle`) move to `mathcat/geometry`. New `mathcat/time`, `mathcat/random`, `mathcat/noise`, and `mathcat/color` entrypoints. Each entrypoint is a separate bundle for tree-shaking.
+- feat: add `mathcat/color` — linear-sRGB `color`, `colorspace` conversions, and `hsl` utilities.
+- feat: add `mathcat/time` — `spring`/smooth-damp utilities alongside `easing` (moved from the top-level `easing` export).
+- feat: split noise into `perlin2d`, `perlin3d`, `simplex2d`, and `simplex3d` namespaces under `mathcat/noise`.
+- feat!: rework `random` — `mulberry32` is now an explicit state object with `create`/`sample`, and the `random` apis are reshaped around it.
+- feat!: rename `common` to `scalar` and split `MutableArrayLike` out into `arrays`.
+- feat: add `fromBuffer`/`toBuffer` to `vec2`, `vec4`, and `quat` (matching `vec3`); `toBuffer` returns the target buffer.
+- feat!: remove the `Ray3` type.
+- feat: make the remaining apis consistent with the out-argument-first convention for allocation-free usage.
+- build: switch the bundler from rollup to rolldown (one ES bundle per subpath entry); declarations are emitted with `tsc` and post-processed to add explicit `.js` extensions.
+- docs: regenerate the reference README grouped by subpath entrypoint, and add a website plus a typedoc API reference.
+
 ## 0.0.14
 
 - feat!: remove the `Raycast3` struct and its helpers (`raycast3.create`/`fromValues`/`set`/`copy`/`fromSegment`). `raycast3.intersectsTriangle` and `raycast3.intersectsBox3` now take the ray in form (`origin: Vec3`, `direction: Vec3`, `length: number`) instead of a `Raycast3` object.
