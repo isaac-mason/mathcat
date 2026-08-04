@@ -53,6 +53,16 @@
         ],
         "category": "color"
     },
+    "example-simplex-2d-noise-terrain": {
+        "title": "Simplex 2D Noise Terrain",
+        "description": "A rolling terrain whose heights come from mathcat's simplex2d noise, scrolling like a fly-over; lit and coloured by the flowing rainbow.",
+        "tags": [
+            "simplex2d",
+            "noise",
+            "terrain"
+        ],
+        "category": "noise"
+    },
     "example-easing": {
         "title": "Easing",
         "description": "A gallery of mathcat's easing functions raced side by side — dots start together and spread apart as each follows its own pacing.",
