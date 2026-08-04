@@ -1,15 +1,21 @@
 import * as g from 'gpucat';
 import { d } from 'gpucat';
+import { mat4, vec4 } from 'mathcat';
 import { quickhull2 } from 'mathcat/geometry';
 import { mulberry32 } from 'mathcat/random';
 import { rainbowLineColor, rainbowRGB, time } from './common/rainbow';
 
 // A drifting 2D point cloud with its convex hull (mathcat's quickhull2)
 // recomputed every frame. As points wander in and out of the boundary the hull
-// polygon morphs and points light up when they join it. The outline and the
-// hull-vertex markers use the flowing brand rainbow (see common/rainbow).
+// polygon morphs and points light up (rainbow markers) when they join it.
+// One point is yours: move the mouse (or drag a finger) and it steers to the
+// pointer, so you can push it onto the hull and watch quickhull2 re-solve live.
+// Nothing special about that point's look — it's driven by data, so it goes grey
+// like the rest when off the hull and lights up like the rest when on it. The
+// screen point is unprojected onto the z=0 plane with mathcat (inverse view·proj).
 
 const POINT_COUNT = 16;
+const CONTROLLED = 0; // this point follows the pointer while you interact
 
 /* ------------------------------------------------------------------ drifters */
 
@@ -41,6 +47,7 @@ const canvas = renderer.domElement as HTMLCanvasElement;
 document.body.appendChild(canvas);
 renderer.setPixelRatio(devicePixelRatio);
 renderer.setSize(window.innerWidth, window.innerHeight);
+canvas.style.touchAction = 'none';
 
 const scene = new g.Scene();
 
@@ -48,9 +55,13 @@ const camera = new g.PerspectiveCamera(Math.PI / 4, window.innerWidth / window.i
 camera.position[2] = 5.5;
 scene.add(camera);
 
+// single-pointer drag is reserved for steering a point, so the orbit controls
+// keep only wheel / pinch zoom (no rotate or pan grabbing the pointer).
 const controls = new g.OrbitControls(camera, canvas);
 controls.enableDamping = true;
 controls.dampingFactor = 0.1;
+controls.enableRotate = false;
+controls.enablePan = false;
 
 renderer.setInspector(new g.Inspector());
 
@@ -98,15 +109,83 @@ for (let i = 0; i < POINT_COUNT; i++) {
     hullMarkers.push(marker);
 }
 
+/* -------------------------------------------------------------- pointer input */
+
+// where the steered point wants to be (world x, y on the z=0 plane)
+const steerTarget: [number, number] = [0, 0];
+let steering = false; // is the pointer currently driving the point?
+let touchDown = false; // a finger is held (touch has no hover to steer with)
+
+// unproject a screen point onto the z=0 plane using mathcat (inverse of proj·view)
+const invVP = mat4.create();
+const rayNear = vec4.create();
+const rayFar = vec4.create();
+function pointerToPlane(clientX: number, clientY: number, out: [number, number]): boolean {
+    const rect = canvas.getBoundingClientRect();
+    const ndcX = ((clientX - rect.left) / rect.width) * 2 - 1;
+    const ndcY = -(((clientY - rect.top) / rect.height) * 2 - 1);
+
+    mat4.multiply(invVP, camera.projectionMatrix, camera.matrixWorldInverse);
+    mat4.invert(invVP, invVP);
+
+    vec4.set(rayNear, ndcX, ndcY, -1, 1);
+    vec4.set(rayFar, ndcX, ndcY, 1, 1);
+    vec4.transformMat4(rayNear, rayNear, invVP);
+    vec4.transformMat4(rayFar, rayFar, invVP);
+
+    const nx = rayNear[0] / rayNear[3];
+    const ny = rayNear[1] / rayNear[3];
+    const nz = rayNear[2] / rayNear[3];
+    const fx = rayFar[0] / rayFar[3];
+    const fy = rayFar[1] / rayFar[3];
+    const fz = rayFar[2] / rayFar[3];
+
+    const dz = fz - nz;
+    if (Math.abs(dz) < 1e-6) return false;
+    const s = -nz / dz; // parameter along the ray where world z == 0
+    out[0] = nx + (fx - nx) * s;
+    out[1] = ny + (fy - ny) * s;
+    return true;
+}
+
+function steerTo(e: PointerEvent) {
+    if (pointerToPlane(e.clientX, e.clientY, steerTarget)) steering = true;
+}
+
+// desktop: steer while the pointer hovers the canvas. touch: steer while a finger is down.
+canvas.addEventListener('pointermove', (e) => {
+    if (e.pointerType === 'touch' && !touchDown) return; // touch has no hover
+    steerTo(e);
+});
+canvas.addEventListener('pointerdown', (e) => {
+    touchDown = true;
+    steerTo(e);
+});
+// lifting a finger stops steering; a mouse keeps steering as long as it hovers
+canvas.addEventListener('pointerup', (e) => {
+    touchDown = false;
+    if (e.pointerType === 'touch') steering = false;
+});
+canvas.addEventListener('pointercancel', () => {
+    touchDown = false;
+    steering = false;
+});
+canvas.addEventListener('pointerleave', () => {
+    touchDown = false;
+    steering = false; // mouse left the canvas — ease the point back into its drift
+});
+
 /* ------------------------------------------------------------------ readout */
 
 const readout = document.createElement('div');
-readout.style.cssText = 'position:absolute;left:16px;top:14px;color:#cfd8dc;font:13px/1.6 monospace;pointer-events:none;text-shadow:0 1px 2px #000';
+readout.className = 'mc-info';
+readout.style.left = '16px';
+readout.style.top = '14px';
 document.body.appendChild(readout);
 
 /* ------------------------------------------------------------------ render */
 
-const points: number[] = new Array(POINT_COUNT * 2);
+const points: number[] = new Array(POINT_COUNT * 2).fill(0);
 
 const scenePass = g.pass(scene, camera);
 const outputNode = g.fxaa(scenePass.getTextureNode());
@@ -116,11 +195,18 @@ function frame(tms: number) {
     const t = tms / 1000;
     time.value = t;
 
-    // advance the drifting points
+    // advance the points; the controlled one eases toward the pointer while
+    // steering, and eases back into its drift orbit once released
     for (let i = 0; i < POINT_COUNT; i++) {
         const dr = drifters[i];
-        const x = dr.bx + dr.ax * Math.sin(t * dr.fx + dr.px);
-        const y = dr.by + dr.ay * Math.sin(t * dr.fy + dr.py);
+        let x = dr.bx + dr.ax * Math.sin(t * dr.fx + dr.px);
+        let y = dr.by + dr.ay * Math.sin(t * dr.fy + dr.py);
+        if (i === CONTROLLED) {
+            const tx = steering ? steerTarget[0] : x;
+            const ty = steering ? steerTarget[1] : y;
+            x = points[i * 2] + (tx - points[i * 2]) * 0.3;
+            y = points[i * 2 + 1] + (ty - points[i * 2 + 1]) * 0.3;
+        }
         points[i * 2] = x;
         points[i * 2 + 1] = y;
         pointDots[i].position[0] = x;
@@ -152,7 +238,10 @@ function frame(tms: number) {
         }
     }
 
-    readout.textContent = `points: ${POINT_COUNT}   hull vertices: ${hull.length}   quickhull2: ${hullMs.toFixed(2)}ms`;
+    const onHull = hull.includes(CONTROLLED);
+    readout.innerHTML =
+        `points ${POINT_COUNT} · hull ${hull.length} · quickhull2 ${hullMs.toFixed(2)}ms` +
+        `<br><span class="mc-dim">steer a point with the pointer — ${onHull ? 'yours is on the hull' : 'push it onto the hull'}</span>`;
 
     scene.updateWorldMatrix();
     camera.updateViewMatrix();

@@ -1,4 +1,5 @@
 import * as g from 'gpucat';
+import { d } from 'gpucat';
 import { type Vec2, vec2 } from 'mathcat';
 import { circumcircle } from 'mathcat/geometry';
 import { circle } from 'mathcat/shapes';
@@ -9,8 +10,6 @@ import { rainbowLineColor, time } from './common/rainbow';
 // circumcircle) recomputed every frame. As the triangle flattens toward
 // degenerate the circumcircle balloons — watch the circumradius readout. The
 // ring is drawn with the flowing brand rainbow (see common/rainbow).
-
-const d = g.d;
 
 /* ------------------------------------------------------------------ shapes */
 
@@ -86,7 +85,7 @@ const centerDot = makeDot([1.0, 0.243, 0.647]);
 // distance — driven from the same eased morph index as the triangle.
 const ROW_HEIGHT = 46;
 const wheel = document.createElement('div');
-wheel.style.cssText = 'position:absolute;left:40px;top:50%;width:220px;height:0;pointer-events:none;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif';
+wheel.style.cssText = 'position:absolute;left:40px;top:50%;width:220px;height:0;pointer-events:none;font-family:var(--mc-mono)';
 document.body.appendChild(wheel);
 const wheelRows = SHAPES.map((shape) => {
     const el = document.createElement('div');
@@ -117,7 +116,9 @@ function updateWheel(continuousIndex: number) {
 
 // small circumradius readout
 const readout = document.createElement('div');
-readout.style.cssText = 'position:absolute;left:40px;bottom:24px;color:#cfd8dc;font:13px/1.6 monospace;pointer-events:none;text-shadow:0 1px 2px #000';
+readout.className = 'mc-info';
+readout.style.left = '40px';
+readout.style.bottom = '24px';
 document.body.appendChild(readout);
 
 /* ------------------------------------------------------------------ render */

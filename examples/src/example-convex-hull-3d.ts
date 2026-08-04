@@ -1,4 +1,5 @@
 import * as g from 'gpucat';
+import { d } from 'gpucat';
 import GUI from 'lil-gui';
 import { mat4, quat, vec3 as v3 } from 'mathcat';
 import { quickhull3 } from 'mathcat/geometry';
@@ -11,8 +12,6 @@ import { rainbowRGB, time } from './common/rainbow';
 // animated over time, so the bands anchor to the geometry as the camera orbits.
 // On-hull points glow rainbow; interior points stay grey. Pick a point set from
 // the dropdown (the Stanford bunny, primitives, or random).
-
-const d = g.d;
 
 /* ------------------------------------------------------------------ point sets */
 
@@ -251,7 +250,9 @@ function rebuild(rawPoints: number[]) {
 /* ------------------------------------------------------------------ ui + stats */
 
 const stats = document.createElement('div');
-stats.style.cssText = 'position:absolute;top:10px;left:10px;color:#fff;font:12px/1.6 monospace;pointer-events:none;text-shadow:0 1px 2px #000';
+stats.className = 'mc-info';
+stats.style.top = '10px';
+stats.style.left = '10px';
 document.body.appendChild(stats);
 function updateStats(points: number, hullVerts: number, ms: number) {
     stats.innerHTML = `points: ${points}<br>hull vertices: ${hullVerts}<br>quickhull3: ${ms.toFixed(2)}ms`;
