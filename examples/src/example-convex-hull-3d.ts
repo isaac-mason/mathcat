@@ -1,74 +1,158 @@
 import * as g from 'gpucat';
+import GUI from 'lil-gui';
 import { mat4, quat, vec3 as v3 } from 'mathcat';
 import { quickhull3 } from 'mathcat/geometry';
 import { mulberry32 } from 'mathcat/random';
 
-// A seeded 3D point cloud and its convex hull (mathcat's quickhull3), rendered
-// with gpucat: a translucent normal-coloured "rainbow" hull shell over instanced
-// spheres — blue for points on the hull, grey for points inside it. mathcat does
-// the maths: point generation (mulberry32), the hull, and its vertex normals (vec3).
+// A point cloud and its convex hull (mathcat's quickhull3), rendered with gpucat:
+// a translucent hull shell + instanced spheres, coloured by a flowing "brand
+// rainbow" (adapted from makecat.io) — a palette sampled by world position and
+// animated over time, so the bands anchor to the geometry as the camera orbits.
+// On-hull points glow rainbow; interior points stay grey. Pick a point set from
+// the dropdown (the Stanford bunny, primitives, or random).
 
 const d = g.d;
 
-const POINT_COUNT = 60;
-const CLOUD_RADIUS = 1.5;
-const MARKER_RADIUS = 0.05;
-const HULL_OPACITY = 0.16;
+/* ------------------------------------------------- flowing brand rainbow (shader) */
 
-/* mathcat: seeded point cloud inside a ball (rejection sampling) */
+// shared time uniform — advance once per frame so every rainbow stays phase-locked
+const time = g.uniform(g.f32(0), 'time');
 
-const rng = mulberry32.create(1337);
-const points: number[] = [];
-while (points.length < POINT_COUNT * 3) {
-    const x = mulberry32.sample(rng) * 2 - 1;
-    const y = mulberry32.sample(rng) * 2 - 1;
-    const z = mulberry32.sample(rng) * 2 - 1;
-    if (x * x + y * y + z * z <= 1) {
-        points.push(x * CLOUD_RADIUS, y * CLOUD_RADIUS, z * CLOUD_RADIUS);
+// 5-stop palette (pink -> yellow -> blue -> purple -> pink), sRGB/255
+const rainbowPalette = g.wgslFn(
+    `
+    fn hullRainbowPalette(t: f32) -> vec3f {
+        let x = fract(t) * 4.0;
+        let i = floor(x);
+        let f = x - i;
+        let c0 = vec3f(1.0, 0.243, 0.647);
+        let c1 = vec3f(1.0, 0.824, 0.247);
+        let c2 = vec3f(0.247, 0.655, 1.0);
+        let c3 = vec3f(0.541, 0.169, 0.886);
+        var a = c0;
+        var b = c1;
+        if (i >= 3.0) { a = c3; b = c0; }
+        else if (i >= 2.0) { a = c2; b = c3; }
+        else if (i >= 1.0) { a = c1; b = c2; }
+        return mix(a, b, f);
     }
+`,
+    { output: d.vec3f, params: [{ name: 't', type: d.f32 }] },
+);
+
+const RAINBOW_PERIOD = 2.5; // world units per palette cycle
+const RAINBOW_SPEED = 0.15; // cycles per second along the flow
+const rainbowAxis = g.vec3f(0.5774, 0.5774, 0.5774); // (1,1,1)/sqrt(3)
+
+// phase(worldPos) = dot(worldPos, axis)/PERIOD - time*SPEED
+function rainbowRGB(worldPos: g.Node<typeof d.vec3f>): g.Node<typeof d.vec3f> {
+    const along = g.mul(g.dot(worldPos, rainbowAxis), g.f32(1 / RAINBOW_PERIOD));
+    const phase = g.sub(along, g.mul(time, g.f32(RAINBOW_SPEED)));
+    return rainbowPalette(phase);
 }
-const numPoints = points.length / 3;
 
-/* mathcat: convex hull (triangle indices) + the set of on-hull vertices */
+/* ------------------------------------------------------------------ point sets */
 
-const hullIndices = quickhull3(points);
-const hullVertices = new Set(hullIndices);
-
-/* mathcat: smooth vertex normals for the hull (area-weighted face normals) */
-
-const hullNormals = new Float32Array(numPoints * 3);
-{
-    const a = v3.create();
-    const b = v3.create();
-    const c = v3.create();
-    const e1 = v3.create();
-    const e2 = v3.create();
-    const fn = v3.create();
-    for (let i = 0; i < hullIndices.length; i += 3) {
-        const ia = hullIndices[i];
-        const ib = hullIndices[i + 1];
-        const ic = hullIndices[i + 2];
-        v3.set(a, points[ia * 3], points[ia * 3 + 1], points[ia * 3 + 2]);
-        v3.set(b, points[ib * 3], points[ib * 3 + 1], points[ib * 3 + 2]);
-        v3.set(c, points[ic * 3], points[ic * 3 + 1], points[ic * 3 + 2]);
-        v3.subtract(e1, b, a);
-        v3.subtract(e2, c, a);
-        v3.cross(fn, e1, e2); // length ∝ triangle area → area-weighted accumulation
-        for (const idx of [ia, ib, ic]) {
-            hullNormals[idx * 3] += fn[0];
-            hullNormals[idx * 3 + 1] += fn[1];
-            hullNormals[idx * 3 + 2] += fn[2];
+// minimal .glb reader — pulls just the POSITION accessors (all we need for a hull)
+async function loadGlbPositions(url: string): Promise<number[]> {
+    const buf = await (await fetch(url)).arrayBuffer();
+    const dv = new DataView(buf);
+    let offset = 12; // skip 12-byte header
+    let json: any = null;
+    let bin: ArrayBuffer | null = null;
+    while (offset < dv.byteLength) {
+        const len = dv.getUint32(offset, true);
+        const type = dv.getUint32(offset + 4, true);
+        const data = buf.slice(offset + 8, offset + 8 + len);
+        if (type === 0x4e4f534a) json = JSON.parse(new TextDecoder().decode(data));
+        else if (type === 0x004e4942) bin = data;
+        offset += 8 + len;
+    }
+    const positions: number[] = [];
+    const binView = new DataView(bin as ArrayBuffer);
+    for (const mesh of json.meshes) {
+        for (const prim of mesh.primitives) {
+            const accIdx = prim.attributes?.POSITION;
+            if (accIdx == null) continue;
+            const acc = json.accessors[accIdx];
+            const view = json.bufferViews[acc.bufferView];
+            const base = (view.byteOffset ?? 0) + (acc.byteOffset ?? 0);
+            const stride = view.byteStride ?? 12;
+            for (let i = 0; i < acc.count; i++) {
+                const o = base + i * stride;
+                positions.push(binView.getFloat32(o, true), binView.getFloat32(o + 4, true), binView.getFloat32(o + 8, true));
+            }
         }
     }
-    for (let i = 0; i < numPoints; i++) {
-        const len = Math.hypot(hullNormals[i * 3], hullNormals[i * 3 + 1], hullNormals[i * 3 + 2]) || 1;
-        hullNormals[i * 3] /= len;
-        hullNormals[i * 3 + 1] /= len;
-        hullNormals[i * 3 + 2] /= len;
-    }
+    return positions;
 }
 
-/* renderer, scene, camera */
+function gridCube(): number[] {
+    const pts: number[] = [];
+    for (let x = -1; x <= 1; x++) for (let y = -1; y <= 1; y++) for (let z = -1; z <= 1; z++) pts.push(x, y, z);
+    return pts;
+}
+
+function pyramid(): number[] {
+    return [-1, 0, -1, 1, 0, -1, 1, 0, 1, -1, 0, 1, 0, 1.5, 0, 0, 0.5, 0, 0.5, 0.3, 0.5];
+}
+
+function sphereShell(seed: number): number[] {
+    const rng = mulberry32.create(seed);
+    const pts: number[] = [];
+    for (let i = 0; i < 80; i++) {
+        const u = mulberry32.sample(rng) * 2 - 1;
+        const t = mulberry32.sample(rng) * Math.PI * 2;
+        const s = Math.sqrt(1 - u * u);
+        pts.push(Math.cos(t) * s, Math.sin(t) * s, u);
+    }
+    return pts;
+}
+
+function randomCloud(n: number, seed: number): number[] {
+    const rng = mulberry32.create(seed);
+    const pts: number[] = [];
+    while (pts.length < n * 3) {
+        const x = mulberry32.sample(rng) * 2 - 1;
+        const y = mulberry32.sample(rng) * 2 - 1;
+        const z = mulberry32.sample(rng) * 2 - 1;
+        if (x * x + y * y + z * z <= 1) pts.push(x, y, z);
+    }
+    return pts;
+}
+
+const VARIATIONS: Record<string, () => number[] | Promise<number[]>> = {
+    bunny: () => loadGlbPositions('./models/bunny.glb'),
+    cube: gridCube,
+    sphere: () => sphereShell(7),
+    pyramid,
+    'random 50': () => randomCloud(50, 11),
+    'random 500': () => randomCloud(500, 23),
+};
+
+// centre a point set at the origin and scale its largest extent to ~3 units,
+// so every variation frames the same regardless of its native size
+function normalize(pts: number[]): number[] {
+    const n = pts.length / 3;
+    let minx = Infinity, miny = Infinity, minz = Infinity;
+    let maxx = -Infinity, maxy = -Infinity, maxz = -Infinity;
+    for (let i = 0; i < n; i++) {
+        minx = Math.min(minx, pts[i * 3]); maxx = Math.max(maxx, pts[i * 3]);
+        miny = Math.min(miny, pts[i * 3 + 1]); maxy = Math.max(maxy, pts[i * 3 + 1]);
+        minz = Math.min(minz, pts[i * 3 + 2]); maxz = Math.max(maxz, pts[i * 3 + 2]);
+    }
+    const cx = (minx + maxx) / 2, cy = (miny + maxy) / 2, cz = (minz + maxz) / 2;
+    const scale = 3 / (Math.max(maxx - minx, maxy - miny, maxz - minz) || 1);
+    const out = new Array<number>(pts.length);
+    for (let i = 0; i < n; i++) {
+        out[i * 3] = (pts[i * 3] - cx) * scale;
+        out[i * 3 + 1] = (pts[i * 3 + 1] - cy) * scale;
+        out[i * 3 + 2] = (pts[i * 3 + 2] - cz) * scale;
+    }
+    return out;
+}
+
+/* ------------------------------------------------------------------ renderer */
 
 const renderer = new g.WebGPURenderer({ antialias: true });
 await renderer.init();
@@ -81,9 +165,9 @@ renderer.setSize(window.innerWidth, window.innerHeight);
 const scene = new g.Scene();
 
 const camera = new g.PerspectiveCamera(Math.PI / 4, window.innerWidth / window.innerHeight, 0.1, 100);
-camera.position[0] = -1.6;
-camera.position[1] = 1.8;
-camera.position[2] = 3.6;
+camera.position[0] = -1.8;
+camera.position[1] = 1.9;
+camera.position[2] = 4;
 scene.add(camera);
 
 const controls = new g.OrbitControls(camera, canvas);
@@ -98,106 +182,138 @@ window.addEventListener('resize', () => {
     camera.updateProjectionMatrix();
 });
 
-/* instanced spheres — one per point, tinted by hull membership */
+const sphereGeometry = g.createSphereGeometry(1, 12, 8);
+const HULL_MARKER_RADIUS = 0.03;
+const INNER_MARKER_RADIUS = 0.018;
+const HULL_OPACITY = 0.16;
 
-const sphere = g.createSphereGeometry(1, 16, 12);
+/* ------------------------------------------------------------------ (re)build */
 
-const instanceMatrices = new Float32Array(numPoints * 16);
-const instanceColors = new Float32Array(numPoints * 3);
-{
+let pointsMesh: g.Mesh | null = null;
+let hullMesh: g.Mesh | null = null;
+
+function buildPoints(points: number[], hullSet: Set<number>): g.Mesh {
+    const numPoints = points.length / 3;
+    const instanceMatrices = new Float32Array(numPoints * 16);
+    const instanceHull = new Float32Array(numPoints); // 1 = on hull, 0 = interior
     const t = v3.create();
-    const s = v3.fromValues(MARKER_RADIUS, MARKER_RADIUS, MARKER_RADIUS);
+    const s = v3.create();
     const q = quat.create();
     const m = mat4.create();
     for (let i = 0; i < numPoints; i++) {
+        const onHull = hullSet.has(i);
+        const r = onHull ? HULL_MARKER_RADIUS : INNER_MARKER_RADIUS;
         v3.set(t, points[i * 3], points[i * 3 + 1], points[i * 3 + 2]);
+        v3.set(s, r, r, r);
         mat4.fromRotationTranslationScale(m, q, t, s);
         instanceMatrices.set(m, i * 16);
-        const onHull = hullVertices.has(i);
-        instanceColors[i * 3] = onHull ? 0.3 : 0.5;
-        instanceColors[i * 3 + 1] = onHull ? 0.45 : 0.5;
-        instanceColors[i * 3 + 2] = onHull ? 1.0 : 0.55;
+        instanceHull[i] = onHull ? 1 : 0;
     }
+
+    const stride = 16 * 4;
+    const col0 = g.attribute(instanceMatrices, d.vec4f, { stride, offset: 0, instanced: true });
+    const col1 = g.attribute(instanceMatrices, d.vec4f, { stride, offset: 16, instanced: true });
+    const col2 = g.attribute(instanceMatrices, d.vec4f, { stride, offset: 32, instanced: true });
+    const col3 = g.attribute(instanceMatrices, d.vec4f, { stride, offset: 48, instanced: true });
+    const instanceTransform = g.mat4(col0, col1, col2, col3);
+    const instanceHullFlag = g.attribute(instanceHull, d.f32, { stride: 4, offset: 0, instanced: true });
+
+    const pos = g.attribute('position', d.vec3f);
+    const nrm = g.attribute('normal', d.vec3f);
+    const world = g.mul(instanceTransform, g.vec4(pos, g.f32(1)));
+    const clip = g.mul(g.cameraProjectionMatrix, g.mul(g.cameraViewMatrix, world));
+    const vNormal = g.varying(g.normalize(nrm), 'v_snormal');
+    const vWorld = g.varying(world.xyz, 'v_pworld');
+    const vHull = g.varying(instanceHullFlag, 'v_ishull');
+
+    const lightDirection = g.vec3(0.6, 1.0, 0.8).normalize();
+    const diffuse = g.Var('diffuse', vNormal.dot(lightDirection).max(g.f32(0)));
+    const light = g.Var('light', g.f32(0.4).add(diffuse.mul(g.f32(0.7))));
+    // interior points stay grey; on-hull points glow with the flowing rainbow
+    const grey = g.vec3(0.32, 0.32, 0.35);
+    const base = g.Var('base', g.mix(grey, rainbowRGB(vWorld), vHull));
+    const lit = g.Var('lit', base.mul(light));
+
+    const material = new g.Material({ vertex: clip, fragment: g.vec4(lit, g.f32(1)) });
+    const mesh = new g.Mesh(sphereGeometry, material);
+    mesh.count = numPoints;
+    return mesh;
 }
 
-const stride = 16 * 4;
-const col0 = g.attribute(instanceMatrices, d.vec4f, { stride, offset: 0, instanced: true });
-const col1 = g.attribute(instanceMatrices, d.vec4f, { stride, offset: 16, instanced: true });
-const col2 = g.attribute(instanceMatrices, d.vec4f, { stride, offset: 32, instanced: true });
-const col3 = g.attribute(instanceMatrices, d.vec4f, { stride, offset: 48, instanced: true });
-const instanceTransform = g.mat4(col0, col1, col2, col3);
-const instanceColor = g.attribute(instanceColors, d.vec3f, { stride: 12, offset: 0, instanced: true });
+function buildHull(points: number[], hullIndices: number[]): g.Mesh {
+    const geometry = new g.Geometry();
+    geometry.setBuffer('hullPosition', g.createVertexBuffer(d.vec3f, new Float32Array(points)));
+    geometry.setIndex(g.createIndexBuffer(new Uint32Array(hullIndices)));
 
-const spherePos = g.attribute('position', d.vec3f);
-const sphereNormal = g.attribute('normal', d.vec3f);
+    const pos = g.attribute('hullPosition', d.vec3f);
+    const world = g.mul(g.modelWorldMatrix, g.vec4(pos, g.f32(1)));
+    const clip = g.mul(g.cameraProjectionMatrix, g.mul(g.cameraViewMatrix, world));
+    const vWorld = g.varying(world.xyz, 'v_hworld');
 
-const sphereWorld = g.mul(instanceTransform, g.vec4(spherePos, g.f32(1)));
-const sphereClip = g.mul(g.cameraProjectionMatrix, g.mul(g.cameraViewMatrix, sphereWorld));
+    const material = new g.Material({
+        vertex: clip,
+        fragment: g.vec4(rainbowRGB(vWorld), g.f32(HULL_OPACITY)),
+        transparent: true,
+        cullMode: 'back',
+        depthWrite: false,
+        blend: {
+            color: { srcFactor: 'src-alpha', dstFactor: 'one-minus-src-alpha', operation: 'add' },
+            alpha: { srcFactor: 'one', dstFactor: 'one-minus-src-alpha', operation: 'add' },
+        },
+    });
+    return new g.Mesh(geometry, material);
+}
 
-// instances carry only uniform scale + translation, so the object-space normal
-// is already the world normal.
-const vSphereNormal = g.varying(g.normalize(sphereNormal), 'v_snormal');
-const vSphereColor = g.varying(instanceColor, 'v_scolor');
+function rebuild(rawPoints: number[]) {
+    const points = normalize(rawPoints);
+    const numPoints = points.length / 3;
 
-const lightDirection = g.vec3(0.6, 1.0, 0.8).normalize();
-const sphereDiffuse = g.Var('sphereDiffuse', vSphereNormal.dot(lightDirection).max(g.f32(0)));
-const sphereLight = g.Var('sphereLight', g.f32(0.35).add(sphereDiffuse.mul(g.f32(0.75))));
-const sphereLit = g.Var('sphereLit', vSphereColor.mul(sphereLight));
+    const t0 = performance.now();
+    const hullIndices = quickhull3(points);
+    const hullMs = performance.now() - t0;
+    const hullSet = new Set(hullIndices);
 
-const sphereMaterial = new g.Material({
-    vertex: sphereClip,
-    fragment: g.vec4(sphereLit, g.f32(1)),
-});
+    if (pointsMesh) scene.remove(pointsMesh);
+    if (hullMesh) scene.remove(hullMesh);
 
-const pointsMesh = new g.Mesh(sphere, sphereMaterial);
-pointsMesh.count = numPoints;
-scene.add(pointsMesh);
+    pointsMesh = buildPoints(points, hullSet);
+    hullMesh = buildHull(points, hullIndices);
+    scene.add(pointsMesh);
+    scene.add(hullMesh);
+    scene.updateWorldMatrix();
 
-/* hull — translucent shell coloured by surface normal (the "rainbow") */
+    updateStats(numPoints, hullSet.size, hullMs);
+}
 
-// distinct attribute names so the hull's (small, 60-vertex) buffers can't be
-// bound during the instanced sphere draw, which shares 'position'/'normal'.
-const hullGeometry = new g.Geometry();
-hullGeometry.setBuffer('hullPosition', g.createVertexBuffer(d.vec3f, new Float32Array(points)));
-hullGeometry.setBuffer('hullNormal', g.createVertexBuffer(d.vec3f, hullNormals));
-hullGeometry.setIndex(g.createIndexBuffer(new Uint32Array(hullIndices)));
+/* ------------------------------------------------------------------ ui + stats */
 
-const hullPos = g.attribute('hullPosition', d.vec3f);
-const hullNormal = g.attribute('hullNormal', d.vec3f);
+const stats = document.createElement('div');
+stats.style.cssText = 'position:absolute;top:10px;left:10px;color:#fff;font:12px/1.6 monospace;pointer-events:none;text-shadow:0 1px 2px #000';
+document.body.appendChild(stats);
+function updateStats(points: number, hullVerts: number, ms: number) {
+    stats.innerHTML = `points: ${points}<br>hull vertices: ${hullVerts}<br>quickhull3: ${ms.toFixed(2)}ms`;
+}
 
-const hullWorld = g.mul(g.modelWorldMatrix, g.vec4(hullPos, g.f32(1)));
-const hullClip = g.mul(g.cameraProjectionMatrix, g.mul(g.cameraViewMatrix, hullWorld));
-const vHullNormal = g.varying(g.normalize(g.mul(g.modelNormalMatrix, hullNormal)), 'v_hnormal');
+const settings = { variation: 'bunny' };
+async function select(name: string) {
+    rebuild(await VARIATIONS[name]());
+}
 
-// normal (-1..1) → colour (0..1)
-const rainbow = g.Var('rainbow', vHullNormal.mul(g.f32(0.5)).add(g.vec3(0.5, 0.5, 0.5)));
+const gui = new GUI();
+gui.add(settings, 'variation', Object.keys(VARIATIONS)).name('Point set').onChange((v: string) => select(v));
+gui.add({ regenerate: () => select(settings.variation) }, 'regenerate').name('↻ Regenerate');
 
-const hullMaterial = new g.Material({
-    vertex: hullClip,
-    fragment: g.vec4(rainbow, g.f32(HULL_OPACITY)),
-    transparent: true,
-    cullMode: 'back',
-    depthWrite: false,
-    depthTest: false,
-    blend: {
-        color: { srcFactor: 'src-alpha', dstFactor: 'one-minus-src-alpha', operation: 'add' },
-        alpha: { srcFactor: 'one', dstFactor: 'one-minus-src-alpha', operation: 'add' },
-    },
-});
-
-const hullMesh = new g.Mesh(hullGeometry, hullMaterial);
-scene.add(hullMesh);
-
-scene.updateWorldMatrix();
+await select(settings.variation);
 camera.updateViewMatrix();
 
-/* render loop */
+/* ------------------------------------------------------------------ render loop */
 
 const scenePass = g.pass(scene, camera);
 const outputNode = g.renderOutput(scenePass.getTextureNode());
 const renderPipeline = new g.RenderPipeline(renderer, outputNode);
 
 function frame() {
+    time.value = performance.now() / 1000;
     controls.update();
     renderPipeline.render();
     requestAnimationFrame(frame);

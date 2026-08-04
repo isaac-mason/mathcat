@@ -35,6 +35,9 @@ importers:
       gpucat:
         specifier: github:isaac-mason/gpucat
         version: https://codeload.github.com/isaac-mason/gpucat/tar.gz/fac1308b2cc5f6a54f2b0ea45a68aba1cf4443d1
+      lil-gui:
+        specifier: ^0.20.0
+        version: 0.20.0
       mathcat:
         specifier: workspace:*
         version: link:..
@@ -804,6 +807,9 @@ packages:
 
   js-tokens@9.0.1:
     resolution: {integrity: sha512-mxa9E9ITFOt0ban3j6L5MpjwegGz6lBQmM1IJkWeBZGcMxto50+eWdjC/52xDbS2vy0k7vIMK0Fe2wfL9OQSpQ==}
+
+  lil-gui@0.20.0:
+    resolution: {integrity: sha512-k7Ipr0ztqslMA2XvM5z5ZaWhxQtnEOwJBfI/hmSuRh6q4iMG9L0boqqrnZSzBR1jzyJ28OMl47l65ILzRe1TdA==}
 
   linkify-it@5.0.2:
     resolution: {integrity: sha512-ONTm2jCMAVZjgQa/Fy1kScXsuOoF5NPTsoFBdE1KVIZ2vAh/r9+Bqo+0jINCBYnavTPQZz38QzFTme79ENoN3Q==}
@@ -1618,6 +1624,8 @@ snapshots:
       mathcat: 0.0.13
 
   js-tokens@9.0.1: {}
+
+  lil-gui@0.20.0: {}
 
   linkify-it@5.0.2:
     dependencies:
