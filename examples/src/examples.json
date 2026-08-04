@@ -42,5 +42,15 @@
             "particles"
         ],
         "category": "noise"
+    },
+    "example-easing": {
+        "title": "Easing",
+        "description": "A gallery of mathcat's easing functions raced side by side — dots start together and spread apart as each follows its own pacing.",
+        "tags": [
+            "easing",
+            "time",
+            "animation"
+        ],
+        "category": "time"
     }
 }
