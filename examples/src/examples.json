@@ -1,0 +1,12 @@
+{
+    "example-basic": {
+        "title": "Basic",
+        "description": "A lit sphere rendered with gpucat (WebGL2), spun by a mathcat quaternion.",
+        "tags": [
+            "quaternion",
+            "gpucat",
+            "webgl"
+        ],
+        "category": "basics"
+    }
+}
