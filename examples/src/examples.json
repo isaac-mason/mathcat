@@ -1,13 +1,4 @@
 {
-    "example-basic": {
-        "title": "Basic",
-        "description": "A lit sphere rendered with gpucat, spun by a mathcat quaternion.",
-        "tags": [
-            "quaternion",
-            "vec3"
-        ],
-        "category": "basics"
-    },
     "example-convex-hull-3d": {
         "title": "Convex Hull 3D",
         "description": "A point cloud (the Stanford bunny, primitives, or random) and its convex hull, computed with mathcat's quickhull3 and drawn as a rainbow shell over the points.",
