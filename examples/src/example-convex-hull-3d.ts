@@ -272,7 +272,7 @@ camera.updateViewMatrix();
 /* ------------------------------------------------------------------ render loop */
 
 const scenePass = g.pass(scene, camera);
-const outputNode = g.renderOutput(scenePass.getTextureNode());
+const outputNode = g.fxaa(scenePass.getTextureNode());
 const renderPipeline = new g.RenderPipeline(renderer, outputNode);
 
 function frame() {
