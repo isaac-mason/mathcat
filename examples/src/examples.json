@@ -43,6 +43,16 @@
         ],
         "category": "noise"
     },
+    "example-color-wheel": {
+        "title": "Color Wheel",
+        "description": "An HSL colour wheel built with mathcat/color (hsl.toColor). Move the pointer to pick a colour and read its HSL / RGB / hex.",
+        "tags": [
+            "color",
+            "hsl",
+            "colorspace"
+        ],
+        "category": "color"
+    },
     "example-easing": {
         "title": "Easing",
         "description": "A gallery of mathcat's easing functions raced side by side — dots start together and spread apart as each follows its own pacing.",
