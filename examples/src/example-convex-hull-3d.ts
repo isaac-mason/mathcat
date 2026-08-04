@@ -184,7 +184,7 @@ window.addEventListener('resize', () => {
 
 const sphereGeometry = g.createSphereGeometry(1, 12, 8);
 const HULL_MARKER_RADIUS = 0.03;
-const INNER_MARKER_RADIUS = 0.018;
+const INNER_MARKER_RADIUS = 0.009;
 const HULL_OPACITY = 0.16;
 
 /* ------------------------------------------------------------------ (re)build */
