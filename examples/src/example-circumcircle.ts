@@ -79,11 +79,46 @@ function makeDot(rgb: [number, number, number]): g.Mesh {
 const vertexDots = [makeDot([0.95, 0.96, 1]), makeDot([0.95, 0.96, 1]), makeDot([0.95, 0.96, 1])];
 const centerDot = makeDot([1.0, 0.243, 0.647]);
 
-/* ------------------------------------------------------------------ label */
+/* ------------------------------------------------------------------ name wheel + readout */
 
-const label = document.createElement('div');
-label.style.cssText = 'position:absolute;top:12px;left:12px;color:#fff;font:13px/1.6 monospace;pointer-events:none;text-shadow:0 1px 2px #000';
-document.body.appendChild(label);
+// a picker-style column of the shape names (DOM overlay). the column scrolls so
+// the active shape sits at the vertical centre, dimming and shrinking with
+// distance — driven from the same eased morph index as the triangle.
+const ROW_HEIGHT = 46;
+const wheel = document.createElement('div');
+wheel.style.cssText = 'position:absolute;left:40px;top:50%;width:220px;height:0;pointer-events:none;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif';
+document.body.appendChild(wheel);
+const wheelRows = SHAPES.map((shape) => {
+    const el = document.createElement('div');
+    el.textContent = shape.name;
+    el.style.cssText = 'position:absolute;left:0;white-space:nowrap;transform-origin:left center;text-shadow:0 1px 3px #000';
+    wheel.appendChild(el);
+    return el;
+});
+
+function updateWheel(continuousIndex: number) {
+    const n = SHAPES.length;
+    const active = ((continuousIndex % n) + n) % n;
+    for (let i = 0; i < n; i++) {
+        // shortest signed distance from the active row, wrapped into [-n/2, n/2)
+        let dist = i - active;
+        dist = ((dist % n) + n) % n;
+        if (dist > n / 2) dist -= n;
+        const k = Math.min(Math.abs(dist) / 2.5, 1);
+        const y = dist * ROW_HEIGHT;
+        wheelRows[i].style.transform = `translateY(${y}px) translateY(-50%) scale(${1 - k * 0.4})`;
+        wheelRows[i].style.opacity = `${1 - k * 0.82}`;
+        const isActive = Math.abs(dist) < 0.5;
+        wheelRows[i].style.color = isActive ? '#ff3ea5' : '#eceff1';
+        wheelRows[i].style.fontWeight = isActive ? '700' : '500';
+        wheelRows[i].style.fontSize = '26px';
+    }
+}
+
+// small circumradius readout
+const readout = document.createElement('div');
+readout.style.cssText = 'position:absolute;left:40px;bottom:24px;color:#cfd8dc;font:13px/1.6 monospace;pointer-events:none;text-shadow:0 1px 2px #000';
+document.body.appendChild(readout);
 
 /* ------------------------------------------------------------------ render */
 
@@ -137,7 +172,8 @@ function frame(tms: number) {
     setDot(vertexDots[2], c[0], c[1]);
     setDot(centerDot, circ.center[0], circ.center[1]);
 
-    label.textContent = `${SHAPES[idx].name} → ${SHAPES[next].name}\ncircumradius: ${circ.radius.toFixed(2)}`;
+    updateWheel(Math.floor(tt) + local); // eased continuous index, in sync with the morph
+    readout.textContent = `circumradius: ${circ.radius.toFixed(2)}`;
 
     scene.updateWorldMatrix();
     camera.updateViewMatrix();
