@@ -59,7 +59,9 @@ window.addEventListener('resize', () => {
 /* ------------------------------------------------------------------ pointer */
 
 let pointerDown = false;
+let everMoved = false; // until the pointer takes over, the head orbits on its own
 function moveTo(clientX: number, clientY: number) {
+    everMoved = true;
     const [x, y] = unproject(clientX, clientY);
     target[0] = x;
     target[1] = y;
@@ -127,7 +129,13 @@ function frame(tms: number) {
     const dt = Math.min(t - last, 0.05);
     last = t;
 
-    // head chases the pointer; every other bead chases the one ahead
+    // idle: sweep the head target on a lissajous until the pointer takes over
+    if (!everMoved) {
+        target[0] = Math.cos(t * 0.9) * 1.5;
+        target[1] = Math.sin(t * 1.3) * 1.1;
+    }
+
+    // head chases the target; every other bead chases the one ahead
     spring2.update(chain[0], target, SMOOTH_HEAD, DAMPING, dt);
     for (let i = 1; i < N; i++) {
         spring2.update(chain[i], chain[i - 1].value, SMOOTH_LINK, DAMPING, dt);
