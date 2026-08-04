@@ -101,6 +101,20 @@
             margin-bottom: 16px;
         }
 
+        .category-header {
+            font-size: 11px;
+            font-weight: 600;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            color: #78909c;
+            margin: 0 0 12px 0;
+            list-style: none;
+        }
+
+        .category-group.hidden {
+            display: none;
+        }
+
         .example-item {
             display: block;
             padding: 0;
@@ -158,6 +172,28 @@
             color: #b0bec5;
             margin: 0;
             line-height: 1.4;
+        }
+
+        .example-source-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            font-size: 11px;
+            color: #eceff1;
+            text-decoration: none;
+            align-self: flex-start;
+            letter-spacing: 0.06em;
+            text-transform: uppercase;
+            font-weight: 500;
+            border-bottom: 1px solid rgba(236, 239, 241, 0.25);
+            padding-bottom: 1px;
+            transition: border-color 0.2s, opacity 0.2s;
+            opacity: 0.5;
+        }
+
+        .example-source-link:hover {
+            opacity: 1;
+            border-bottom-color: #eceff1;
         }
 
         .content {
@@ -279,62 +315,79 @@
         <iframe class="example-frame" id="example-frame"></iframe>
     </div>
 
-    <a id="source-link" href="#" target="_blank" style="
-        position: fixed;
-        right: 20px;
-        bottom: 20px;
-        z-index: 2000;
-        background: #222;
-        color: #fff;
-        border: 1px solid #555;
-        border-radius: 6px;
-        padding: 8px 14px;
-        font-size: 15px;
-        text-decoration: none;
-        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
-        display: flex;
-        align-items: center;
-        gap: 6px;
-        opacity: 0.85;
-        transition: opacity 0.2s;
-      " title="View source code on GitHub">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-            stroke-linecap="round" stroke-linejoin="round" style="vertical-align: middle">
-            <path d="M9 18v-6h6v6M9 6h6" />
-            <rect x="3" y="3" width="18" height="18" rx="2" />
-        </svg>
-        <span>Source</span>
-    </a>
-
     <script type="module">
         import examples from "./src/examples.json" assert { type: "json" };
 
-        function addExamplesToSidebar() {
-            const examplesList = document.getElementById("examples-list");
+        // display order for categories
+        const CATEGORY_ORDER = [
+            "geometry",
+            "shapes",
+            "basics",
+            "vectors",
+            "matrices",
+            "noise",
+            "color",
+            "random",
+            "time",
+        ];
 
-            const examplesHTML = Object.entries(examples)
-                .map(([key, example]) => {
-                    const tagsHTML = example.tags
-                        .map((tag) => `<span class="example-tag">${tag}</span>`)
-                        .join("");
+        function orderIndex(order, value) {
+            const i = order.indexOf(value);
+            return i === -1 ? order.length : i;
+        }
 
-                    return `
-                <li>
+        function prettyCategory(category) {
+            if (!category) return "Other";
+            return category.charAt(0).toUpperCase() + category.slice(1);
+        }
+
+        function cardHTML(key, example) {
+            return `
+                <li class="example-card" data-example="${key}">
                     <div class="example-item" data-example="${key}">
                     <div class="example-preview">
-                        <img src="./screenshots/${key}.png" alt="${example.title}" class="example-screenshot">
+                        <img src="./screenshots/${key}.png" alt="${example.title}" class="example-screenshot" onerror="this.style.display='none'">
                         <div class="example-info">
                         <h3 class="example-title">${example.title}</h3>
                         <p class="example-description">${example.description}</p>
+                        <a class="example-source-link" href="https://github.com/isaac-mason/mathcat/blob/main/examples/src/${key}.ts" target="_blank" onclick="event.stopPropagation()">
+                            <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18v-6h6v6M9 6h6"/><rect x="3" y="3" width="18" height="18" rx="2"/></svg>
+                            source
+                        </a>
                         </div>
                     </div>
                     </div>
                 </li>
             `;
-                })
-                .join("");
+        }
 
-            examplesList.innerHTML = examplesHTML;
+        function addExamplesToSidebar() {
+            const examplesList = document.getElementById("examples-list");
+
+            // group entries by category
+            const byCategory = new Map();
+            for (const [key, example] of Object.entries(examples)) {
+                const category = example.category || "other";
+                if (!byCategory.has(category)) byCategory.set(category, []);
+                byCategory.get(category).push([key, example]);
+            }
+
+            const categories = [...byCategory.keys()].sort(
+                (a, b) => orderIndex(CATEGORY_ORDER, a) - orderIndex(CATEGORY_ORDER, b),
+            );
+
+            let html = "";
+            for (const category of categories) {
+                html += `<li class="category-group" data-category="${category}">`;
+                html += `<div class="category-header">${prettyCategory(category)}</div>`;
+                html += `<ul class="examples-list" style="padding:0;">`;
+                for (const [key, example] of byCategory.get(category)) {
+                    html += cardHTML(key, example);
+                }
+                html += `</ul></li>`;
+            }
+
+            examplesList.innerHTML = html;
         }
 
         // initialize examples list
@@ -350,28 +403,30 @@
         // search functionality
         function filterExamples() {
             const searchTerm = searchInput.value.toLowerCase();
-            const exampleItems = document.querySelectorAll(".examples-list li");
+            const cards = document.querySelectorAll(".example-card");
 
-            exampleItems.forEach((item) => {
-                const exampleKey = item
-                    .querySelector(".example-item")
-                    .getAttribute("data-example");
+            cards.forEach((card) => {
+                const exampleKey = card.getAttribute("data-example");
                 const example = examples[exampleKey];
 
                 // search in title, description, and tags
                 const searchableText = [
                     example.title,
                     example.description,
-                    ...example.tags,
+                    ...(example.tags || []),
                 ]
                     .join(" ")
                     .toLowerCase();
 
-                if (searchableText.includes(searchTerm)) {
-                    item.style.display = "";
-                } else {
-                    item.style.display = "none";
-                }
+                card.style.display = searchableText.includes(searchTerm) ? "" : "none";
+            });
+
+            // hide category groups with no visible cards
+            document.querySelectorAll(".category-group").forEach((group) => {
+                const anyVisible = [...group.querySelectorAll(".example-card")].some(
+                    (c) => c.style.display !== "none",
+                );
+                group.classList.toggle("hidden", !anyVisible);
             });
         }
 
@@ -427,10 +482,6 @@
 
             // update URL
             window.location.hash = exampleKey;
-
-            // update source link
-            const sourceLink = document.getElementById("source-link");
-            sourceLink.href = `https://github.com/isaac-mason/mathcat/blob/main/examples/src/${exampleKey}.ts`;
 
             // close mobile sidebar
             sidebar.classList.remove("open");

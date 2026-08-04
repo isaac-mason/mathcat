@@ -30,19 +30,25 @@ jobs:
       - name: Build root project
         run: pnpm run build
 
+      - name: Run tests
+        run: pnpm test
+
+      - name: Build website
+        run: pnpm run build:website
+
       - name: Build examples
-        run: |
-          cd examples
-          pnpm install
-          pnpm run build
+        run: pnpm run build:examples
+
+      - name: Build typedoc API reference
+        run: pnpm run typedoc
+
+      - name: Assemble Pages site
+        run: bash website/build.sh
 
       - name: Upload Pages artifact
         uses: actions/upload-pages-artifact@v3
         with:
-          path: ./examples/dist
-
-      - name: Run tests
-        run: pnpm test
+          path: ./_site
 
   deploy:
     environment:

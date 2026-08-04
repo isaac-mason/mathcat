@@ -2,13 +2,43 @@
     "name": "mathcat",
     "version": "0.0.14",
     "author": "Isaac Mason <isaac@isaacmason.com>",
-    "description": "a collection of math helpers for 3D graphics and simulations",
+    "description": "a collection of math helpers for graphics and simulations",
     "keywords": ["math", "vector", "matrix", "quaternion", "euler", "random", "noise"],
     "license": "MIT",
     "type": "module",
     "sideEffects": false,
     "main": "dist/index.js",
-    "types": "dist/index.d.ts",
+    "types": "dist/src/index.d.ts",
+    "exports": {
+        ".": {
+            "import": "./dist/index.js",
+            "types": "./dist/src/index.d.ts"
+        },
+        "./shapes": {
+            "import": "./dist/shapes.js",
+            "types": "./dist/src/shapes/index.d.ts"
+        },
+        "./geometry": {
+            "import": "./dist/geometry.js",
+            "types": "./dist/src/geometry/index.d.ts"
+        },
+        "./time": {
+            "import": "./dist/time.js",
+            "types": "./dist/src/time/index.d.ts"
+        },
+        "./random": {
+            "import": "./dist/random.js",
+            "types": "./dist/src/random/index.d.ts"
+        },
+        "./noise": {
+            "import": "./dist/noise.js",
+            "types": "./dist/src/noise/index.d.ts"
+        },
+        "./color": {
+            "import": "./dist/color.js",
+            "types": "./dist/src/color/index.d.ts"
+        }
+    },
     "files": [
         "dist",
         "LICENSE",
@@ -18,22 +48,30 @@
         "type": "git",
         "url": "git+https://github.com/isaac-mason/mathcat.git"
     },
+    "homepage": "https://github.com/isaac-mason/mathcat",
+    "bugs": {
+        "url": "https://github.com/isaac-mason/mathcat/issues"
+    },
     "scripts": {
-        "build": "rm -rf ./dist && rollup --config rollup.config.mjs",
+        "build": "rm -rf ./dist && pnpm run build:bundle && pnpm run build:dts",
+        "build:bundle": "rolldown --config rolldown.config.mjs",
+        "build:dts": "tsc -p tsconfig.build.json && node scripts/add-js-extensions-dts.mjs",
+        "build:examples": "pnpm --filter mathcat-examples build",
+        "build:website": "pnpm --filter website build",
         "format": "biome format --write src/. tst/.",
         "lint": "biome lint --write src/. tst/.",
-        "test": "vitest",
-        "docs": "(cd docs && node ./build.js)"
+        "test": "vitest run ./tst",
+        "typecheck-docs": "tsc --project docs/tsconfig.json --noEmit",
+        "docs": "(cd docs && node ./build.js)",
+        "typedoc": "typedoc --tsconfig ./tsconfig.json --name \"mathcat docs\" --out ./dist-typedoc ./src/index.ts ./src/shapes/index.ts ./src/geometry/index.ts ./src/time/index.ts ./src/random/index.ts ./src/noise/index.ts ./src/color/index.ts",
+        "build:docs": "pnpm run docs && pnpm run typedoc",
+        "release": "pnpm run build && pnpm run test && pnpm run build:examples && pnpm run build:docs && pnpm run build:website"
     },
-    "packageManager": "pnpm@8.15.2+sha1.798034f615aa211c6c2ae00010cc20be5fc102ee",
+    "packageManager": "pnpm@9.15.0",
     "devDependencies": {
-        "@biomejs/biome": "^2.2.0",
-        "@rollup/plugin-node-resolve": "^16.0.1",
-        "@rollup/plugin-typescript": "^12.1.4",
-        "rollup": "^4.46.2",
-        "rollup-plugin-copy": "^3.5.0",
-        "rollup-plugin-filesize": "^10.0.0",
-        "tslib": "^2.8.1",
+        "@biomejs/biome": "^2.5.6",
+        "rolldown": "^1.2.1",
+        "typedoc": "^0.28.16",
         "typescript": "^5.9.2",
         "vitest": "^3.2.4"
     }

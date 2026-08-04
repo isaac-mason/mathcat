@@ -1,216 +1,186 @@
-import GUI from 'lil-gui';
-import type { Circle } from 'mathcat';
-import { circle, circumcircle } from 'mathcat';
+import * as g from 'gpucat';
+import { d } from 'gpucat';
+import { type Vec2, vec2 } from 'mathcat';
+import { circumcircle } from 'mathcat/geometry';
+import { circle } from 'mathcat/shapes';
+import { easing } from 'mathcat/time';
+import { rainbowLineColor, time } from './common/rainbow';
 
-type Triangle2 = [a: [number, number], b: [number, number], c: [number, number]];
+// A triangle that morphs between shapes, with its circumcircle (mathcat's
+// circumcircle) recomputed every frame. As the triangle flattens toward
+// degenerate the circumcircle balloons — watch the circumradius readout. The
+// ring is drawn with the flowing brand rainbow (see common/rainbow).
 
-function generateRandomTriangle(): Triangle2 {
-    const spread = 150;
-    return [
-        [(Math.random() - 0.5) * spread, (Math.random() - 0.5) * spread],
-        [(Math.random() - 0.5) * spread, (Math.random() - 0.5) * spread],
-        [(Math.random() - 0.5) * spread, (Math.random() - 0.5) * spread],
-    ];
-}
+/* ------------------------------------------------------------------ shapes */
 
-const examples = {
-    random: generateRandomTriangle,
-    equilateral: (): Triangle2 => {
-        const size = 100;
-        const h = (size * Math.sqrt(3)) / 2;
-        return [
-            [0, h / 2],
-            [-size / 2, -h / 2],
-            [size / 2, -h / 2],
-        ];
-    },
-    rightAngle: (): Triangle2 => [
-        [-100, -50],
-        [100, -50],
-        [-100, 100],
-    ],
-    acute: (): Triangle2 => [
-        [0, 80],
-        [-60, -40],
-        [70, -30],
-    ],
-    obtuse: (): Triangle2 => [
-        [-120, 0],
-        [120, 0],
-        [20, 40],
-    ],
-};
+type Tri = [Vec2, Vec2, Vec2];
+const SHAPES: { name: string; tri: Tri }[] = [
+    { name: 'equilateral', tri: [[0, 1.15], [-1, -0.58], [1, -0.58]] },
+    { name: 'right', tri: [[-1, -0.7], [1, -0.7], [1, 1]] },
+    { name: 'obtuse', tri: [[-1.2, -0.35], [1.2, -0.35], [0.35, 0.15]] },
+    { name: 'sliver', tri: [[-1.25, -0.12], [1.25, -0.16], [0.1, 0.06]] },
+    { name: 'scalene', tri: [[-0.95, -0.75], [1.05, -0.45], [0.05, 1.05]] },
+];
+const SHAPE_DURATION = 2.6; // seconds per morph
 
-let currentTriangle: Triangle2 = examples.random();
-const currentCircumcircle: Circle = circle.create();
+/* ------------------------------------------------------------------ renderer */
 
-// settings
-const settings = {
-    example: 'random',
-};
+const renderer = new g.WebGPURenderer({ antialias: true });
+await renderer.init();
 
-const pointSize = 6;
-
-// pan and zoom state
-let panX = 0;
-let panY = 0;
-let zoom = 1;
-
-// canvas setup
-const canvas = document.createElement('canvas');
+const canvas = renderer.domElement as HTMLCanvasElement;
 document.body.appendChild(canvas);
+renderer.setPixelRatio(devicePixelRatio);
+renderer.setSize(window.innerWidth, window.innerHeight);
 
-const ctx = canvas.getContext('2d')!;
+const scene = new g.Scene();
 
-// style
-document.body.style.margin = '0';
-document.body.style.padding = '0';
-document.body.style.fontFamily = 'monospace';
-document.body.style.background = '#333';
-document.body.style.overflow = 'hidden';
-canvas.style.display = 'block';
-canvas.style.background = '#333';
+const camera = new g.PerspectiveCamera(Math.PI / 4, window.innerWidth / window.innerHeight, 0.1, 100);
+camera.position[2] = 6;
+scene.add(camera);
 
-// responsive
-function resizeCanvas() {
-    canvas.width = window.innerWidth;
-    canvas.height = window.innerHeight;
-    render();
+const controls = new g.OrbitControls(camera, canvas);
+controls.enableDamping = true;
+controls.dampingFactor = 0.1;
+
+renderer.setInspector(new g.Inspector());
+
+window.addEventListener('resize', () => {
+    renderer.setSize(window.innerWidth, window.innerHeight);
+    camera.aspect = window.innerWidth / window.innerHeight;
+    camera.updateProjectionMatrix();
+});
+
+/* ------------------------------------------------------------------ objects */
+
+// morphing triangle outline (neutral) and its circumcircle (rainbow ring)
+const triPoints = new Float32Array(9);
+const triGeometry = new g.LineGeometry(triPoints, true, 3);
+const triangle = new g.Line(triGeometry, new g.LineMaterial({ color: g.vec4f(0.85, 0.88, 0.95, 1), lineWidth: 2 }));
+scene.add(triangle);
+
+const CIRCLE_SEGMENTS = 128;
+const circlePoints = new Float32Array(CIRCLE_SEGMENTS * 3);
+const circleGeometry = new g.LineGeometry(circlePoints, true, CIRCLE_SEGMENTS);
+const circleLine = new g.Line(circleGeometry, new g.LineMaterial({ color: rainbowLineColor(1, 2), lineWidth: 3 }));
+scene.add(circleLine);
+
+// dots: 3 triangle vertices + the circumcenter
+const dotGeometry = g.createSphereGeometry(0.05, 16, 12);
+function makeDot(rgb: [number, number, number]): g.Mesh {
+    const pos = g.attribute('position', d.vec3f);
+    const clip = g.mul(g.cameraProjectionMatrix, g.mul(g.cameraViewMatrix, g.mul(g.modelWorldMatrix, g.vec4(pos, g.f32(1)))));
+    const material = new g.Material({ vertex: clip, fragment: g.vec4f(rgb[0], rgb[1], rgb[2], 1) });
+    const mesh = new g.Mesh(dotGeometry, material);
+    scene.add(mesh);
+    return mesh;
+}
+const vertexDots = [makeDot([0.95, 0.96, 1]), makeDot([0.95, 0.96, 1]), makeDot([0.95, 0.96, 1])];
+const centerDot = makeDot([1.0, 0.243, 0.647]);
+
+/* ------------------------------------------------------------------ name wheel + readout */
+
+// a picker-style column of the shape names (DOM overlay). the column scrolls so
+// the active shape sits at the vertical centre, dimming and shrinking with
+// distance — driven from the same eased morph index as the triangle.
+const ROW_HEIGHT = 46;
+const wheel = document.createElement('div');
+wheel.style.cssText = 'position:absolute;left:40px;top:50%;width:220px;height:0;pointer-events:none;font-family:var(--mc-mono)';
+document.body.appendChild(wheel);
+const wheelRows = SHAPES.map((shape) => {
+    const el = document.createElement('div');
+    el.textContent = shape.name;
+    el.style.cssText = 'position:absolute;left:0;white-space:nowrap;transform-origin:left center;text-shadow:0 1px 3px #000';
+    wheel.appendChild(el);
+    return el;
+});
+
+function updateWheel(continuousIndex: number) {
+    const n = SHAPES.length;
+    const active = ((continuousIndex % n) + n) % n;
+    for (let i = 0; i < n; i++) {
+        // shortest signed distance from the active row, wrapped into [-n/2, n/2)
+        let dist = i - active;
+        dist = ((dist % n) + n) % n;
+        if (dist > n / 2) dist -= n;
+        const k = Math.min(Math.abs(dist) / 2.5, 1);
+        const y = dist * ROW_HEIGHT;
+        wheelRows[i].style.transform = `translateY(${y}px) translateY(-50%) scale(${1 - k * 0.4})`;
+        wheelRows[i].style.opacity = `${1 - k * 0.82}`;
+        const isActive = Math.abs(dist) < 0.5;
+        wheelRows[i].style.color = isActive ? '#ff3ea5' : '#eceff1';
+        wheelRows[i].style.fontWeight = isActive ? '700' : '500';
+        wheelRows[i].style.fontSize = '26px';
+    }
 }
 
-window.addEventListener('resize', resizeCanvas);
-resizeCanvas();
+// small circumradius readout
+const readout = document.createElement('div');
+readout.className = 'mc-info';
+readout.style.left = '40px';
+readout.style.bottom = '24px';
+document.body.appendChild(readout);
 
-// select example function
-function selectExample(name: keyof typeof examples) {
-    settings.example = name;
-    currentTriangle = examples[name]();
-    circumcircle(currentCircumcircle, currentTriangle[0], currentTriangle[1], currentTriangle[2]);
-    render();
+/* ------------------------------------------------------------------ render */
+
+const a = vec2.create();
+const b = vec2.create();
+const c = vec2.create();
+const circ = circle.create();
+
+const scenePass = g.pass(scene, camera);
+const outputNode = g.fxaa(scenePass.getTextureNode());
+const renderPipeline = new g.RenderPipeline(renderer, outputNode);
+
+function setDot(dot: g.Mesh, x: number, y: number) {
+    dot.position[0] = x;
+    dot.position[1] = y;
+    dot.position[2] = 0;
 }
 
-// gui setup
-const gui = new GUI();
-gui.add(settings, 'example', Object.keys(examples))
-    .name('Triangle Type')
-    .onChange(() => selectExample(settings.example as keyof typeof examples));
+function frame(tms: number) {
+    const t = tms / 1000;
+    time.value = t;
 
-const actions = {
-    regenerate: () => selectExample(settings.example as keyof typeof examples),
-};
+    // morph between shapes with an eased blend
+    const tt = t / SHAPE_DURATION;
+    const idx = Math.floor(tt) % SHAPES.length;
+    const next = (idx + 1) % SHAPES.length;
+    const local = easing.cubicInOut(tt - Math.floor(tt));
+    vec2.lerp(a, SHAPES[idx].tri[0], SHAPES[next].tri[0], local);
+    vec2.lerp(b, SHAPES[idx].tri[1], SHAPES[next].tri[1], local);
+    vec2.lerp(c, SHAPES[idx].tri[2], SHAPES[next].tri[2], local);
 
-gui.add(actions, 'regenerate').name('🔄 Regenerate');
+    // mathcat: circumcircle of the current triangle
+    circumcircle(circ, a, b, c);
 
-// pan and zoom
-let isDragging = false;
-let lastMouseX = 0;
-let lastMouseY = 0;
+    // triangle outline
+    triPoints[0] = a[0]; triPoints[1] = a[1];
+    triPoints[3] = b[0]; triPoints[4] = b[1];
+    triPoints[6] = c[0]; triPoints[7] = c[1];
+    triGeometry.update(triPoints, true);
 
-canvas.addEventListener('mousedown', (e) => {
-    isDragging = true;
-    lastMouseX = e.clientX;
-    lastMouseY = e.clientY;
-});
-
-canvas.addEventListener('mousemove', (e) => {
-    if (isDragging) {
-        const dx = e.clientX - lastMouseX;
-        const dy = e.clientY - lastMouseY;
-        panX += dx;
-        panY += dy;
-        lastMouseX = e.clientX;
-        lastMouseY = e.clientY;
-        render();
+    // circumcircle ring
+    for (let i = 0; i < CIRCLE_SEGMENTS; i++) {
+        const ang = (i / CIRCLE_SEGMENTS) * Math.PI * 2;
+        circlePoints[i * 3] = circ.center[0] + Math.cos(ang) * circ.radius;
+        circlePoints[i * 3 + 1] = circ.center[1] + Math.sin(ang) * circ.radius;
     }
-});
+    circleGeometry.update(circlePoints, true);
 
-canvas.addEventListener('mouseup', () => {
-    isDragging = false;
-});
+    setDot(vertexDots[0], a[0], a[1]);
+    setDot(vertexDots[1], b[0], b[1]);
+    setDot(vertexDots[2], c[0], c[1]);
+    setDot(centerDot, circ.center[0], circ.center[1]);
 
-canvas.addEventListener('mouseleave', () => {
-    isDragging = false;
-});
+    updateWheel(Math.floor(tt) + local); // eased continuous index, in sync with the morph
+    readout.textContent = `circumradius: ${circ.radius.toFixed(2)}`;
 
-canvas.addEventListener('wheel', (e) => {
-    e.preventDefault();
-    const zoomFactor = e.deltaY > 0 ? 0.9 : 1.1;
-    zoom *= zoomFactor;
-    render();
-});
-
-function toScreenSpace(x: number, y: number): [number, number] {
-    return [x * zoom + canvas.width / 2 + panX, y * zoom + canvas.height / 2 + panY];
+    scene.updateWorldMatrix();
+    camera.updateViewMatrix();
+    controls.update();
+    renderPipeline.render();
+    requestAnimationFrame(frame);
 }
 
-// simple canvas rendering
-function render() {
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-    const tri = currentTriangle;
-    const circ = currentCircumcircle;
-
-    // draw circumcircle
-    if (circ.radius > 0) {
-        const [cx, cy] = toScreenSpace(circ.center[0], circ.center[1]);
-        const scaledRadius = circ.radius * zoom;
-
-        ctx.beginPath();
-        ctx.arc(cx, cy, scaledRadius, 0, Math.PI * 2);
-        ctx.strokeStyle = '#5555ff';
-        ctx.lineWidth = 2;
-        ctx.stroke();
-        ctx.fillStyle = 'rgba(85, 85, 255, 0.1)';
-        ctx.fill();
-
-        // draw center point
-        ctx.beginPath();
-        ctx.arc(cx, cy, 4, 0, Math.PI * 2);
-        ctx.fillStyle = '#5555ff';
-        ctx.fill();
-    }
-
-    // draw triangle
-    ctx.beginPath();
-    const [x0, y0] = toScreenSpace(tri[0][0], tri[0][1]);
-    ctx.moveTo(x0, y0);
-    for (let i = 1; i < 3; i++) {
-        const [x, y] = toScreenSpace(tri[i][0], tri[i][1]);
-        ctx.lineTo(x, y);
-    }
-    ctx.closePath();
-
-    ctx.strokeStyle = '#fff';
-    ctx.lineWidth = 3;
-    ctx.stroke();
-
-    ctx.fillStyle = 'rgba(255, 255, 255, 0.1)';
-    ctx.fill();
-
-    // draw triangle vertices
-    for (let i = 0; i < 3; i++) {
-        const [x, y] = toScreenSpace(tri[i][0], tri[i][1]);
-
-        ctx.beginPath();
-        ctx.arc(x, y, pointSize, 0, Math.PI * 2);
-        ctx.fillStyle = '#fff';
-        ctx.fill();
-
-        // label vertices
-        ctx.fillStyle = '#fff';
-        ctx.font = '14px monospace';
-        ctx.textAlign = 'center';
-        ctx.textBaseline = 'middle';
-        const labels = ['A', 'B', 'C'];
-        ctx.fillText(labels[i], x + pointSize + 15, y);
-    }
-
-    // stats
-    ctx.fillStyle = '#fff';
-    ctx.font = '14px monospace';
-    ctx.textAlign = 'left';
-    ctx.fillText(`Center: (${circ.center[0].toFixed(2)}, ${circ.center[1].toFixed(2)})`, 10, 20);
-    ctx.fillText(`Radius: ${circ.radius.toFixed(2)}`, 10, 40);
-}
-
-selectExample('random');
+requestAnimationFrame(frame);
