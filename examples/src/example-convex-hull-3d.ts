@@ -3,53 +3,16 @@ import GUI from 'lil-gui';
 import { mat4, quat, vec3 as v3 } from 'mathcat';
 import { quickhull3 } from 'mathcat/geometry';
 import { mulberry32 } from 'mathcat/random';
+import { rainbowRGB, time } from './common/rainbow';
 
 // A point cloud and its convex hull (mathcat's quickhull3), rendered with gpucat:
 // a translucent hull shell + instanced spheres, coloured by a flowing "brand
-// rainbow" (adapted from makecat.io) — a palette sampled by world position and
+// rainbow" (see common/rainbow) — a palette sampled by world position and
 // animated over time, so the bands anchor to the geometry as the camera orbits.
 // On-hull points glow rainbow; interior points stay grey. Pick a point set from
 // the dropdown (the Stanford bunny, primitives, or random).
 
 const d = g.d;
-
-/* ------------------------------------------------- flowing brand rainbow (shader) */
-
-// shared time uniform — advance once per frame so every rainbow stays phase-locked
-const time = g.uniform(g.f32(0), 'time');
-
-// 5-stop palette (pink -> yellow -> blue -> purple -> pink), sRGB/255
-const rainbowPalette = g.wgslFn(
-    `
-    fn hullRainbowPalette(t: f32) -> vec3f {
-        let x = fract(t) * 4.0;
-        let i = floor(x);
-        let f = x - i;
-        let c0 = vec3f(1.0, 0.243, 0.647);
-        let c1 = vec3f(1.0, 0.824, 0.247);
-        let c2 = vec3f(0.247, 0.655, 1.0);
-        let c3 = vec3f(0.541, 0.169, 0.886);
-        var a = c0;
-        var b = c1;
-        if (i >= 3.0) { a = c3; b = c0; }
-        else if (i >= 2.0) { a = c2; b = c3; }
-        else if (i >= 1.0) { a = c1; b = c2; }
-        return mix(a, b, f);
-    }
-`,
-    { output: d.vec3f, params: [{ name: 't', type: d.f32 }] },
-);
-
-const RAINBOW_PERIOD = 2.5; // world units per palette cycle
-const RAINBOW_SPEED = 0.15; // cycles per second along the flow
-const rainbowAxis = g.vec3f(0.5774, 0.5774, 0.5774); // (1,1,1)/sqrt(3)
-
-// phase(worldPos) = dot(worldPos, axis)/PERIOD - time*SPEED
-function rainbowRGB(worldPos: g.Node<typeof d.vec3f>): g.Node<typeof d.vec3f> {
-    const along = g.mul(g.dot(worldPos, rainbowAxis), g.f32(1 / RAINBOW_PERIOD));
-    const phase = g.sub(along, g.mul(time, g.f32(RAINBOW_SPEED)));
-    return rainbowPalette(phase);
-}
 
 /* ------------------------------------------------------------------ point sets */
 
