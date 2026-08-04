@@ -73,6 +73,16 @@
         ],
         "category": "basics"
     },
+    "example-spring": {
+        "title": "Spring",
+        "description": "A springy tail that chases the pointer — the head springs to the cursor and each bead springs to the one ahead (mathcat's spring2, under-damped so it overshoots and settles).",
+        "tags": [
+            "spring",
+            "time",
+            "vec2"
+        ],
+        "category": "time"
+    },
     "example-easing": {
         "title": "Easing",
         "description": "A gallery of mathcat's easing functions raced side by side — dots start together and spread apart as each follows its own pacing.",
