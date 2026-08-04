@@ -43,13 +43,7 @@ jobs:
         run: pnpm run typedoc
 
       - name: Assemble Pages site
-        run: |
-          rm -rf _site
-          mkdir -p _site
-          cp -r website/dist/. _site/
-          mkdir -p _site/examples && cp -r examples/dist/. _site/examples/
-          mkdir -p _site/docs && cp -r dist-typedoc/. _site/docs/
-          touch _site/.nojekyll
+        run: bash website/build.sh
 
       - name: Upload Pages artifact
         uses: actions/upload-pages-artifact@v3

@@ -6,3 +6,4 @@ website/dist
 *.tsbuildinfo
 tmp
 .DS_Store
+_site
