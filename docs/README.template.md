@@ -25,7 +25,7 @@ mathcat is a collection of math helpers for graphics and simulations.
 **Acknowledgements:**
 
 - The vec*, quat*, mat* code started as a typescript port of glMatrix (https://glmatrix.net/). This library doesn't aim to stay in sync with glMatrix however.
-- The color, noise, and easing utilities are adapted from https://github.com/pmndrs/maath (which adapted its simplex noise from https://github.com/josephg/noisejs) :)
+- The noise, and easing utilities are adapted from https://github.com/pmndrs/maath (which adapted its simplex noise from https://github.com/josephg/noisejs) :)
 
 ## Quick Start
 
