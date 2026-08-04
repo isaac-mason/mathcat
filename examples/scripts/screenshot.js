@@ -95,8 +95,14 @@ try {
         // Headless by default so the run doesn't steal desktop focus.
         // Set HEADED=1 to watch it drive a real window.
         headless: process.env.HEADED !== '1',
-        // Shove any headed fallback window far offscreen so it can't cover work.
-        args: ['--window-position=-10000,-10000'],
+        // Enable WebGPU in headless Chromium (some examples use gpucat's WebGPU
+        // backend); --use-angle=metal is the best GPU path on macOS. Shove any
+        // headed fallback window far offscreen so it can't cover work.
+        args: [
+            '--use-angle=metal',
+            '--enable-unsafe-webgpu',
+            '--window-position=-10000,-10000',
+        ],
     });
 
     const context = await browser.newContext({ viewport: VIEWPORT });

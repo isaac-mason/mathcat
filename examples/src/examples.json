@@ -11,12 +11,13 @@
     },
     "example-convex-hull-3d": {
         "title": "Convex Hull 3D",
-        "description": "A seeded 3D point cloud and its convex hull, computed with mathcat's quickhull3 and drawn as a wireframe around the points.",
+        "description": "A seeded 3D point cloud and its convex hull (mathcat's quickhull3), drawn as a translucent normal-coloured shell over instanced spheres — blue on the hull, grey inside.",
         "tags": [
             "quickhull3",
             "geometry",
             "convex-hull",
-            "vec3"
+            "vec3",
+            "instancing"
         ],
         "category": "geometry"
     }
