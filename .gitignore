@@ -1,5 +1,4 @@
 node_modules
-dist
 dist-*
 examples/dist
 website/dist
