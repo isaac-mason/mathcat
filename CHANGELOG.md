@@ -6,7 +6,7 @@ A large restructure into namespaced subpath entrypoints, plus new color, time, a
 
 - feat!: reorganise the library into subpath entrypoints. Core vector/matrix/quaternion/euler/spherical/scalar math stays on the main `mathcat` entry; shape primitives and spatial queries move to `mathcat/shapes`; computational-geometry algorithms (`quickhull2`/`quickhull3`/`circumcircle`) move to `mathcat/geometry`. New `mathcat/time`, `mathcat/random`, `mathcat/noise`, and `mathcat/color` entrypoints. Each entrypoint is a separate bundle for tree-shaking.
 - feat: add `mathcat/color` — linear-sRGB `color`, `colorspace` conversions, and `hsl` utilities.
-- feat: add `mathcat/time` — `spring`/smooth-damp utilities alongside `easing` (moved from the top-level `easing` export).
+- feat: add `mathcat/time` — `spring`/smooth-damp utilities alongside `easing` (moved from the top-level `easing` export). Springs are per-dimension namespaces (`spring`, `spring2`, `spring3`, `spring4`), each with `create`/`update`/`damp` (plus `dampAngle`/`fromResponse` on the scalar `spring`) — mirroring `vec2`/`vec3`/`vec4`.
 - feat: split noise into `perlin2d`, `perlin3d`, `simplex2d`, and `simplex3d` namespaces under `mathcat/noise`.
 - feat!: rework `random` — `mulberry32` is now an explicit state object with `create`/`sample`, and the `random` apis are reshaped around it.
 - feat!: rename `common` to `scalar` and split `MutableArrayLike` out into `arrays`.

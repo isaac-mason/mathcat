@@ -585,15 +585,27 @@ const r = mulberry32.sample(rng); // deterministic [0, 1)
 **spring**
 
 <table><tr>
-<td><a href="#springcreate"><code>spring.create</code></a></td><td><a href="#springcreate2"><code>spring.create2</code></a></td><td><a href="#springcreate3"><code>spring.create3</code></a></td>
+<td><a href="#springcreate"><code>spring.create</code></a></td><td><a href="#springupdate"><code>spring.update</code></a></td><td><a href="#springdamp"><code>spring.damp</code></a></td>
 </tr><tr>
-<td><a href="#springcreate4"><code>spring.create4</code></a></td><td><a href="#springfromresponse"><code>spring.fromResponse</code></a></td><td><a href="#springspring"><code>spring.spring</code></a></td>
-</tr><tr>
-<td><a href="#springdamp"><code>spring.damp</code></a></td><td><a href="#springdampangle"><code>spring.dampAngle</code></a></td><td><a href="#springspring2"><code>spring.spring2</code></a></td>
-</tr><tr>
-<td><a href="#springdamp2"><code>spring.damp2</code></a></td><td><a href="#springspring3"><code>spring.spring3</code></a></td><td><a href="#springdamp3"><code>spring.damp3</code></a></td>
-</tr><tr>
-<td><a href="#springspring4"><code>spring.spring4</code></a></td><td><a href="#springdamp4"><code>spring.damp4</code></a></td><td></td>
+<td><a href="#springdampangle"><code>spring.dampAngle</code></a></td><td><a href="#springfromresponse"><code>spring.fromResponse</code></a></td><td></td>
+</tr></table>
+
+**spring2**
+
+<table><tr>
+<td><a href="#spring2create"><code>spring2.create</code></a></td><td><a href="#spring2update"><code>spring2.update</code></a></td><td><a href="#spring2damp"><code>spring2.damp</code></a></td>
+</tr></table>
+
+**spring3**
+
+<table><tr>
+<td><a href="#spring3create"><code>spring3.create</code></a></td><td><a href="#spring3update"><code>spring3.update</code></a></td><td><a href="#spring3damp"><code>spring3.damp</code></a></td>
+</tr></table>
+
+**spring4**
+
+<table><tr>
+<td><a href="#spring4create"><code>spring4.create</code></a></td><td><a href="#spring4update"><code>spring4.update</code></a></td><td><a href="#spring4damp"><code>spring4.damp</code></a></td>
 </tr></table>
 
 **`mathcat/random`**
@@ -10589,20 +10601,10 @@ export function quickhull3(points: number[]): number[];
 #### `Spring`
 
 ```ts
-// Damped-harmonic-oscillator solver (a spring), integrated with the exact
-// analytic solution — unconditionally stable at any frame delta, and behaviourally
-// equivalent to Unity SmoothDamp / OG maath `damp` for the critical case. Two dials:
-//   smoothTime    — roughly how long to reach the target; omega = 2 / smoothTime
-//   dampingRatio  — the character: 1 = critical (no overshoot), <1 bouncy, >1 sluggish
-// `damp*` is `spring*` pinned to dampingRatio = 1.
-//
-// A spring carries velocity between frames, so state lives in a `Spring<T>`
-// struct the caller allocates once and passes back each frame. Functions mutate
-// `value` and `velocity` in place — zero per-frame allocation.
-//
-// The step is a 2×2 linear map [displacement, velocity] → [displacement', velocity'],
-// identical for every component of a vector, so we compute the four coefficients
-// once and apply them per component.
+// Internal: the damped-harmonic-oscillator solver shared by every spring
+// dimension. `coefficients` recomputes the step's 2×2 linear map into `coef`
+// (module scratch, zero-allocation); each `spring*` namespace then applies those
+// four coefficients per component.
 /**
  * Spring state: a `value` and its `velocity`, of matching rank
  * (`number`, `Vec2`, `Vec3`, or `Vec4`). Allocate once, mutate each frame.
@@ -10750,45 +10752,7 @@ export function rsqw(t: number, delta = 0.01, a = 1, f = 1 / (2 * Math.PI));
 export function create(value = 0): Spring<number>;
 ```
 
-#### `spring.create2`
-
-```ts
-/** Creates a Vec2 spring at `value` (copied), at rest. */
-export function create2(value: Vec2 = [0, 0]): Spring<Vec2>;
-```
-
-#### `spring.create3`
-
-```ts
-/** Creates a Vec3 spring at `value` (copied), at rest. */
-export function create3(value: Vec3 = [0, 0, 0]): Spring<Vec3>;
-```
-
-#### `spring.create4`
-
-```ts
-/** Creates a Vec4 spring at `value` (copied), at rest. */
-export function create4(value: Vec4 = [0, 0, 0, 0]): Spring<Vec4>;
-```
-
-#### `spring.fromResponse`
-
-```ts
-/**
- * Converts a SwiftUI-style `response` — the spring's natural period, in seconds
- * — to the `smoothTime` that `spring`/`damp` consume. `dampingRatio` is the
- * orthogonal second dial and is passed to `spring` unchanged.
- *
- * Yields the same stiffness/damping as SwiftUI's `Spring(response:dampingFraction:)`:
- *
- * ```ts
- * spring3(state, target, fromResponse(0.5), 0.3, delta); // bouncy, ~0.5s period
- * ```
- */
-export function fromResponse(response: number): number;
-```
-
-#### `spring.spring`
+#### `spring.update`
 
 ```ts
 /**
@@ -10811,19 +10775,19 @@ export function fromResponse(response: number): number;
  * @param delta frame delta, for refresh-rate independence
  * @returns state
  */
-export function spring(state: Spring<number>, target: number, smoothTime: number, dampingRatio: number, delta: number): Spring<number>;
+export function update(state: Spring<number>, target: number, smoothTime: number, dampingRatio: number, delta: number): Spring<number>;
 ```
 
 #### `spring.damp`
 
 ```ts
 /**
- * Critically-damped {@link spring} (dampingRatio = 1): moves toward `target`
- * as fast as possible without overshooting.
+ * Critically-damped {@link update} (dampingRatio = 1): moves toward `target` as
+ * fast as possible without overshooting.
  */
 /**
- * Critically-damped {@link spring} (dampingRatio = 1): moves toward `target`
- * as fast as possible without overshooting.
+ * Critically-damped {@link update} (dampingRatio = 1): moves toward `target` as
+ * fast as possible without overshooting.
  */
 export function damp(state: Spring<number>, target: number, smoothTime: number, delta: number): Spring<number>;
 ```
@@ -10842,52 +10806,114 @@ export function damp(state: Spring<number>, target: number, smoothTime: number, 
 export function dampAngle(state: Spring<number>, target: number, smoothTime: number, delta: number): Spring<number>;
 ```
 
-#### `spring.spring2`
+#### `spring.fromResponse`
 
 ```ts
-/** Vec2 {@link spring}: springs `state.value` toward `target`, mutating `state` in place. */
-/** Vec2 {@link spring}: springs `state.value` toward `target`, mutating `state` in place. */
-export function spring2(state: Spring<Vec2>, target: Vec2, smoothTime: number, dampingRatio: number, delta: number): Spring<Vec2>;
+/**
+ * Converts a SwiftUI-style `response` — the spring's natural period, in seconds
+ * — to the `smoothTime` that `update`/`damp` consume. `dampingRatio` is the
+ * orthogonal second dial and is passed to `update` unchanged.
+ *
+ * Yields the same stiffness/damping as SwiftUI's `Spring(response:dampingFraction:)`:
+ *
+ * ```ts
+ * spring3.update(state, target, spring.fromResponse(0.5), 0.3, delta); // bouncy, ~0.5s period
+ * ```
+ */
+export function fromResponse(response: number): number;
 ```
 
-#### `spring.damp2`
+**spring2**
+
+#### `spring2.create`
 
 ```ts
-/** Critically-damped Vec2 spring (dampingRatio = 1). See {@link damp}. */
-/** Critically-damped Vec2 spring (dampingRatio = 1). See {@link damp}. */
-export function damp2(state: Spring<Vec2>, target: Vec2, smoothTime: number, delta: number): Spring<Vec2>;
+/** Creates a Vec2 spring at `value` (copied), at rest. */
+export function create(value: Vec2 = [0, 0]): Spring<Vec2>;
 ```
 
-#### `spring.spring3`
+#### `spring2.update`
 
 ```ts
-/** Vec3 {@link spring}: springs `state.value` toward `target`, mutating `state` in place. */
-/** Vec3 {@link spring}: springs `state.value` toward `target`, mutating `state` in place. */
-export function spring3(state: Spring<Vec3>, target: Vec3, smoothTime: number, dampingRatio: number, delta: number): Spring<Vec3>;
+/**
+ * Springs `state.value` toward `target`, mutating `state` in place. Returns it.
+ * @param dampingRatio 1 = critically damped (no overshoot), <1 bouncy, >1 sluggish
+ */
+/**
+ * Springs `state.value` toward `target`, mutating `state` in place. Returns it.
+ * @param dampingRatio 1 = critically damped (no overshoot), <1 bouncy, >1 sluggish
+ */
+export function update(state: Spring<Vec2>, target: Vec2, smoothTime: number, dampingRatio: number, delta: number): Spring<Vec2>;
 ```
 
-#### `spring.damp3`
+#### `spring2.damp`
 
 ```ts
-/** Critically-damped Vec3 spring (dampingRatio = 1). See {@link damp}. */
-/** Critically-damped Vec3 spring (dampingRatio = 1). See {@link damp}. */
-export function damp3(state: Spring<Vec3>, target: Vec3, smoothTime: number, delta: number): Spring<Vec3>;
+/** Critically-damped Vec2 spring (dampingRatio = 1). See {@link update}. */
+/** Critically-damped Vec2 spring (dampingRatio = 1). See {@link update}. */
+export function damp(state: Spring<Vec2>, target: Vec2, smoothTime: number, delta: number): Spring<Vec2>;
 ```
 
-#### `spring.spring4`
+**spring3**
+
+#### `spring3.create`
 
 ```ts
-/** Vec4 {@link spring}: springs `state.value` toward `target`, mutating `state` in place. */
-/** Vec4 {@link spring}: springs `state.value` toward `target`, mutating `state` in place. */
-export function spring4(state: Spring<Vec4>, target: Vec4, smoothTime: number, dampingRatio: number, delta: number): Spring<Vec4>;
+/** Creates a Vec3 spring at `value` (copied), at rest. */
+export function create(value: Vec3 = [0, 0, 0]): Spring<Vec3>;
 ```
 
-#### `spring.damp4`
+#### `spring3.update`
 
 ```ts
-/** Critically-damped Vec4 spring (dampingRatio = 1). See {@link damp}. */
-/** Critically-damped Vec4 spring (dampingRatio = 1). See {@link damp}. */
-export function damp4(state: Spring<Vec4>, target: Vec4, smoothTime: number, delta: number): Spring<Vec4>;
+/**
+ * Springs `state.value` toward `target`, mutating `state` in place. Returns it.
+ * @param dampingRatio 1 = critically damped (no overshoot), <1 bouncy, >1 sluggish
+ */
+/**
+ * Springs `state.value` toward `target`, mutating `state` in place. Returns it.
+ * @param dampingRatio 1 = critically damped (no overshoot), <1 bouncy, >1 sluggish
+ */
+export function update(state: Spring<Vec3>, target: Vec3, smoothTime: number, dampingRatio: number, delta: number): Spring<Vec3>;
+```
+
+#### `spring3.damp`
+
+```ts
+/** Critically-damped Vec3 spring (dampingRatio = 1). See {@link update}. */
+/** Critically-damped Vec3 spring (dampingRatio = 1). See {@link update}. */
+export function damp(state: Spring<Vec3>, target: Vec3, smoothTime: number, delta: number): Spring<Vec3>;
+```
+
+**spring4**
+
+#### `spring4.create`
+
+```ts
+/** Creates a Vec4 spring at `value` (copied), at rest. */
+export function create(value: Vec4 = [0, 0, 0, 0]): Spring<Vec4>;
+```
+
+#### `spring4.update`
+
+```ts
+/**
+ * Springs `state.value` toward `target`, mutating `state` in place. Returns it.
+ * @param dampingRatio 1 = critically damped (no overshoot), <1 bouncy, >1 sluggish
+ */
+/**
+ * Springs `state.value` toward `target`, mutating `state` in place. Returns it.
+ * @param dampingRatio 1 = critically damped (no overshoot), <1 bouncy, >1 sluggish
+ */
+export function update(state: Spring<Vec4>, target: Vec4, smoothTime: number, dampingRatio: number, delta: number): Spring<Vec4>;
+```
+
+#### `spring4.damp`
+
+```ts
+/** Critically-damped Vec4 spring (dampingRatio = 1). See {@link update}. */
+/** Critically-damped Vec4 spring (dampingRatio = 1). See {@link update}. */
+export function damp(state: Spring<Vec4>, target: Vec4, smoothTime: number, delta: number): Spring<Vec4>;
 ```
 
 ### `mathcat/random`
